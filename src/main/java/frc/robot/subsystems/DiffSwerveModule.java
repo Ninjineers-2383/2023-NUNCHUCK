@@ -368,6 +368,38 @@ public class DiffSwerveModule implements Sendable {
             return m_bottomMotor.getTemperature();
         }, null);
 
+        builder.addDoubleProperty("Drive PID P", () -> {
+            return m_drivePIDController.getP();
+        }, (value) -> {
+            m_drivePIDController.setP(value);
+        });
+        builder.addDoubleProperty("Drive PID I", () -> {
+            return m_drivePIDController.getI();
+        }, (value) -> {
+            m_drivePIDController.setI(value);
+        });
+        builder.addDoubleProperty("Drive PID D", () -> {
+            return m_drivePIDController.getD();
+        }, (value) -> {
+            m_drivePIDController.setD(value);
+        });
+
+        builder.addDoubleProperty("Turn PID P", () -> {
+            return m_turningPIDController.getP();
+        }, (value) -> {
+            m_turningPIDController.setP(value);
+        });
+        builder.addDoubleProperty("Turn PID I", () -> {
+            return m_turningPIDController.getI();
+        }, (value) -> {
+            m_turningPIDController.setI(value);
+        });
+        builder.addDoubleProperty("Turn PID D", () -> {
+            return m_turningPIDController.getD();
+        }, (value) -> {
+            m_turningPIDController.setD(value);
+        });
+
         SendableRegistry.addLW(m_drivePIDController, m_name + "/Drive PID");
         SendableRegistry.addLW(m_turningPIDController, m_name + "/Turn PID");
     }
