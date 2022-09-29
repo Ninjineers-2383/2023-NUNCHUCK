@@ -23,8 +23,8 @@ public final class Constants {
         public final static double kDriveMaxVoltage = 10.0;
         public final static double kMaxCurrent = 40.0;
 
-        public final static double kPModuleTurningController = 3.5 / Math.PI;
-        // public final static double kPModuleTurningController = 0.8 / Math.PI;
+        // public final static double kPModuleTurningController = 0 / Math.PI;
+        public final static double kPModuleTurningController = 0.8 / Math.PI;
 
         public final static double kPModuleDriveController = 0.025;
         // public final static double kPModuleDriveController = 0.01;
@@ -63,9 +63,9 @@ public final class Constants {
     public static final class FrontRightModule {
         public final static int kTopMotorID = 22;
         public final static int kBottomMotorID = 23;
-        public final static int kEncoderPortA = 3;
-        public final static int kEncoderPortB = 4;
-        public final static int kEncoderPortAbs = 5;
+        public final static int kEncoderPortA = 6;
+        public final static int kEncoderPortB = 7;
+        public final static int kEncoderPortAbs = 8;
         public final static String name = "frontRight";
         public final static Translation2d translation = new Translation2d(ModuleConstants.kTrackWidthMeters / 2,
                 (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4);
@@ -74,9 +74,9 @@ public final class Constants {
     public static final class RearModule {
         public final static int kTopMotorID = 24;
         public final static int kBottomMotorID = 25;
-        public final static int kEncoderPortA = 6;
-        public final static int kEncoderPortB = 7;
-        public final static int kEncoderPortAbs = 8;
+        public final static int kEncoderPortA = 3;
+        public final static int kEncoderPortB = 4;
+        public final static int kEncoderPortAbs = 5;
         public final static String name = "rear";
         public final static Translation2d translation = new Translation2d(0,
                 -(Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4);
