@@ -33,8 +33,10 @@ public class RobotContainer {
     private final DoubleSupplier m_driveX = () -> m_driverMoveController.getX();
     private final DoubleSupplier m_driveY = () -> m_driverMoveController.getY();
     private final DoubleSupplier m_driveOmega = () -> m_driverTurnController.getX();
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getTrigger()
-            || m_driverTurnController.getTrigger());
+    // private final BooleanSupplier m_fieldCentric = () ->
+    // !(m_driverMoveController.getTrigger()
+    // || m_driverTurnController.getTrigger());
+    private final BooleanSupplier m_fieldCentric = () -> false;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());

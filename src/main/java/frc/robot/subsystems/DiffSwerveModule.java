@@ -318,7 +318,7 @@ public class DiffSwerveModule implements Sendable {
 
     public void setZeroOffset() {
         m_encoder.reset();
-        double steerPosition = getModuleAngle();
+        double steerPosition = m_encoder.get();
         Preferences.setDouble(m_name, steerPosition);
         loadZeroOffset();
     }
@@ -345,6 +345,13 @@ public class DiffSwerveModule implements Sendable {
 
         builder.addDoubleProperty("Module Angle (Degrees)", () -> {
             return m_moduleAngle;
+        }, null);
+
+        builder.addDoubleProperty("Raw Quad", () -> {
+            return m_encoder.getRawQuad();
+        }, null);
+        builder.addDoubleProperty("Raw Abs", () -> {
+            return m_encoder.getRawAbs();
         }, null);
 
         builder.addDoubleProperty("Drive Output", () -> {

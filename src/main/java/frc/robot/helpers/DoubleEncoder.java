@@ -48,7 +48,7 @@ public class DoubleEncoder {
      * This is the offset between the absolute and quadrature encoders.
      */
     public void setZeroOffset() {
-        m_zeroOffset = absEncoder.getDistance() - getRawQuad();
+        m_zeroOffset = quadEncoder.getDistance() - absEncoder.getDistance();
     }
 
     /**
@@ -71,9 +71,9 @@ public class DoubleEncoder {
     }
 
     /**
-     * Gets the raw value of the quadrate encoder
+     * Gets the raw value of the quadrature encoder
      * 
-     * @return the quadrate ticks
+     * @return the quadrature ticks
      */
     public int getRawQuad() {
         return quadEncoder.getRaw();
