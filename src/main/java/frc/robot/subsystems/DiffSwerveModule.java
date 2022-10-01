@@ -319,9 +319,8 @@ public class DiffSwerveModule implements Sendable {
     public void setZeroOffset() {
         m_encoder.reset();
         double steerPosition = getModuleAngle() + m_offset;
-        DataLogManager.log(String.format("INFO: %s steerPosition %f\n", m_name, steerPosition));
         Preferences.setDouble(m_name, steerPosition);
-        m_offset = steerPosition;
+        loadZeroOffset();
     }
 
     public void loadZeroOffset() {
