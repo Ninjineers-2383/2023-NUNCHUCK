@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
 import frc.robot.helpers.DoubleEncoder;
+import frc.robot.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
     private final WPI_TalonFX m_topMotor;
@@ -83,6 +84,8 @@ public class DiffSwerveModule implements Sendable {
      */
     private double m_moduleAngle;
 
+    private Rotation2d m_staticAngle;
+
     private double m_topVoltage;
     private double m_bottomVoltage;
 
@@ -117,6 +120,7 @@ public class DiffSwerveModule implements Sendable {
             int encoderPortA,
             int encoderPortB,
             int encoderPortAbs,
+            Rotation2d staticAngle,
             String name,
             String CANbus, DataLog log) {
         // Init all the fields
@@ -133,6 +137,8 @@ public class DiffSwerveModule implements Sendable {
 
         m_name = name;
         m_log = log;
+
+        m_staticAngle = staticAngle;
 
         // Reset motors and encoders
         m_topMotor.configFactoryDefault();
@@ -266,9 +272,9 @@ public class DiffSwerveModule implements Sendable {
      * @return the max voltage of the motors
      */
     public double setDesiredState(SwerveModuleState desiredState) {
-        // SwerveModuleState state = SwerveModuleState.optimize(desiredState,
-        // Rotation2d.fromDegrees(getModuleAngle()));
-        SwerveModuleState state = desiredState;
+        SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
+                Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
+        // SwerveModuleState state = desiredState;
 
         m_desiredSpeed = state.speedMetersPerSecond;
         m_desiredAngle = state.angle.getDegrees();
@@ -276,7 +282,7 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
-        m_turnOutput = m_turningPIDController.calculate((m_moduleAngle / 180.0 * Math.PI),
+        m_turnOutput = -m_turningPIDController.calculate((m_moduleAngle / 180.0 * Math.PI),
                 (m_desiredAngle / 180.0 * Math.PI));
         m_turnOutput = MathUtil.clamp(m_turnOutput, -Constants.ModuleConstants.kMaxTurnOutput,
                 Constants.ModuleConstants.kMaxTurnOutput);

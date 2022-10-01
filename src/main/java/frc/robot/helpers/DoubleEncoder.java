@@ -67,7 +67,7 @@ public class DoubleEncoder {
      * @return the angle in degrees
      */
     public double get() {
-        return quadEncoder.getDistance() - m_zeroOffset;
+        return -(quadEncoder.getDistance() - m_zeroOffset);
     }
 
     /**

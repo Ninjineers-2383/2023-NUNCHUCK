@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
@@ -50,35 +51,41 @@ public final class Constants {
     }
 
     public static final class FrontLeftModule {
-        public final static int kTopMotorID = 20;
-        public final static int kBottomMotorID = 21;
+        public final static int kTopMotorID = 21;
+        public final static int kBottomMotorID = 20;
         public final static int kEncoderPortA = 0;
         public final static int kEncoderPortB = 1;
         public final static int kEncoderPortAbs = 2;
         public final static String name = "frontLeft";
-        public final static Translation2d translation = new Translation2d(-ModuleConstants.kTrackWidthMeters / 2,
-                (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4);
+        public final static Translation2d translation = new Translation2d(
+                (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
+                -ModuleConstants.kTrackWidthMeters / 2);
+        public final static Rotation2d staticAngle = Rotation2d.fromDegrees(-45);
     }
 
     public static final class FrontRightModule {
         public final static int kTopMotorID = 22;
         public final static int kBottomMotorID = 23;
-        public final static int kEncoderPortA = 6;
-        public final static int kEncoderPortB = 7;
-        public final static int kEncoderPortAbs = 8;
+        public final static int kEncoderPortA = 3;
+        public final static int kEncoderPortB = 4;
+        public final static int kEncoderPortAbs = 5;
         public final static String name = "frontRight";
-        public final static Translation2d translation = new Translation2d(ModuleConstants.kTrackWidthMeters / 2,
-                (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4);
+        public final static Translation2d translation = new Translation2d(
+                (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
+                ModuleConstants.kTrackWidthMeters / 2);
+        public final static Rotation2d staticAngle = Rotation2d.fromDegrees(45);
     }
 
     public static final class RearModule {
         public final static int kTopMotorID = 24;
         public final static int kBottomMotorID = 25;
-        public final static int kEncoderPortA = 3;
-        public final static int kEncoderPortB = 4;
-        public final static int kEncoderPortAbs = 5;
+        public final static int kEncoderPortA = 6;
+        public final static int kEncoderPortB = 7;
+        public final static int kEncoderPortAbs = 8;
         public final static String name = "rear";
-        public final static Translation2d translation = new Translation2d(0,
-                -(Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4);
+        public final static Translation2d translation = new Translation2d(
+                -(Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
+                0);
+        public final static Rotation2d staticAngle = Rotation2d.fromDegrees(90);
     }
 }
