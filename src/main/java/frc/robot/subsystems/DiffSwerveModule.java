@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.Constants;
 import frc.robot.helpers.DoubleEncoder;
 
@@ -275,12 +276,14 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
-        m_driveOutput = m_drivePIDController.calculate(m_driveSpeed, m_desiredSpeed);
-
         m_turnOutput = m_turningPIDController.calculate((m_moduleAngle / 180.0 * Math.PI),
                 (m_desiredAngle / 180.0 * Math.PI));
         m_turnOutput = MathUtil.clamp(m_turnOutput, -Constants.ModuleConstants.kMaxTurnOutput,
                 Constants.ModuleConstants.kMaxTurnOutput);
+
+        m_desiredSpeed *= Math.abs(Math.cos(m_turningPIDController.getPositionError()));
+
+        m_driveOutput = m_drivePIDController.calculate(m_driveSpeed, m_desiredSpeed);
 
         double driveFeedForward = m_driveFeedForward.calculate(m_desiredSpeed);
 
