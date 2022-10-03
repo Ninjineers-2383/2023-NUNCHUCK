@@ -10,6 +10,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -33,10 +34,9 @@ public class RobotContainer {
     private final DoubleSupplier m_driveX = () -> m_driverMoveController.getX();
     private final DoubleSupplier m_driveY = () -> m_driverMoveController.getY();
     private final DoubleSupplier m_driveOmega = () -> m_driverTurnController.getX();
-    // private final BooleanSupplier m_fieldCentric = () ->
-    // !(m_driverMoveController.getTrigger()
-    // || m_driverTurnController.getTrigger());
-    private final BooleanSupplier m_fieldCentric = () -> false;
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getTrigger()
+            || m_driverTurnController.getTrigger());
+    // private final BooleanSupplier m_fieldCentric = () -> false;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());

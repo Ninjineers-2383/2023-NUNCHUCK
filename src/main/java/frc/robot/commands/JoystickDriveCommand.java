@@ -36,7 +36,7 @@ public class JoystickDriveCommand extends CommandBase {
         double omega = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_omega.getAsDouble(), 0.1))
                 * DriveConstants.kMaxAngularSpeed;
 
-        m_drivetrain.drive(-y, x, -omega, m_fieldRelative.getAsBoolean());
+        m_drivetrain.drive(-y, x, omega, m_fieldRelative.getAsBoolean());
     }
 
     @Override
