@@ -362,6 +362,9 @@ public class DiffSwerveModule implements Sendable {
         builder.addDoubleProperty("Raw Abs", () -> {
             return m_encoder.getRawAbs();
         }, null);
+        builder.addDoubleProperty("Abs Distance", () -> {
+            return m_encoder.getAbsDistance();
+        }, null);
 
         builder.addDoubleProperty("Drive Output", () -> {
             return m_driveOutput;
