@@ -22,13 +22,12 @@ public class DoubleEncoder {
      * @param absChannel   The DIO channel of the absolute encoder's PWM channel
      */
     public DoubleEncoder(int quadChannelA, int quadChannelB, int absChannel) {
-        quadEncoder = new Encoder(quadChannelA, quadChannelB, false, Encoder.EncodingType.k4X);
+        quadEncoder = new Encoder(quadChannelA, quadChannelB, true, Encoder.EncodingType.k4X);
         quadEncoderSim = new EncoderSim(quadEncoder);
         absEncoder = new DutyCycleEncoder(absChannel);
         absEncoderSim = new DutyCycleEncoderSim(absEncoder);
 
         quadEncoder.setDistancePerPulse(360.0 / 1024.0);
-        absEncoder.setDistancePerRotation(360.0);
     }
 
     /**
@@ -47,7 +46,7 @@ public class DoubleEncoder {
      * This is the offset between the absolute and quadrature encoders.
      */
     public void setZeroOffset() {
-        m_zeroOffset = quadEncoder.getDistance() - absEncoder.getAbsolutePosition() * 360;
+        m_zeroOffset = quadEncoder.getDistance() - absEncoder.getAbsolutePosition() * 360.0;
         DataLogManager.log(String.format("Set Zero Offset %f\n", m_zeroOffset));
     }
 
@@ -67,7 +66,7 @@ public class DoubleEncoder {
      * @return the angle in degrees
      */
     public double get() {
-        return -(quadEncoder.getDistance() - m_zeroOffset);
+        return quadEncoder.getDistance() - m_zeroOffset;
     }
 
     /**
@@ -89,7 +88,7 @@ public class DoubleEncoder {
     }
 
     public double getAbsDistance() {
-        return absEncoder.getDistance();
+        return absEncoder.getAbsolutePosition() * 360.0;
     }
 
     public double getZeroOffset() {
