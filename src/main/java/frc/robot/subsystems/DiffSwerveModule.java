@@ -281,7 +281,6 @@ public class DiffSwerveModule implements Sendable {
     public double setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
                 Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
-        // SwerveModuleState state = desiredState;
 
         m_desiredSpeed = state.speedMetersPerSecond;
         m_desiredAngle = state.angle.getDegrees();

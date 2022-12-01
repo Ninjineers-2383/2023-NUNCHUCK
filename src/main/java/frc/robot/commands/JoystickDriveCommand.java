@@ -18,9 +18,9 @@ public class JoystickDriveCommand extends CommandBase {
     private final DoubleSupplier m_omega;
     private final BooleanSupplier m_fieldRelative;
 
-    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(100);
+    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(100);
+    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(100);
 
     public JoystickDriveCommand(DrivetrainSubsystem drivetrain, DoubleSupplier xInput, DoubleSupplier yInput,
             DoubleSupplier rotationInput, BooleanSupplier fieldRelative) {

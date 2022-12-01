@@ -32,14 +32,14 @@ public final class Constants {
 
         public final static double kMaxTurnOutput = 0.5;
 
-        public final static double ks = 0.57219;
-        public final static double kv = 2.184;
-        public final static double ka = 0.067772;
+        public final static double ks = 0.8091;
+        public final static double kv = 2.4154;
+        public final static double ka = 0.22344;
         // public final static double ks = 0.2;
         // public final static double kv = 0.012;
         // public final static double ka = 0.1;
 
-        public final static double kDriveGearRatio = 6.4;
+        public final static double kDriveGearRatio = 7;
         public final static double kTurnGearRatio = 28;
 
         public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
