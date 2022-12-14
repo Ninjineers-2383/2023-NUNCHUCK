@@ -27,7 +27,7 @@ public class DoubleEncoder {
         absEncoder = new DutyCycleEncoder(absChannel);
         absEncoderSim = new DutyCycleEncoderSim(absEncoder);
 
-        quadEncoder.setDistancePerPulse(360.0 / 1024.0);
+        quadEncoder.setDistancePerPulse(360.0 / 2048.0);
     }
 
     /**

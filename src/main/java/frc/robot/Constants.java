@@ -79,9 +79,9 @@ public final class Constants {
     public static final class RearModule {
         public final static int kTopMotorID = 24;
         public final static int kBottomMotorID = 25;
-        public final static int kEncoderPortA = 6;
-        public final static int kEncoderPortB = 7;
-        public final static int kEncoderPortAbs = 8;
+        public final static int kEncoderPortA = 7;
+        public final static int kEncoderPortB = 8;
+        public final static int kEncoderPortAbs = 9;
         public final static String name = "rear";
         public final static Translation2d translation = new Translation2d(
                 -(Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
