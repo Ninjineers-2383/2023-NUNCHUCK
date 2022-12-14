@@ -59,7 +59,7 @@ public final class Constants {
         public final static String name = "frontLeft";
         public final static Translation2d translation = new Translation2d(
                 (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
-                -ModuleConstants.kTrackWidthMeters / 2);
+                ModuleConstants.kTrackWidthMeters / 2);
         public final static Rotation2d staticAngle = Rotation2d.fromDegrees(-45);
     }
 
@@ -72,7 +72,7 @@ public final class Constants {
         public final static String name = "frontRight";
         public final static Translation2d translation = new Translation2d(
                 (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
-                ModuleConstants.kTrackWidthMeters / 2);
+                -ModuleConstants.kTrackWidthMeters / 2);
         public final static Rotation2d staticAngle = Rotation2d.fromDegrees(45);
     }
 
