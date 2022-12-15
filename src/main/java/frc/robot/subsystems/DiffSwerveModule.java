@@ -198,8 +198,10 @@ public class DiffSwerveModule implements Sendable {
         m_wheelSpeed.append(m_driveSpeed);
         m_moduleAngleLog.append(m_moduleAngle);
 
-        if (i < 10) {
-            m_encoder.reset();
+        if (i < 200) {
+            if (i == 199) {
+                m_encoder.reset();
+            }
             i++;
         }
 

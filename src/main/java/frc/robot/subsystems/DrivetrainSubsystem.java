@@ -81,6 +81,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Gyro Heading", getHeading().getDegrees());
+
         for (int i = 0; i < m_modules.length; i++) {
             m_lastStates[i] = m_modules[i].getState();
         }
