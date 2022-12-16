@@ -123,10 +123,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @param fieldRelative Whether the speeds are relative to the field or the
      *                      robot
      */
-    public void drive(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative) {
+    public void drive(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative,
+            Translation2d centerOfRotation) {
         SwerveModuleState[] swerveModuleStates = m_kinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, getHeading())
-                        : new ChassisSpeeds(xSpeed, ySpeed, rotSpeed));
+                        : new ChassisSpeeds(xSpeed, ySpeed, rotSpeed),
+                centerOfRotation);
 
         setModuleStates(swerveModuleStates);
     }

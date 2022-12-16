@@ -16,8 +16,8 @@ public final class Constants {
     public static final String kCANivoreBus = "rio"; // TODO: Change to canivore when available
 
     public static final class DriveConstants {
-        public static final double kMaxSpeed = 5.0; // meters per second
-        public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+        public static final double kMaxSpeed = 10.0; // meters per second
+        public static final double kMaxAngularSpeed = 4 * Math.PI; // radians per second
     }
 
     public static final class ModuleConstants {

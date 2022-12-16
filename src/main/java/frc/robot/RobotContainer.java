@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,13 +36,14 @@ public class RobotContainer {
     private final DoubleSupplier m_driveOmega = () -> m_driverTurnController.getX();
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getTrigger()
             || m_driverTurnController.getTrigger());
+    private final IntSupplier m_povSupplier = () -> m_driverTurnController.getPOV();
     // private final BooleanSupplier m_fieldCentric = () -> false;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
 
     private final JoystickDriveCommand m_dDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-            m_driveY, m_driveOmega, m_fieldCentric);
+            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
