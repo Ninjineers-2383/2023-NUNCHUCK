@@ -30,18 +30,24 @@ import frc.robot.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
     private final WPI_TalonFX m_topMotor;
-    private final TalonFXSimCollection m_topMotorSim;
     private final WPI_TalonFX m_bottomMotor;
+
+    // Simulation motor controllers
+    private final TalonFXSimCollection m_topMotorSim;
     private final TalonFXSimCollection m_bottomMotorSim;
 
+    // Simulation motor plants
     private final DCMotorSim m_topMotorSimulator;
     private final DCMotorSim m_bottomMotorSimulator;
 
+    // Encoder class that allows for the use of abs and quadrature encoders
     private final DoubleEncoder m_encoder;
 
+    // Logging variables
     private final String m_name;
     private final DataLog m_log;
 
+    // Profiled PID controller for module rotation
     private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
             Constants.ModuleConstants.kPModuleTurningController,
             0.0,
@@ -49,16 +55,19 @@ public class DiffSwerveModule implements Sendable {
             new Constraints(Constants.ModuleConstants.kMaxAngularVelocity,
                     Constants.ModuleConstants.kMaxAngularAcceleration));
 
+    // PID controller for module drive speed
     private final PIDController m_drivePIDController = new PIDController(
             Constants.ModuleConstants.kPModuleDriveController,
             0.0,
             0.0);
 
+    // Feedforward for module drive speed
     private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(
             Constants.ModuleConstants.ks,
             Constants.ModuleConstants.kv,
             Constants.ModuleConstants.ka);
 
+    // Logging variables for the module
     private final DoubleLogEntry m_topMotorCurrent;
     private final DoubleLogEntry m_bottomMotorCurrent;
 
@@ -80,29 +89,40 @@ public class DiffSwerveModule implements Sendable {
      * <p>
      * Can be converted to radians with Rotation2d.fromDegrees()
      * <p>
-     * CCW+ CW-
+     * CCW+
      */
     private double m_moduleAngle;
 
+    // The static angle of the module
     private Rotation2d m_staticAngle;
 
+    // Temporary storage for the current desired voltage
     private double m_topVoltage;
     private double m_bottomVoltage;
 
+    // The offset for the module encoder in degrees
     private double m_offset;
 
+    /**
+     * Desired speed in meters per second
+     */
     private double m_desiredSpeed;
+
     /**
      * Desired angle in degrees
      * <p>
-     * CCW+ CW-
+     * CCW+
      */
     private double m_desiredAngle;
 
+    // The current output of the module PIDs (used for logging)
     private double m_driveOutput;
     private double m_turnOutput;
 
-    private int i = 0;
+    /**
+     * Counter used for the timing of resetting the module angle
+     */
+    private int reset_counter = 0;
 
     /**
      * Creates a new DiffSwerveModule.
@@ -159,6 +179,7 @@ public class DiffSwerveModule implements Sendable {
         m_topMotor.configSupplyCurrentLimit(supply);
         m_bottomMotor.configSupplyCurrentLimit(supply);
 
+        // Configure the turning PID to be continuous (-pi == pi)
         m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         m_topMotor.setNeutralMode(NeutralMode.Coast);
@@ -198,11 +219,11 @@ public class DiffSwerveModule implements Sendable {
         m_wheelSpeed.append(m_driveSpeed);
         m_moduleAngleLog.append(m_moduleAngle);
 
-        if (i < 200) {
-            if (i == 199) {
+        if (reset_counter < 200) {
+            if (reset_counter == 199) {
                 m_encoder.reset();
             }
-            i++;
+            reset_counter++;
         }
 
         return new SwerveModuleState(m_driveSpeed, Rotation2d.fromDegrees(m_moduleAngle));
@@ -290,9 +311,13 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
-        m_turnOutput = m_turningPIDController.calculate((m_moduleAngle / 180.0 * Math.PI),
-                (m_desiredAngle / 180.0 * Math.PI));
-        m_turnOutput = MathUtil.clamp(m_turnOutput, -Constants.ModuleConstants.kMaxTurnOutput,
+        m_turnOutput = m_turningPIDController.calculate(
+                Math.toRadians(m_moduleAngle),
+                Math.toRadians(m_desiredAngle));
+
+        // Only turn
+        m_turnOutput = MathUtil.clamp(m_turnOutput,
+                -Constants.ModuleConstants.kMaxTurnOutput,
                 Constants.ModuleConstants.kMaxTurnOutput);
 
         m_desiredSpeed *= Math.abs(Math.cos(m_turningPIDController.getPositionError()));
@@ -301,7 +326,8 @@ public class DiffSwerveModule implements Sendable {
 
         double driveFeedForward = m_driveFeedForward.calculate(m_desiredSpeed);
 
-        m_topVoltage = m_driveOutput + driveFeedForward + Constants.ModuleConstants.kDriveMaxVoltage * m_turnOutput;
+        m_topVoltage = m_driveOutput + driveFeedForward
+                + Constants.ModuleConstants.kDriveMaxVoltage * m_turnOutput;
 
         m_bottomVoltage = -m_driveOutput - driveFeedForward
                 + Constants.ModuleConstants.kDriveMaxVoltage * m_turnOutput;
@@ -373,9 +399,6 @@ public class DiffSwerveModule implements Sendable {
         }, null);
         builder.addDoubleProperty("Raw Abs", () -> {
             return m_encoder.getRawAbs();
-        }, null);
-        builder.addDoubleProperty("Abs Distance", () -> {
-            return m_encoder.getAbsDistance();
         }, null);
 
         builder.addDoubleProperty("Drive Output", () -> {

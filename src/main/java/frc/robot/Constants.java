@@ -24,20 +24,15 @@ public final class Constants {
         public final static double kDriveMaxVoltage = 10.0;
         public final static double kMaxCurrent = 40.0;
 
-        // public final static double kPModuleTurningController = 0 / Math.PI;
         public final static double kPModuleTurningController = 0.8 / Math.PI;
 
         public final static double kPModuleDriveController = 0.025;
-        // public final static double kPModuleDriveController = 0.01;
 
         public final static double kMaxTurnOutput = 0.5;
 
         public final static double ks = 0.8091;
         public final static double kv = 2.4154;
         public final static double ka = 0.22344;
-        // public final static double ks = 0.2;
-        // public final static double kv = 0.012;
-        // public final static double ka = 0.1;
 
         public final static double kDriveGearRatio = 7;
         public final static double kTurnGearRatio = 28;

@@ -23,11 +23,14 @@ public class DoubleEncoder {
      */
     public DoubleEncoder(int quadChannelA, int quadChannelB, int absChannel) {
         quadEncoder = new Encoder(quadChannelA, quadChannelB, true, Encoder.EncodingType.k4X);
-        quadEncoderSim = new EncoderSim(quadEncoder);
         absEncoder = new DutyCycleEncoder(absChannel);
+
+        // Sim encoders to allow simulation of the robot
+        quadEncoderSim = new EncoderSim(quadEncoder);
         absEncoderSim = new DutyCycleEncoderSim(absEncoder);
 
-        quadEncoder.setDistancePerPulse(360.0 / 2048.0);
+        quadEncoder.setDistancePerPulse(360.0 / 2048.0); // Encoder is mounted on turning shaft so the encoder spins 1:1
+                                                         // with the wheel, 360 degrees per 2048 ticks (1 rotation)
     }
 
     /**
@@ -89,10 +92,11 @@ public class DoubleEncoder {
         return absEncoder.getAbsolutePosition();
     }
 
-    public double getAbsDistance() {
-        return absEncoder.getAbsolutePosition() * 360.0;
-    }
-
+    /**
+     * Gets the zero offset of the encoder
+     * 
+     * @return the zero offset
+     */
     public double getZeroOffset() {
         return m_zeroOffset;
     }
