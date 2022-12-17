@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
@@ -45,6 +46,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private double m_currentYaw;
     private int m_counter;
+    private int m_counter2;
 
     public DrivetrainSubsystem(DataLog log) {
         m_frontLeftModule = new DiffSwerveModule(Constants.FrontLeftModule.kTopMotorID,
@@ -67,6 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_lastStates = new SwerveModuleState[m_modules.length];
 
         loadWheelOffsets();
+        getCompassHeading();
 
         SmartDashboard.putData("Field", m_field);
 
@@ -96,9 +99,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_field.setRobotPose(m_odometry.getPoseMeters());
 
         if (RobotController.getUserButton() && m_counter == 0) {
-            setWheelOffsets();
+            m_counter2 += 1;
             m_counter = 100;
-            DataLogManager.log("INFO: User Button Pressed\nSetting all module rotation offsets\n");
+            DataLogManager.log("User button pressed " + m_counter2 + " times.\n");
+        }
+
+        if (!RobotController.getUserButton() && m_counter2 != 0) {
+            if (m_counter2 == 1) {
+                setWheelOffsets();
+                DataLogManager.log("INFO: User Button Pressed\nSetting all module rotation offsets\n");
+            } else if (m_counter2 == 2) {
+                setCompassHeading();
+                DataLogManager.log("INFO: User Button Pressed\nSetting Compass Heading\n");
+            }
+            m_counter2 = 0;
         }
 
         if (m_counter > 0)
@@ -206,6 +220,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
         for (DiffSwerveModule module : m_modules) {
             module.motorsOff();
         }
+    }
+
+    public void setCompassHeading() {
+        double m_gyroOffset;
+        m_gyroOffset = m_gyro.getCompassHeading();
+        Preferences.setDouble("Gyro Offset", m_gyroOffset);
+        m_gyro.reset();
+        m_gyro.setAngleAdjustment(0);
+    }
+
+    public void getCompassHeading() {
+        double m_gyroOffset = Preferences.getDouble("Gyro Offset", 0);
+        m_gyro.reset();
+        double currentHeading = m_gyro.getCompassHeading();
+        m_gyro.setAngleAdjustment(currentHeading - m_gyroOffset);
+        DataLogManager.log(String.format("Gyro Offset: %f\nCurrent Heading: %f\nAdjustment: %f\n", m_gyroOffset,
+                currentHeading, currentHeading - m_gyroOffset));
     }
 
     public void setWheelOffsets() {
