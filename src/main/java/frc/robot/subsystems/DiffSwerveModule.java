@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
@@ -20,7 +21,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -362,12 +362,14 @@ public class DiffSwerveModule implements Sendable {
     public void setZeroOffset() {
         m_encoder.reset();
         double steerPosition = m_encoder.get();
-        Preferences.setDouble(m_name, steerPosition);
+        m_topMotor.config_kP(2, steerPosition, 1000);
         loadZeroOffset();
     }
 
     public void loadZeroOffset() {
-        m_offset = Preferences.getDouble(m_name, 0);
+        SlotConfiguration slot = new SlotConfiguration();
+        m_topMotor.getSlotConfigs(slot, 2, 1000);
+        m_offset = slot.kP;
         DataLogManager.log(String.format("INFO: %s steerPosition %f\n", m_name, m_offset));
     }
 
