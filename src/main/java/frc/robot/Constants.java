@@ -16,7 +16,7 @@ public final class Constants {
     public static final String kCANivoreBus = "rio"; // TODO: Change to canivore when available
 
     public static final class DriveConstants {
-        public static final double kMaxSpeed = 10.0; // meters per second
+        public static final double kMaxSpeed = 4; // meters per second
         public static final double kMaxAngularSpeed = 4 * Math.PI; // radians per second
     }
 
@@ -26,15 +26,17 @@ public final class Constants {
 
         public final static double kPModuleTurningController = 0.8 / Math.PI;
 
-        public final static double kPModuleDriveController = 0.025;
+        public final static double kPModuleDriveController = 0.8;
+        public final static double kIModuleDriveController = 0.003;
+        public final static double kDModuleDriveController = 0.02;
 
         public final static double kMaxTurnOutput = 0.5;
 
-        public final static double ks = 0.8091;
-        public final static double kv = 2.4154;
-        public final static double ka = 0.22344;
+        public final static double ks = 0.45;
+        public final static double kv = 2.4;
+        public final static double ka = 0;
 
-        public final static double kDriveGearRatio = 7;
+        public final static double kDriveGearRatio = (9 / 60.0) * (20 / 84.0) * (64 / 16.0);
         public final static double kTurnGearRatio = 28;
 
         public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
@@ -46,8 +48,8 @@ public final class Constants {
     }
 
     public static final class FrontLeftModule {
-        public final static int kTopMotorID = 21;
-        public final static int kBottomMotorID = 20;
+        public final static int kTopMotorID = 20;
+        public final static int kBottomMotorID = 21;
         public final static int kEncoderPortA = 0;
         public final static int kEncoderPortB = 1;
         public final static int kEncoderPortAbs = 2;
@@ -56,6 +58,7 @@ public final class Constants {
                 (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
                 ModuleConstants.kTrackWidthMeters / 2);
         public final static Rotation2d staticAngle = Rotation2d.fromDegrees(-45);
+        public final static Rotation2d mountAngle = Rotation2d.fromDegrees(60);
     }
 
     public static final class FrontRightModule {
@@ -69,6 +72,7 @@ public final class Constants {
                 (Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
                 -ModuleConstants.kTrackWidthMeters / 2);
         public final static Rotation2d staticAngle = Rotation2d.fromDegrees(45);
+        public final static Rotation2d mountAngle = Rotation2d.fromDegrees(-60);
     }
 
     public static final class RearModule {
@@ -82,5 +86,6 @@ public final class Constants {
                 -(Math.sqrt(3) * ModuleConstants.kTrackWidthMeters) / 4,
                 0);
         public final static Rotation2d staticAngle = Rotation2d.fromDegrees(90);
+        public final static Rotation2d mountAngle = Rotation2d.fromDegrees(0);
     }
 }

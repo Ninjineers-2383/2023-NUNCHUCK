@@ -10,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
 import frc.robot.helpers.DoubleEncoder;
+import frc.robot.helpers.Feedforward;
 import frc.robot.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
@@ -58,11 +58,11 @@ public class DiffSwerveModule implements Sendable {
     // PID controller for module drive speed
     private final PIDController m_drivePIDController = new PIDController(
             Constants.ModuleConstants.kPModuleDriveController,
-            0.0,
-            0.0);
+            Constants.ModuleConstants.kIModuleDriveController,
+            Constants.ModuleConstants.kDModuleDriveController);
 
     // Feedforward for module drive speed
-    private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(
+    private final Feedforward m_driveFeedForward = new Feedforward(
             Constants.ModuleConstants.ks,
             Constants.ModuleConstants.kv,
             Constants.ModuleConstants.ka);
@@ -95,6 +95,9 @@ public class DiffSwerveModule implements Sendable {
 
     // The static angle of the module
     private Rotation2d m_staticAngle;
+
+    // The angle angle of the module top plate (used to calculate offset)
+    private Rotation2d m_moduleMountAngle;
 
     // Temporary storage for the current desired voltage
     private double m_topVoltage;
@@ -143,6 +146,7 @@ public class DiffSwerveModule implements Sendable {
             int encoderPortB,
             int encoderPortAbs,
             Rotation2d staticAngle,
+            Rotation2d moduleAngle,
             String name,
             String CANbus, DataLog log) {
         // Init all the fields
@@ -161,10 +165,11 @@ public class DiffSwerveModule implements Sendable {
         m_log = log;
 
         m_staticAngle = staticAngle;
+        m_moduleMountAngle = moduleAngle;
 
         // Reset motors and encoders
-        m_topMotor.configFactoryDefault();
-        m_bottomMotor.configFactoryDefault();
+        // m_topMotor.configFactoryDefault();
+        // m_bottomMotor.configFactoryDefault();
 
         m_topMotor.configVoltageCompSaturation(Constants.ModuleConstants.kDriveMaxVoltage);
         m_topMotor.enableVoltageCompensation(true);
@@ -361,15 +366,15 @@ public class DiffSwerveModule implements Sendable {
 
     public void setZeroOffset() {
         m_encoder.reset();
-        double steerPosition = m_encoder.get();
+        double steerPosition = m_encoder.get() + m_moduleMountAngle.getDegrees();
         m_topMotor.config_kP(2, steerPosition, 1000);
         loadZeroOffset();
     }
 
     public void loadZeroOffset() {
         SlotConfiguration slot = new SlotConfiguration();
-        m_topMotor.getSlotConfigs(slot, 2, 1000);
-        m_offset = slot.kP;
+        m_topMotor.getSlotConfigs(slot, 2, 5000);
+        m_offset = slot.kP - m_moduleMountAngle.getDegrees();
         DataLogManager.log(String.format("INFO: %s steerPosition %f\n", m_name, m_offset));
     }
 
@@ -456,7 +461,29 @@ public class DiffSwerveModule implements Sendable {
             m_turningPIDController.setD(value);
         });
 
-        SendableRegistry.addLW(m_drivePIDController, m_name + "/Drive PID");
-        SendableRegistry.addLW(m_turningPIDController, m_name + "/Turn PID");
+        builder.addDoubleProperty("Drive FF ks", () -> {
+            return m_driveFeedForward.getKs();
+        }, (value) -> {
+            m_driveFeedForward.setKs(value);
+            DataLogManager.log(String.format(
+                    "%s: FF ks set to %f",
+                    m_name, value));
+        });
+
+        builder.addDoubleProperty("Drive FF kv", () -> {
+            return m_driveFeedForward.getKv();
+        }, (value) -> {
+            m_driveFeedForward.setKv(value);
+        });
+
+        builder.addDoubleProperty("Drive FF ka", () -> {
+            return m_driveFeedForward.getKa();
+        }, (value) -> {
+            m_driveFeedForward.setKa(value);
+        });
+
+        SmartDashboard.putData(m_name + "/Drive PID", m_drivePIDController);
+        SmartDashboard.putData(m_name + "/Turn PID", m_turningPIDController);
+        SmartDashboard.putData(m_name + "/Drive FF", m_driveFeedForward);
     }
 }

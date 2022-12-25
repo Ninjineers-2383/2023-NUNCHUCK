@@ -51,16 +51,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FrontLeftModule.kBottomMotorID, Constants.FrontLeftModule.kEncoderPortA,
                 Constants.FrontLeftModule.kEncoderPortB, Constants.FrontLeftModule.kEncoderPortAbs,
                 Constants.FrontLeftModule.staticAngle,
+                Constants.FrontLeftModule.mountAngle,
                 Constants.FrontLeftModule.name, Constants.kCANivoreBus, log);
         m_frontRightModule = new DiffSwerveModule(Constants.FrontRightModule.kTopMotorID,
                 Constants.FrontRightModule.kBottomMotorID, Constants.FrontRightModule.kEncoderPortA,
                 Constants.FrontRightModule.kEncoderPortB, Constants.FrontRightModule.kEncoderPortAbs,
                 Constants.FrontRightModule.staticAngle,
+                Constants.FrontRightModule.mountAngle,
                 Constants.FrontRightModule.name, Constants.kCANivoreBus, log);
         m_rearModule = new DiffSwerveModule(Constants.RearModule.kTopMotorID, Constants.RearModule.kBottomMotorID,
                 Constants.RearModule.kEncoderPortA, Constants.RearModule.kEncoderPortB,
                 Constants.RearModule.kEncoderPortAbs,
                 Constants.RearModule.staticAngle,
+                Constants.RearModule.mountAngle,
                 Constants.RearModule.name, Constants.kCANivoreBus, log);
 
         m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
