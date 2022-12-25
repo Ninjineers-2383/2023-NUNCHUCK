@@ -12,7 +12,7 @@ public class DoubleEncoder {
     private final DutyCycleEncoder absEncoder;
     private final DutyCycleEncoderSim absEncoderSim;
 
-    private double m_zeroOffset = Double.NaN;
+    private double m_zeroOffset = 0;
 
     /**
      * Creates a new DoubleEncoder.s

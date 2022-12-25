@@ -33,7 +33,10 @@
       "/LiveWindow/Ungrouped/frontRight/Drive PID": "PIDController",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/frontLeft/Drive PID": "PIDController",
+      "/SmartDashboard/frontRight/Drive PID": "PIDController",
+      "/SmartDashboard/rear/Drive PID": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {
