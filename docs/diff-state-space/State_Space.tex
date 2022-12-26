@@ -1,0 +1,132 @@
+\documentclass{scrartcl}
+\input{File_Setup.tex}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+%Title of the report, name of coworkers and dates (of experiment and of report).
+\begin{titlepage}
+    \centering
+    {\large \today\par}
+    \vfill
+
+    %%%% PROJECT TITLE
+    {\huge\bfseries Differential Swerve State Space Controller Design\par}
+    \vfill
+
+    %%%% AUTHOR(S)
+    {\Large\itshape Henry LeCompte}\par
+    {\itshape FRC Team 2383, The Ninjineers}\par
+    \vspace{1.5cm}
+
+    \vfill
+    % Bottom of the page
+\end{titlepage}
+
+\newpage
+
+\doublespacing
+\tableofcontents
+\singlespacing
+
+\newpage
+
+\doublespacing
+
+\section{Designing the State Space Model}
+
+State space controller in the form of
+\begin{equation} \label{state-change}
+    \dot{x} = Ax + Bu
+\end{equation}
+\begin{equation} \label{output}
+    y = Cx + Du
+\end{equation}
+
+\subsection{Inputs, Outputs, and States}
+The States will be in the form of
+\begin{equation}
+    x =
+    \begin{bmatrix}
+        \dot{L} \\
+        \dot{R} \\
+        \theta  \\
+    \end{bmatrix}
+\end{equation}
+
+The inputs will be in the form of
+\begin{equation}
+    u =
+    \begin{bmatrix}
+        V_l & V_r
+    \end{bmatrix}
+\end{equation}
+
+And the outputs will be the same as the states so C will be the identity matrix and D will be 0
+
+\subsection{A and B matrices}
+We know that a permanent magnet DC motor follows the general equation of
+\begin{equation}
+    V = K_v\dot{x} + K_a\ddot{x}
+\end{equation}
+And we can rewrite this as
+\begin{align*}
+    V               & = K_v\dot{x} + K_a\ddot{x}                \\
+    V - K_a\ddot{x} & = K_v\dot{x}                              \\
+    -K_a\ddot{x}    & = K_v\dot{x} - V                          \\
+    \ddot{x}        & = \frac{-K_v\dot{x} + V}{K_a}             \\
+    \ddot{x}        & = \frac{-K_v\dot{x}}{K_a} + \frac{V}{K_a}
+\end{align*}
+We can also substitute v as \(\dot{x}\) to create
+\begin{equation}
+    \dot{v} = \frac{-K_v v}{K_a} + \frac{V}{K_a}
+\end{equation}
+
+This equation can then be written in state space form as
+\begin{equation}
+    \dot{x} = \begin{bmatrix}\frac{-K_v}{K_a}\end{bmatrix}x + \begin{bmatrix}\frac{1}{K_a}\end{bmatrix}u
+\end{equation}
+\begin{equation}
+    y = 1x + 0u
+\end{equation}
+
+Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas needed to compute the different velocity components of the system
+\begin{align}
+    \ddot{L}     & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}\dot{L} + \frac{1}{K_{a_\mathit{drive}}}V_l \\
+    \ddot{R}     & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}\dot{R} + \frac{1}{K_{a_\mathit{drive}}}V_r \\
+    \dot{\theta} & = \frac{\dot{L} + \dot{R}}{2} * K_\mathit{turn\_ratio}
+\end{align}
+
+Now that we have these basic equations we can turn them into the A and B matrix
+\begin{align}
+    A & =
+    \begin{bmatrix}
+        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0                                                  & 0 \\
+        0                                                  & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0 \\
+        \frac{K_\mathit{turn\_ratio}}{2}                   & \frac{K_\mathit{turn\_ratio}}{2}                   & 0
+    \end{bmatrix} \\
+    B & =
+    \begin{bmatrix}
+        \frac{1}{K_{a_\mathit{drive}}} & 0                              \\
+        0                              & \frac{1}{K_{a_\mathit{drive}}} \\
+        0                              & 0                              \\
+    \end{bmatrix}
+\end{align}
+
+\subsection{C and D matrices}
+With these, we just need the C and D matrices
+\begin{align}
+    C & =
+    \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+        0 & 0 & 1 \\
+    \end{bmatrix} \\
+    D & = 0
+\end{align}
+Now that we have our full state space representation of the system we need to create a Linear Quadratic Regulator to control the system.
+
+\section{Designing the LQR}
+The LQR is designed to minimize the cost function
+
+\end{document}
