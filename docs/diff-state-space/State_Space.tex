@@ -33,6 +33,9 @@
 
 \doublespacing
 
+\section{Introduction}
+Swerve is a type of drivetrain that is characterized by having at least two wheels that can each rotate and spin independently of each other (here rotate is define as a rotation around the robots up axis and spin is defined as a rotation around the modules y axis). This allows the robot to move in any direction and turn in place. Differential Swerve is a type of swerve drivetrain in which the rotation of the wheel is controlled by the difference of the motor velocities and the spin if the wheel is controlled by the average of the motor velocities. This allows for the combination of the torque produced by both motors when driving and turning. This is the main advantage over conventional (coaxial) swerve drivetrains in which rotation and spin are controlled by separate motors. The main disadvantage of differential swerve is that it is significantly more complex to control.
+
 \section{Designing the State Space Model}
 
 State space controller in the form of
@@ -48,23 +51,40 @@ The States will be in the form of
 \begin{equation}
     x =
     \begin{bmatrix}
-        \dot{L} \\
-        \dot{R} \\
-        \theta  \\
+        v_t    \\
+        v_b    \\
+        v_w    \\
+        \theta \\
     \end{bmatrix}
 \end{equation}
+
+Where \(v_w\) is the spin velocity of the wheel and \(\theta\) is the angle of the wheel. \\
+\(v_t\) and \(v_b\) are the top and bottom motor velocities respectively.
 
 The inputs will be in the form of
 \begin{equation}
     u =
     \begin{bmatrix}
-        V_l & V_r
+        V_t & V_b
     \end{bmatrix}
 \end{equation}
 
-And the outputs will be the same as the states so C will be the identity matrix and D will be 0
+Where \(V_t\) is the top motor voltage and \(V_b\) is the bottom motor voltage.
 
-\subsection{A and B matrices}
+Our output matrix is the same as the state matrix as we can measure all states.
+\begin{equation}
+    y =
+    \begin{bmatrix}
+        v_t \\
+        v_b \\
+        v_w \\
+        \theta
+    \end{bmatrix}
+\end{equation}
+
+Where \(v_t\) is the top motor velocity, \(v_b\) is the bottom motor velocity, and \(\theta\) is the angle of the wheel.
+
+\subsection{DC Motor Model}
 We know that a permanent magnet DC motor follows the general equation of
 \begin{equation}
     V = K_v\dot{x} + K_a\ddot{x}
@@ -90,37 +110,63 @@ This equation can then be written in state space form as
     y = 1x + 0u
 \end{equation}
 
+\subsection{A and B Matrices}
 Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas needed to compute the different velocity components of the system
 \begin{align}
-    \ddot{L}     & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}\dot{L} + \frac{1}{K_{a_\mathit{drive}}}V_l \\
-    \ddot{R}     & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}\dot{R} + \frac{1}{K_{a_\mathit{drive}}}V_r \\
-    \dot{\theta} & = \frac{\dot{L} + \dot{R}}{2} * K_\mathit{turn\_ratio}
+    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t \\
+    \dot{v_b}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + \frac{1}{K_{a_\mathit{drive}}}V_b \\
+    \dot{v_w}    & = \frac{1}{2}K_\mathit{dr}(\dot{v_t} - \dot{v_b}) \label{wheel_accel}                       \\
+    \dot{\theta} & = \frac{v_t + v_b}{2} * K_\mathit{turn\_ratio}
 \end{align}
 
-Now that we have these basic equations we can turn them into the A and B matrix
+Equation \ref{wheel_accel} is the angular acceleration of the wheel but it needs to be rewritten to not use \(\dot{v_t}\) or \(\dot{v_t}\) This can be achieved by combining the three equations.
+
+\begin{align}
+    \dot{v_w} & = \frac{K_\mathit{dr}}{2}(\dot{v_t} - \dot{v_b})                                                                                                                                                                                              \\
+    \dot{v_w} & = \frac{K_\mathit{dr}}{2}(\frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t - \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b - \frac{1}{K_{a_\mathit{drive}}}V_b)                              \\
+    \dot{v_w} & = \frac{-K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_t - \frac{-K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b - \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_b \\
+    \dot{v_w} & = -\frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_t - \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_b
+\end{align}
+
+Where \(K_\mathit{dr}\) is the gear ratio of the wheel to the motor shaft
+
+We can now rewrite these equations as a system that has coefficients for every state and input
+\begin{align}
+    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0v_w + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b                                                                                  \\
+    \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0v_w + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b                                                                                  \\
+    \dot{v_w}    & = -\frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + 0v_w + 0\theta + \frac{1}{2K_{a_\mathit{drive}}}V_t - \frac{1}{2K_{a_\mathit{drive}}}V_b \\
+    \dot{\theta} & = \frac{K_\mathit{turn\_ratio}}{2}v_t + \frac{K_\mathit{turn\_ratio}}{2}v_b + 0v_w + 0\theta + 0V_t + 0V_b
+\end{align}
+
+Now that we have these linear equations we can turn them into the A and B matrix
+
 \begin{align}
     A & =
     \begin{bmatrix}
-        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0                                                  & 0 \\
-        0                                                  & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0 \\
-        \frac{K_\mathit{turn\_ratio}}{2}                   & \frac{K_\mathit{turn\_ratio}}{2}                   & 0
+        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}               & 0                                                               & 0 & 0 \\
+        0                                                                & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}              & 0 & 0 \\
+        -\frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}} & \frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}} & 0 & 0 \\
+        \frac{K_\mathit{turn\_ratio}}{2}                                 & \frac{K_\mathit{turn\_ratio}}{2}                                & 0 & 0 \\
     \end{bmatrix} \\
     B & =
     \begin{bmatrix}
-        \frac{1}{K_{a_\mathit{drive}}} & 0                              \\
-        0                              & \frac{1}{K_{a_\mathit{drive}}} \\
-        0                              & 0                              \\
+        \frac{1}{K_{a_\mathit{drive}}}             & 0                                           \\
+        0                                          & \frac{1}{K_{a_\mathit{drive}}}              \\
+        \frac{K_\mathit{dr}}{K_{a_\mathit{drive}}} & -\frac{K_\mathit{dr}}{K_{a_\mathit{drive}}} \\
+        0                                          & 0                                           \\
     \end{bmatrix}
 \end{align}
 
 \subsection{C and D matrices}
-With these, we just need the C and D matrices
+With these, we just need the C and D matrices.
+Because the output matrix is the same as the state matrix C is just the identity matrix.
 \begin{align}
     C & =
     \begin{bmatrix}
-        1 & 0 & 0 \\
-        0 & 1 & 0 \\
-        0 & 0 & 1 \\
+        1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1 \\
     \end{bmatrix} \\
     D & = 0
 \end{align}

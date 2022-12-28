@@ -30,8 +30,9 @@
   "latex-workshop.latex.autoClean.run": "onBuilt",
   "cSpell.words": [
     "AHRS",
-    "Feedforward",
     "CANivore",
+    "drivetrains",
+    "Feedforward",
     "Odometry",
     "teleop",
     "teleoperated"

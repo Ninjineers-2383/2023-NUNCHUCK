@@ -1,6 +1,16 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "Talon FX[20]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[21]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
       "navX-Sensor[0]": {
         "header": {
           "open": true
@@ -64,7 +74,8 @@
         "navX-Sensor[4]": {
           "open": true
         }
-      }
+      },
+      "open": true
     },
     "SmartDashboard": {
       "Simulated": {
@@ -79,10 +90,18 @@
             "open": true
           },
           "open": true
-        },
+        }
+      },
+      "frontLeft": {
         "open": true
       },
-      "open": true
+      "frontRight": {
+        "open": true
+      },
+      "open": true,
+      "rear": {
+        "open": true
+      }
     }
   },
   "Plot": {
@@ -91,10 +110,78 @@
         {
           "axis": [
             {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 90.0,
+              "min": -90.0
+            }
+          ],
+          "height": 405,
+          "name": "Angle",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Angle (Degrees"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Module Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 4.3,
+              "min": -4.3
+            }
+          ],
+          "height": 405,
+          "name": "Speed",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Speed"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Drive Speed"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "axis": [
+            {
               "autoFit": true
             }
           ],
-          "height": 155,
+          "height": 333,
           "series": [
             {
               "color": [
@@ -122,7 +209,7 @@
               "autoFit": true
             }
           ],
-          "height": 155,
+          "height": 333,
           "series": [
             {
               "color": [
@@ -131,7 +218,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Speed"
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Voltage"
             },
             {
               "color": [
@@ -140,11 +227,14 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Drive Speed"
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Voltage"
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }
