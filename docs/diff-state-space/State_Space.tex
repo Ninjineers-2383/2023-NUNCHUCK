@@ -36,9 +36,10 @@
 \section{Introduction}
 Swerve is a type of drivetrain that is characterized by having at least two wheels that can each rotate and spin independently of each other (here rotate is define as a rotation around the robots up axis and spin is defined as a rotation around the modules y axis). This allows the robot to move in any direction and turn in place. Differential Swerve is a type of swerve drivetrain in which the rotation of the wheel is controlled by the difference of the motor velocities and the spin if the wheel is controlled by the average of the motor velocities. This allows for the combination of the torque produced by both motors when driving and turning. This is the main advantage over conventional (coaxial) swerve drivetrains in which rotation and spin are controlled by separate motors. The main disadvantage of differential swerve is that it is significantly more complex to control.
 
+\newpage
 \section{Designing the State Space Model}
 
-State space controller in the form of
+We need to design a continuos, time-invariant state space model of the system. This will allow us to estimate the response of the system to create a feedforward and feedback controller. The following is the general form of a state space model.
 \begin{equation} \label{state-change}
     \dot{x} = Ax + Bu
 \end{equation}
@@ -199,14 +200,79 @@ And now will all of these matrices we can write the full continuos model as
     \end{bmatrix}
 \end{equation}
 
+Now we can also add the following constants to the model (These will be different for each robot)
+\begin{align}
+    K_{v_\mathit{drive}}   & = 0.023        \\
+    K_{a_\mathit{drive}}   & = 0.001        \\
+    K_\mathit{turn\_ratio} & = \frac{1}{28}
+\end{align}
+
 \newpage
 
 \section{Validating the State Space Model}
-Now that we have a state space model
+Now that we have a state space model we need to validate that it is controllable, observable and stable.
+\subsection{Controllability}
+Controllability is a property of the system that allows any initial state to be driven to any desired state using control inputs in a finite time.
+The Controllability matrix for continuos time-invariant systems is defined as
+\begin{equation}
+    \mathit{R} = \begin{bmatrix}
+        B & AB & A^2B & \dots & A^{n-1}B
+    \end{bmatrix}
+\end{equation}
+And the system is said to be controllable if the rank of the controllability matrix is equal to the number of states (n).
+\begin{equation}
+    \mathit{rank}(\mathit{R}) = n
+\end{equation}
+
+We can now calculate the rank of the controllability matrix for our system and find that it is indeed 3. This means that out system is indeed controllable and we can move on to the next step.
+
+\subsection{Observability}
+A system is said to be observable if, for every possible state, the current state can be estimated using only the information from outputs.
+The observability matrix for continuos time-invariant systems is defined as
+\begin{equation}
+    \mathit{O} = \begin{bmatrix}
+        C      \\
+        CA     \\
+        CA^2   \\
+        \vdots \\
+        CA^{n-1}
+    \end{bmatrix}
+\end{equation}
+
+And the system is said to be observable if the rank of the observability matrix is equal to the number of states (n).
+
+\begin{equation}
+    \mathit{rank}(\mathit{O}) = n
+\end{equation}
+
+Calculating this for our current system we find that the rank is indeed 3. This means that our system is observable and we can move on to the next step.
+
+\subsection{Stability}
+A system is said to be stable if the eigenvalues of the A matrix are all negative.
+Calculating the eigenvalues of the A matrix we can find that the real parts of the eigenvalues are 0 and -23. This means that our system is marginally stable but we can fix this with the LQR controller in the next section.
+
+\subsection{Step Response}
+To validate that our system is stable we can also look at the step response of the system.
+The step response is the response of the system to a step input.
+This can be calculated with the python package control.
+We can graph the step response values for the system and find that the system is indeed stable. This graph can be seen in figure \ref{fig:step_response}.
+
+\subsection{Forced Response}
+We also want to make sure that the wheel is turning correctly and is still stable with different inputs. To do this we can create a graph of forced inputs. This graph uses 5 time steps of 12 volts on each motor. 495 more time steps of 12 and -12 volts and 500 more time steps of no voltage. This graph can be seen in figure \ref{fig:forced_response}.
+
+\begin{minipage}{.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{step_response.png}
+    \captionof{figure}{Step response of the system}
+    \label{fig:step_response}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{forced_response.png}
+    \captionof{figure}{Forced response of the system}
+    \label{fig:forced_response}
+\end{minipage}
 
 \newpage
-
-\section{Designing the LQR}
-The LQR is designed to minimize the cost function
 
 \end{document}

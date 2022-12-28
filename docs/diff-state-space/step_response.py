@@ -27,21 +27,25 @@ step = 0.02
 t = np.arange(start, stop, step)
 
 
-t, y = control.forced_response(
-    sys, t, [[12] * 500 + [0] * 500, [12] * 5 + [-12] * 495 + [0] * 500], x0)
+t, y = control.step_response(
+    sys, t, x0)
 
-plt.figure()
+plt.figure(figsize=(10, 10))
+plt.title('Step Response')
 plt.subplot(3, 1, 1)
-plt.plot(t, y[0], 'blue')
+plt.plot(t, y[0][0], 'red')
 plt.grid()
 plt.legend(labels=('vt[r / s]',))
+plt.title("Top Motor Velocity")
 plt.subplot(3, 1, 2)
-plt.plot(t, y[1], 'green')
+plt.plot(t, y[1][1], 'blue')
 plt.grid()
 plt.legend(labels=('vb[r / s]',))
+plt.title("Bottom Motor Velocity")
 plt.subplot(3, 1, 3)
-plt.plot(t, y[2], 'red')
+plt.plot(t, y[2][1], 'green')
 plt.grid()
 plt.legend(labels=('th[radians]',))
+plt.title("Wheel Rotation Angle")
 plt.xlabel('t[s]')
-plt.show()
+plt.savefig("step_response.png")
