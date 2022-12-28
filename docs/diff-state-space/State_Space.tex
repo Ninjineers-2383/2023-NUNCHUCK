@@ -53,19 +53,19 @@ The States will be in the form of
     \begin{bmatrix}
         v_t    \\
         v_b    \\
-        v_w    \\
         \theta \\
     \end{bmatrix}
 \end{equation}
 
-Where \(v_w\) is the spin velocity of the wheel and \(\theta\) is the angle of the wheel. \\
-\(v_t\) and \(v_b\) are the top and bottom motor velocities respectively.
+Where \(\theta\) is the angle of the wheel and\(v_t\) and \(v_b\) are the top and bottom motor velocities respectively. \\
+The velocity of the wheel is not included as a state because it is a linear combination of the motor velocities so it can be calculated from the current state.
 
 The inputs will be in the form of
 \begin{equation}
     u =
     \begin{bmatrix}
-        V_t & V_b
+        V_t \\
+        V_b \\
     \end{bmatrix}
 \end{equation}
 
@@ -77,7 +77,6 @@ Our output matrix is the same as the state matrix as we can measure all states.
     \begin{bmatrix}
         v_t \\
         v_b \\
-        v_w \\
         \theta
     \end{bmatrix}
 \end{equation}
@@ -115,27 +114,15 @@ Now that we know how to calculate the angular velocity of a motor based on its c
 \begin{align}
     \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t \\
     \dot{v_b}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + \frac{1}{K_{a_\mathit{drive}}}V_b \\
-    \dot{v_w}    & = \frac{1}{2}K_\mathit{dr}(\dot{v_t} - \dot{v_b}) \label{wheel_accel}                       \\
     \dot{\theta} & = \frac{v_t + v_b}{2} * K_\mathit{turn\_ratio}
 \end{align}
 
-Equation \ref{wheel_accel} is the angular acceleration of the wheel but it needs to be rewritten to not use \(\dot{v_t}\) or \(\dot{v_t}\) This can be achieved by combining the three equations.
-
-\begin{align}
-    \dot{v_w} & = \frac{K_\mathit{dr}}{2}(\dot{v_t} - \dot{v_b})                                                                                                                                                                                              \\
-    \dot{v_w} & = \frac{K_\mathit{dr}}{2}(\frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t - \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b - \frac{1}{K_{a_\mathit{drive}}}V_b)                              \\
-    \dot{v_w} & = \frac{-K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_t - \frac{-K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b - \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_b \\
-    \dot{v_w} & = -\frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_t - \frac{K_\mathit{dr}}{2K_{a_\mathit{drive}}}V_b
-\end{align}
-
-Where \(K_\mathit{dr}\) is the gear ratio of the wheel to the motor shaft
-
 We can now rewrite these equations as a system that has coefficients for every state and input
 \begin{align}
-    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0v_w + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b                                                                                  \\
-    \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0v_w + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b                                                                                  \\
-    \dot{v_w}    & = -\frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + 0v_w + 0\theta + \frac{1}{2K_{a_\mathit{drive}}}V_t - \frac{1}{2K_{a_\mathit{drive}}}V_b \\
-    \dot{\theta} & = \frac{K_\mathit{turn\_ratio}}{2}v_t + \frac{K_\mathit{turn\_ratio}}{2}v_b + 0v_w + 0\theta + 0V_t + 0V_b
+    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b                                                                                  \\
+    \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b                                                                                  \\
+    \dot{v_w}    & = -\frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + 0\theta + \frac{1}{2K_{a_\mathit{drive}}}V_t - \frac{1}{2K_{a_\mathit{drive}}}V_b \\
+    \dot{\theta} & = \frac{K_\mathit{turn\_ratio}}{2}v_t + \frac{K_\mathit{turn\_ratio}}{2}v_b + 0\theta + 0V_t + 0V_b
 \end{align}
 
 Now that we have these linear equations we can turn them into the A and B matrix
@@ -143,17 +130,15 @@ Now that we have these linear equations we can turn them into the A and B matrix
 \begin{align}
     A & =
     \begin{bmatrix}
-        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}               & 0                                                               & 0 & 0 \\
-        0                                                                & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}              & 0 & 0 \\
-        -\frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}} & \frac{K_\mathit{dr}K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}} & 0 & 0 \\
-        \frac{K_\mathit{turn\_ratio}}{2}                                 & \frac{K_\mathit{turn\_ratio}}{2}                                & 0 & 0 \\
+        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0                                                  & 0 \\
+        0                                                  & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0 \\
+        \frac{K_\mathit{turn\_ratio}}{2}                   & \frac{K_\mathit{turn\_ratio}}{2}                   & 0 \\
     \end{bmatrix} \\
     B & =
     \begin{bmatrix}
-        \frac{1}{K_{a_\mathit{drive}}}             & 0                                           \\
-        0                                          & \frac{1}{K_{a_\mathit{drive}}}              \\
-        \frac{K_\mathit{dr}}{K_{a_\mathit{drive}}} & -\frac{K_\mathit{dr}}{K_{a_\mathit{drive}}} \\
-        0                                          & 0                                           \\
+        \frac{1}{K_{a_\mathit{drive}}} & 0                              \\
+        0                              & \frac{1}{K_{a_\mathit{drive}}} \\
+        0                              & 0                              \\
     \end{bmatrix}
 \end{align}
 
@@ -163,14 +148,63 @@ Because the output matrix is the same as the state matrix C is just the identity
 \begin{align}
     C & =
     \begin{bmatrix}
-        1 & 0 & 0 & 0 \\
-        0 & 1 & 0 & 0 \\
-        0 & 0 & 1 & 0 \\
-        0 & 0 & 0 & 1 \\
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+        0 & 0 & 1 \\
     \end{bmatrix} \\
     D & = 0
 \end{align}
-Now that we have our full state space representation of the system we need to create a Linear Quadratic Regulator to control the system.
+
+\subsection{Full model}
+And now will all of these matrices we can write the full continuos model as
+\begin{equation}
+    \dot{\begin{bmatrix}
+            v_t    \\
+            v_b    \\
+            \theta \\
+        \end{bmatrix}} =
+    \begin{bmatrix}
+        \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0                                                  & 0 \\
+        0                                                  & \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}} & 0 \\
+        \frac{K_\mathit{turn\_ratio}}{2}                   & \frac{K_\mathit{turn\_ratio}}{2}                   & 0 \\
+    \end{bmatrix}\begin{bmatrix}
+        v_t    \\
+        v_b    \\
+        \theta \\
+    \end{bmatrix} + \begin{bmatrix}
+        \frac{1}{K_{a_\mathit{drive}}} & 0                              \\
+        0                              & \frac{1}{K_{a_\mathit{drive}}} \\
+        0                              & 0                              \\
+    \end{bmatrix}\begin{bmatrix}
+        V_t \\
+        V_b \\
+    \end{bmatrix}
+\end{equation}
+\begin{equation}
+    \begin{bmatrix}
+        v_t    \\
+        v_b    \\
+        \theta \\
+    \end{bmatrix}      = \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+        0 & 0 & 1 \\
+    \end{bmatrix}\begin{bmatrix}
+        v_t    \\
+        v_b    \\
+        \theta \\
+    \end{bmatrix} + 0\begin{bmatrix}
+        V_t \\
+        V_b \\
+    \end{bmatrix}
+\end{equation}
+
+\newpage
+
+\section{Validating the State Space Model}
+Now that we have a state space model
+
+\newpage
 
 \section{Designing the LQR}
 The LQR is designed to minimize the cost function
