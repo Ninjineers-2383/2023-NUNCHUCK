@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.helpers.DoubleEncoder;
 import frc.robot.helpers.Feedforward;
 import frc.robot.helpers.SwerveModuleOptimizer;
@@ -43,54 +45,40 @@ public class DiffSwerveModule implements Sendable {
     private final TalonFXSimCollection m_topMotorSim;
     private final TalonFXSimCollection m_bottomMotorSim;
 
-    // Simulation motor plants
-    private final DCMotorSim m_topMotorSimulator;
-    private final DCMotorSim m_bottomMotorSimulator;
-
-    private final LinearSystem<N4, N2, N4> m_diffySwervePlant = new LinearSystem<>(
-            Matrix.mat(Nat.N4(), Nat.N4()).fill(
+    private final LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
+            Matrix.mat(Nat.N3(), Nat.N3()).fill(
                     // ---
-                    -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0, 0, 0,
+                    -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0, 0,
                     // ---
-                    0, -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0, 0,
+                    0, -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0,
                     // ---
-                    -(Constants.ModuleConstants.kv * Constants.ModuleConstants.kDriveGearRatio)
-                            / (2 * Constants.ModuleConstants.ka),
-                    (Constants.ModuleConstants.kv * Constants.ModuleConstants.kDriveGearRatio)
-                            / (2 * Constants.ModuleConstants.ka),
-                    0, 0,
-                    // ---
-                    Constants.ModuleConstants.kTurnGearRatio / 2.0, Constants.ModuleConstants.kTurnGearRatio / 2.0, 0,
+                    Constants.ModuleConstants.kTurnGearRatio / 2.0, Constants.ModuleConstants.kTurnGearRatio / 2.0,
                     0),
-            Matrix.mat(Nat.N4(), Nat.N2()).fill(
+            Matrix.mat(Nat.N3(), Nat.N2()).fill(
                     // ---
                     1 / Constants.ModuleConstants.ka, 0,
                     // ---
                     0, 1 / Constants.ModuleConstants.ka,
                     // ---
-                    Constants.ModuleConstants.kDriveGearRatio / Constants.ModuleConstants.ka,
-                    -Constants.ModuleConstants.kDriveGearRatio / Constants.ModuleConstants.ka,
-                    // ---
                     0, 0),
-            Matrix.mat(Nat.N4(), Nat.N4()).fill(
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1),
-            Matrix.mat(Nat.N4(), Nat.N2()).fill(
-                    0, 0,
+            Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                    1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1),
+            Matrix.mat(Nat.N3(), Nat.N2()).fill(
                     0, 0,
                     0, 0,
                     0, 0));
 
-    private final KalmanFilter<N4, N2, N4> m_observer = new KalmanFilter<>(Nat.N4(), Nat.N4(), m_diffySwervePlant,
-            VecBuilder.fill(1, 1, 1, 1), VecBuilder.fill(0.01, 0.01, 0.01, 0.01), 0.02);
+    private final LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
+            VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
-    private final LinearQuadraticRegulator<N4, N2, N4> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-            VecBuilder.fill(1000000000, 1000000000, 0.1, 0.001), VecBuilder.fill(12, 12), 0.02);
+    private final KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
+            VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
-    private final LinearSystemLoop<N4, N2, N4> m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
+    private final LinearSystemLoop<N3, N2, N3> m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
             m_observer, 12.0, 0.02);
+
     // Encoder class that allows for the use of abs and quadrature encoders
     private final DoubleEncoder m_encoder;
 
@@ -207,9 +195,6 @@ public class DiffSwerveModule implements Sendable {
         m_bottomMotor = new WPI_TalonFX(bottomMotorID, CANbus);
         m_bottomMotorSim = m_bottomMotor.getSimCollection();
 
-        m_topMotorSimulator = new DCMotorSim(DCMotor.getFalcon500(1), 1, 0.005);
-        m_bottomMotorSimulator = new DCMotorSim(DCMotor.getFalcon500(1), 1, 0.005);
-
         m_encoder = new DoubleEncoder(encoderPortA, encoderPortB, encoderPortAbs);
 
         m_name = name;
@@ -289,19 +274,19 @@ public class DiffSwerveModule implements Sendable {
     }
 
     public void simulate() {
-
-        SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
-                m_topMotorSimulator.getAngularVelocityRPM());
-        SmartDashboard.putNumber("Simulated/" + m_name + "/Bottom Motor Simulator/Output Velocity",
-                m_bottomMotorSimulator.getAngularVelocityRPM());
-
         m_topMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10));
+                (int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
 
         m_bottomMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10));
+                (int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
 
-        m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(3)).getDegrees());
+        SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
+                m_topMotor.getSelectedSensorVelocity());
+
+        SmartDashboard.putNumber("Simulated/" + m_name + "/Bottom Motor Simulator/Output Velocity",
+                m_bottomMotor.getSelectedSensorVelocity());
+
+        m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Encoder/Rotation", getModuleAngle());
     }
@@ -344,7 +329,7 @@ public class DiffSwerveModule implements Sendable {
     public double getModuleAngle() {
         double angle = m_encoder.get() - m_offset;
 
-        return MathUtil.angleModulus(angle);
+        return Math.toDegrees(MathUtil.angleModulus(Math.toRadians(angle)));
     }
 
     /**
@@ -354,9 +339,8 @@ public class DiffSwerveModule implements Sendable {
      * @return the max voltage of the motors
      */
     public double setDesiredState(SwerveModuleState desiredState) {
-        // SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
-        // Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
-        SwerveModuleState state = desiredState;
+        SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
+                Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
 
         m_desiredSpeed = state.speedMetersPerSecond;
         m_desiredAngle = state.angle.getDegrees();
@@ -364,28 +348,37 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
-        double turnVelocity = -(MathUtil
-                .angleModulus(Rotation2d.fromDegrees(m_desiredAngle).minus(Rotation2d.fromDegrees(m_moduleAngle))
-                        .getRadians())
-                / Math.PI);
-        // * Constants.ModuleConstants.kMaxAngularVelocity;
+        // double turnVelocity = -(MathUtil
+        // .angleModulus(Rotation2d.fromDegrees(m_desiredAngle).minus(Rotation2d.fromDegrees(m_moduleAngle))
+        // .getRadians())
+        // / Math.PI);
+        // // * Constants.ModuleConstants.kMaxAngularVelocity;
 
-        SmartDashboard.putNumber(m_name + "/turn vel", turnVelocity);
+        // SmartDashboard.putNumber(m_name + "/turn vel", turnVelocity);
 
-        double m_topDesired = driveSpeedToMotorVelocity(m_desiredSpeed)
-                + turnVelocity;
-        double m_bottomDesired = -driveSpeedToMotorVelocity(m_desiredSpeed) + turnVelocity;
+        double m_topDesired = driveSpeedToMotorVelocity(m_desiredSpeed);
+        // + turnVelocity;
+        double m_bottomDesired = -driveSpeedToMotorVelocity(m_desiredSpeed); // + turnVelocity;
 
-        m_systemLoop.setNextR(VecBuilder.fill(0, 0, m_desiredSpeed, m_desiredAngle));
+        m_systemLoop.setNextR(VecBuilder.fill(m_topDesired, m_bottomDesired, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(
                 VecBuilder.fill(
                         m_topMotor.getSelectedSensorVelocity() * (20 * Math.PI / 2048),
                         m_bottomMotor.getSelectedSensorVelocity() * (20 * Math.PI
                                 / 2048),
-                        getDriveSpeed(m_topMotor.getSelectedSensorVelocity(),
-                                m_bottomMotor.getSelectedSensorVelocity()),
-                        getModuleAngle()));
+                        Math.toRadians(getModuleAngle())));
+
+        SmartDashboard.putNumber(m_name + "/Xhat vt", m_systemLoop.getXHat(0));
+        SmartDashboard.putNumber(m_name + "/Xhat vb", m_systemLoop.getXHat(1));
+        SmartDashboard.putNumber(m_name + "/Xhat th", m_systemLoop.getXHat(2));
+        SmartDashboard.putNumber(m_name + "/R vt", m_systemLoop.getNextR(0));
+        SmartDashboard.putNumber(m_name + "/R vb", m_systemLoop.getNextR(1));
+        SmartDashboard.putNumber(m_name + "/R th", m_systemLoop.getNextR(2));
+        SmartDashboard.putNumber(m_name + "/P th", Math.toRadians(getModuleAngle()));
+        SmartDashboard.putNumber(m_name + "/E vt", m_systemLoop.getError(0));
+        SmartDashboard.putNumber(m_name + "/E vb", m_systemLoop.getError(1));
+        SmartDashboard.putNumber(m_name + "/E th", m_systemLoop.getError(2));
 
         m_systemLoop.predict(0.020);
 
@@ -432,6 +425,10 @@ public class DiffSwerveModule implements Sendable {
         m_topMotor.getSlotConfigs(slot, 2, 5000);
         m_offset = slot.kP - m_moduleMountAngle.getDegrees();
         DataLogManager.log(String.format("INFO: %s steerPosition %f\n", m_name, m_offset));
+
+        if (Robot.isSimulation()) {
+            m_offset = 0;
+        }
     }
 
     @Override

@@ -33,8 +33,8 @@ public final class Constants {
         public final static double kMaxTurnOutput = 0.5;
 
         public final static double ks = 0.45;
-        public final static double kv = 0.1;
-        public final static double ka = 0.7;
+        public final static double kv = 0.023;
+        public final static double ka = 0.0001;
 
         public final static double kDriveGearRatio = (9 / 60.0) * (20 / 84.0) * (64 / 16.0); // 1/7
         public final static double kTurnGearRatio = 1 / 28.0;
