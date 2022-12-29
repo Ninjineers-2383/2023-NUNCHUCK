@@ -31,8 +31,10 @@
   "cSpell.words": [
     "AHRS",
     "CANivore",
+    "diffy",
     "drivetrains",
     "Feedforward",
+    "Kalman",
     "Odometry",
     "teleop",
     "teleoperated"

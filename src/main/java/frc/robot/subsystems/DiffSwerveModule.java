@@ -12,14 +12,11 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -31,7 +28,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.helpers.DoubleEncoder;
-import frc.robot.helpers.Feedforward;
 import frc.robot.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
@@ -42,6 +38,7 @@ public class DiffSwerveModule implements Sendable {
     private final TalonFXSimCollection m_topMotorSim;
     private final TalonFXSimCollection m_bottomMotorSim;
 
+    // New fancy state space controller
     private final LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
             Matrix.mat(Nat.N3(), Nat.N3()).fill(
                     // ---
@@ -83,32 +80,12 @@ public class DiffSwerveModule implements Sendable {
     private final String m_name;
     private final DataLog m_log;
 
-    // Profiled PID controller for module rotation
-    private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-            Constants.ModuleConstants.kPModuleTurningController,
-            0.0,
-            0.0,
-            new Constraints(Constants.ModuleConstants.kMaxAngularVelocity,
-                    Constants.ModuleConstants.kMaxAngularAcceleration));
-
-    // PID controller for module drive speed
-    private final PIDController m_drivePIDController = new PIDController(
-            Constants.ModuleConstants.kPModuleDriveController,
-            Constants.ModuleConstants.kIModuleDriveController,
-            Constants.ModuleConstants.kDModuleDriveController);
-
-    // Feedforward for module drive speed
-    private final Feedforward m_driveFeedForward = new Feedforward(
-            Constants.ModuleConstants.ks,
-            Constants.ModuleConstants.kv,
-            Constants.ModuleConstants.ka);
-
     // Logging variables for the module
     private final DoubleLogEntry m_topMotorCurrent;
     private final DoubleLogEntry m_bottomMotorCurrent;
 
-    private final DoubleLogEntry m_topMotorRPM;
-    private final DoubleLogEntry m_bottomMotorRPM;
+    private final DoubleLogEntry m_topMotorVel;
+    private final DoubleLogEntry m_bottomMotorVel;
 
     private final DoubleLogEntry m_wheelSpeed;
     private final DoubleLogEntry m_moduleAngleLog;
@@ -154,10 +131,6 @@ public class DiffSwerveModule implements Sendable {
      */
     private double m_desiredAngle;
 
-    // The current output of the module PIDs (used for logging)
-    private double m_driveOutput;
-    private double m_turnOutput;
-
     /**
      * Counter used for the timing of resetting the module angle
      */
@@ -200,13 +173,6 @@ public class DiffSwerveModule implements Sendable {
         m_staticAngle = staticAngle;
         m_moduleMountAngle = moduleAngle;
 
-        DataLogManager.log(m_diffySwervePlant.getA().minus(m_diffySwervePlant.getB().times(m_controller.getK()))
-                .getStorage().eig().getEigenvalues().toString());
-
-        // Reset motors and encoders
-        // m_topMotor.configFactoryDefault();
-        // m_bottomMotor.configFactoryDefault();
-
         m_topMotor.configVoltageCompSaturation(Constants.ModuleConstants.kDriveMaxVoltage);
         m_topMotor.enableVoltageCompensation(true);
         m_bottomMotor.configVoltageCompSaturation(Constants.ModuleConstants.kDriveMaxVoltage);
@@ -220,17 +186,14 @@ public class DiffSwerveModule implements Sendable {
         m_topMotor.configSupplyCurrentLimit(supply);
         m_bottomMotor.configSupplyCurrentLimit(supply);
 
-        // Configure the turning PID to be continuous (-pi == pi)
-        m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
-
         m_topMotor.setNeutralMode(NeutralMode.Coast);
         m_bottomMotor.setNeutralMode(NeutralMode.Coast);
 
         m_topMotorCurrent = new DoubleLogEntry(m_log, "/" + m_name + "/topMotorCurrent");
         m_bottomMotorCurrent = new DoubleLogEntry(m_log, "/" + m_name + "/bottomMotorCurrent");
 
-        m_topMotorRPM = new DoubleLogEntry(m_log, "/" + m_name + "/topMotorRPM");
-        m_bottomMotorRPM = new DoubleLogEntry(m_log, "/" + m_name + "/bottomMotorRPM");
+        m_topMotorVel = new DoubleLogEntry(m_log, "/" + m_name + "/topMotorVel");
+        m_bottomMotorVel = new DoubleLogEntry(m_log, "/" + m_name + "/bottomMotorVel");
 
         m_wheelSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/wheelSpeed");
         m_moduleAngleLog = new DoubleLogEntry(m_log, "/" + m_name + "/moduleAngle");
@@ -254,8 +217,8 @@ public class DiffSwerveModule implements Sendable {
         m_topMotorCurrent.append(m_topMotor.getStatorCurrent());
         m_bottomMotorCurrent.append(m_bottomMotor.getStatorCurrent());
 
-        m_topMotorRPM.append(topMotorSpeed);
-        m_bottomMotorRPM.append(bottomMotorSpeed);
+        m_topMotorVel.append(topMotorSpeed);
+        m_bottomMotorVel.append(bottomMotorSpeed);
 
         m_wheelSpeed.append(m_driveSpeed);
         m_moduleAngleLog.append(m_moduleAngle);
@@ -345,19 +308,9 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
-        // double turnVelocity = -(MathUtil
-        // .angleModulus(Rotation2d.fromDegrees(m_desiredAngle).minus(Rotation2d.fromDegrees(m_moduleAngle))
-        // .getRadians())
-        // / Math.PI);
-        // // * Constants.ModuleConstants.kMaxAngularVelocity;
+        double desiredMotorVel = driveSpeedToMotorVelocity(m_desiredSpeed);
 
-        // SmartDashboard.putNumber(m_name + "/turn vel", turnVelocity);
-
-        double m_topDesired = driveSpeedToMotorVelocity(m_desiredSpeed);
-        // + turnVelocity;
-        double m_bottomDesired = -driveSpeedToMotorVelocity(m_desiredSpeed); // + turnVelocity;
-
-        m_systemLoop.setNextR(VecBuilder.fill(m_topDesired, m_bottomDesired, Math.toRadians(m_desiredAngle)));
+        m_systemLoop.setNextR(VecBuilder.fill(desiredMotorVel, -desiredMotorVel, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(
                 VecBuilder.fill(
@@ -365,17 +318,6 @@ public class DiffSwerveModule implements Sendable {
                         m_bottomMotor.getSelectedSensorVelocity() * (20 * Math.PI
                                 / 2048),
                         Math.toRadians(getModuleAngle())));
-
-        SmartDashboard.putNumber(m_name + "/Xhat vt", m_systemLoop.getXHat(0));
-        SmartDashboard.putNumber(m_name + "/Xhat vb", m_systemLoop.getXHat(1));
-        SmartDashboard.putNumber(m_name + "/Xhat th", m_systemLoop.getXHat(2));
-        SmartDashboard.putNumber(m_name + "/R vt", m_systemLoop.getNextR(0));
-        SmartDashboard.putNumber(m_name + "/R vb", m_systemLoop.getNextR(1));
-        SmartDashboard.putNumber(m_name + "/R th", m_systemLoop.getNextR(2));
-        SmartDashboard.putNumber(m_name + "/P th", Math.toRadians(getModuleAngle()));
-        SmartDashboard.putNumber(m_name + "/E vt", m_systemLoop.getError(0));
-        SmartDashboard.putNumber(m_name + "/E vb", m_systemLoop.getError(1));
-        SmartDashboard.putNumber(m_name + "/E th", m_systemLoop.getError(2));
 
         m_systemLoop.predict(0.020);
 
@@ -393,10 +335,8 @@ public class DiffSwerveModule implements Sendable {
      *                      voltage
      */
     public void setVoltage(double driveMaxScale) {
-        m_topMotor.set(ControlMode.PercentOutput,
-                (m_topVoltage * driveMaxScale / Constants.ModuleConstants.kDriveMaxVoltage));
-        m_bottomMotor.set(ControlMode.PercentOutput,
-                (m_bottomVoltage * driveMaxScale / Constants.ModuleConstants.kDriveMaxVoltage));
+        m_topMotor.setVoltage(m_topVoltage);
+        m_bottomMotor.setVoltage(m_bottomVoltage);
     }
 
     public void resetEncoders() {
@@ -458,13 +398,6 @@ public class DiffSwerveModule implements Sendable {
             return m_encoder.getRawAbs();
         }, null);
 
-        builder.addDoubleProperty("Drive Output", () -> {
-            return m_driveOutput;
-        }, null);
-        builder.addDoubleProperty("Turn Output", () -> {
-            return m_turnOutput;
-        }, null);
-
         builder.addDoubleProperty("Top Voltage", () -> {
             return m_topVoltage;
         }, null);
@@ -478,62 +411,5 @@ public class DiffSwerveModule implements Sendable {
         builder.addDoubleProperty("Bottom Temperature", () -> {
             return m_bottomMotor.getTemperature();
         }, null);
-
-        builder.addDoubleProperty("Drive PID P", () -> {
-            return m_drivePIDController.getP();
-        }, (value) -> {
-            m_drivePIDController.setP(value);
-        });
-        builder.addDoubleProperty("Drive PID I", () -> {
-            return m_drivePIDController.getI();
-        }, (value) -> {
-            m_drivePIDController.setI(value);
-        });
-        builder.addDoubleProperty("Drive PID D", () -> {
-            return m_drivePIDController.getD();
-        }, (value) -> {
-            m_drivePIDController.setD(value);
-        });
-
-        builder.addDoubleProperty("Turn PID P", () -> {
-            return m_turningPIDController.getP();
-        }, (value) -> {
-            m_turningPIDController.setP(value);
-        });
-        builder.addDoubleProperty("Turn PID I", () -> {
-            return m_turningPIDController.getI();
-        }, (value) -> {
-            m_turningPIDController.setI(value);
-        });
-        builder.addDoubleProperty("Turn PID D", () -> {
-            return m_turningPIDController.getD();
-        }, (value) -> {
-            m_turningPIDController.setD(value);
-        });
-
-        builder.addDoubleProperty("Drive FF ks", () -> {
-            return m_driveFeedForward.getKs();
-        }, (value) -> {
-            m_driveFeedForward.setKs(value);
-            DataLogManager.log(String.format(
-                    "%s: FF ks set to %f",
-                    m_name, value));
-        });
-
-        builder.addDoubleProperty("Drive FF kv", () -> {
-            return m_driveFeedForward.getKv();
-        }, (value) -> {
-            m_driveFeedForward.setKv(value);
-        });
-
-        builder.addDoubleProperty("Drive FF ka", () -> {
-            return m_driveFeedForward.getKa();
-        }, (value) -> {
-            m_driveFeedForward.setKa(value);
-        });
-
-        SmartDashboard.putData(m_name + "/Drive PID", m_drivePIDController);
-        SmartDashboard.putData(m_name + "/Turn PID", m_turningPIDController);
-        SmartDashboard.putData(m_name + "/Drive FF", m_driveFeedForward);
     }
 }
