@@ -1,4 +1,4 @@
-package frc.robot.helpers;
+package com.team2383.diffy.helpers;
 
 public class ThrottleSoftener {
     /**

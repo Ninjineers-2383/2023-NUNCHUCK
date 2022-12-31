@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.team2383.diffy.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import com.team2383.diffy.Constants;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;

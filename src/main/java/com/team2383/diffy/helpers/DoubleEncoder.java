@@ -1,4 +1,4 @@
-package frc.robot.helpers;
+package com.team2383.diffy.helpers;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;

@@ -1,4 +1,4 @@
-package frc.robot.autos;
+package com.team2383.diffy.autos;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.TrajectoryDriveCommand;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.commands.TrajectoryDriveCommand;
+import com.team2383.diffy.subsystems.DrivetrainSubsystem;
 
 public class FullAutoCommand extends SequentialCommandGroup {
     public FullAutoCommand(DrivetrainSubsystem drivetrain, String pathName, HashMap<String, Command> commandMap) {

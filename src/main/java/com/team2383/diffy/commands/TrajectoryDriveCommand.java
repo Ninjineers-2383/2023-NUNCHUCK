@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package com.team2383.diffy.commands;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.Constants;
+import com.team2383.diffy.subsystems.DrivetrainSubsystem;
 
 public class TrajectoryDriveCommand extends CommandBase {
     private final HolonomicDriveController driveController = new HolonomicDriveController(

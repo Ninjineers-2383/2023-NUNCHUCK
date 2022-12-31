@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package com.team2383.diffy.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -9,10 +9,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.helpers.ThrottleSoftener;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.Constants;
+import com.team2383.diffy.Constants.DriveConstants;
+import com.team2383.diffy.helpers.ThrottleSoftener;
+import com.team2383.diffy.subsystems.DrivetrainSubsystem;
 
 public class JoystickDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrain;

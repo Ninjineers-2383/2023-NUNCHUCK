@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.team2383.diffy.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -25,10 +25,10 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.helpers.DoubleEncoder;
-import frc.robot.helpers.SwerveModuleOptimizer;
+import com.team2383.diffy.Constants;
+import com.team2383.diffy.Robot;
+import com.team2383.diffy.helpers.DoubleEncoder;
+import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
     private final WPI_TalonFX m_topMotor;
