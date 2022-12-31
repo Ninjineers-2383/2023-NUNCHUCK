@@ -32,6 +32,9 @@
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX [20]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [21]": "Motor Controller",
@@ -62,7 +65,13 @@
         "frontLeft": {
           "open": true
         },
-        "open": true
+        "frontRight": {
+          "open": true
+        },
+        "open": true,
+        "rear": {
+          "open": true
+        }
       },
       "Ungrouped": {
         "frontLeft": {
@@ -110,17 +119,27 @@
               "min": -180.0
             }
           ],
-          "height": 405,
+          "height": 273,
+          "legendLocation": 6,
           "name": "Angle",
           "series": [
             {
               "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Angle (Degrees"
+              "id": "NT:/SmartDashboard/E theta traj"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/RotSpeed"
             },
             {
               "color": [
@@ -130,6 +149,15 @@
                 1.0
               ],
               "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Module Angle (Degrees)"
+            },
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Angle (Degrees"
             }
           ]
         },
@@ -142,7 +170,7 @@
               "min": -4.3
             }
           ],
-          "height": 405,
+          "height": 273,
           "name": "Speed",
           "series": [
             {
@@ -175,7 +203,7 @@
               "autoFit": true
             }
           ],
-          "height": 333,
+          "height": 801,
           "series": [
             {
               "color": [
@@ -184,7 +212,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Angle (Degrees"
+              "id": "NT:/SmartDashboard/E theta traj"
             },
             {
               "color": [
@@ -193,136 +221,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Module Angle (Degrees)"
-            }
-          ]
-        },
-        {
-          "axis": [
-            {
-              "autoFit": true
-            }
-          ],
-          "height": 333,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Voltage"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Voltage"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <2>": {
-      "plots": [
-        {
-          "axis": [
-            {
-              "lockMax": true,
-              "lockMin": true,
-              "max": 0.02,
-              "min": -0.02
-            }
-          ],
-          "height": 421,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Voltage"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Voltage"
-            }
-          ]
-        },
-        {
-          "axis": [
-            {
-              "autoFit": true,
-              "max": 100.0,
-              "min": -100.0
-            }
-          ],
-          "height": 421,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Simulated/frontLeft/Bottom Motor Simulator/Output Velocity"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Simulated/frontLeft/Top Motor Simulator/Output Velocity"
-            }
-          ]
-        }
-      ]
-    },
-    "Plot <3>": {
-      "plots": [
-        {
-          "axis": [
-            {
-              "max": 3.2,
-              "min": -3.2
-            }
-          ],
-          "height": 339,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/frontLeft/E th"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/frontLeft/P th"
+              "id": "NT:/SmartDashboard/RotSpeed"
             },
             {
               "color": [
@@ -331,7 +230,7 @@
                 0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/frontLeft/Xhat th"
+              "id": "NT:/SmartDashboard/Gyro Heading"
             }
           ]
         }

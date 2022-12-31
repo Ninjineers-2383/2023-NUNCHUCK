@@ -34,6 +34,7 @@
     "diffy",
     "drivetrains",
     "Feedforward",
+    "Holonomic",
     "Kalman",
     "Odometry",
     "teleop",

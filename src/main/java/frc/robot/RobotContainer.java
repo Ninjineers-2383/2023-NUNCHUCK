@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.autos.FullAutoCommand;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -44,6 +47,16 @@ public class RobotContainer {
     private final JoystickDriveCommand m_dDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
+    // This is just an example event map. It would be better to have a constant,
+    // global event map
+    // in your code that will be used by all path following commands.
+    HashMap<String, Command> eventMap = new HashMap<>() {
+        {
+            put("log", new PrintCommand("Event: log"));
+            put("intakeDown", null);
+        }
+    };
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -71,6 +84,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return null;
+        return new FullAutoCommand(m_drivetrainSubsystem, "Testing Path", eventMap);
     }
 }

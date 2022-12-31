@@ -173,11 +173,6 @@ public class DiffSwerveModule implements Sendable {
         m_staticAngle = staticAngle;
         m_moduleMountAngle = moduleAngle;
 
-        m_topMotor.configVoltageCompSaturation(Constants.ModuleConstants.kDriveMaxVoltage);
-        m_topMotor.enableVoltageCompensation(true);
-        m_bottomMotor.configVoltageCompSaturation(Constants.ModuleConstants.kDriveMaxVoltage);
-        m_bottomMotor.enableVoltageCompensation(true);
-
         SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
                 true,
                 Constants.ModuleConstants.kMaxCurrent,

@@ -34,7 +34,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
 
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             Constants.FrontLeftModule.translation,
             Constants.FrontRightModule.translation,
             Constants.RearModule.translation);
@@ -43,7 +43,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final Field2d m_field = new Field2d();
 
-    private double m_currentYaw;
     private int m_counter;
 
     public DrivetrainSubsystem(DataLog log) {
@@ -92,8 +91,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_lastChassisSpeed = m_kinematics.toChassisSpeeds(m_lastStates[0], m_lastStates[1], m_lastStates[2]);
 
-        m_currentYaw = m_gyro.getAngle();
-
         m_odometry.update(getHeading(), m_lastStates[0], m_lastStates[1], m_lastStates[2]);
 
         m_field.setRobotPose(m_odometry.getPoseMeters());
@@ -114,7 +111,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightModule.simulate();
         m_rearModule.simulate();
 
-        m_gyroSimAngle.set(m_currentYaw + (m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+        // It is important that this is the only place that uses getYaw because it is
+        // not offset
+        // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
+        // all other angles
+        m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
     }
 
     /**
@@ -134,6 +135,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 centerOfRotation);
 
         setModuleStates(swerveModuleStates);
+
+        SmartDashboard.putNumber("RotSpeed", rotSpeed);
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
@@ -184,7 +187,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetHeading(Rotation2d currentHeading) {
         // getYaw is CW positive not CCW positive
-        m_gyro.setAngleAdjustment(m_gyro.getRotation2d().getDegrees() - currentHeading.getDegrees());
+        m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
         m_odometry.resetPosition(m_odometry.getPoseMeters(), getHeading());
     }
 
@@ -202,6 +205,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
+        resetHeading(pose.getRotation());
         m_odometry.resetPosition(pose, getHeading());
     }
 
