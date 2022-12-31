@@ -8,6 +8,12 @@ targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
+repositories {
+    maven {
+        url file('repos')
+    }
+}
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
@@ -66,6 +72,8 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
+
+    implementation 'com.pathplanner.lib:PathplannerLib-java:2022.2.1'
 }
 
 // Simulation configuration (e.g. environment variables).
