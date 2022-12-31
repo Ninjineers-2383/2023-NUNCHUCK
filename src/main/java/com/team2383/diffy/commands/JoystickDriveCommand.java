@@ -42,10 +42,12 @@ public class JoystickDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double x = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_x.getAsDouble(), 0.1)) * DriveConstants.kMaxSpeed;
-        double y = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_y.getAsDouble(), 0.1)) * DriveConstants.kMaxSpeed;
+        double x = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_x.getAsDouble(), 0.1))
+                * DriveConstants.kMaxVelocity;
+        double y = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_y.getAsDouble(), 0.1))
+                * DriveConstants.kMaxVelocity;
         double omega = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_omega.getAsDouble(), 0.1))
-                * DriveConstants.kMaxAngularSpeed;
+                * DriveConstants.kMaxAngularVelocity;
 
         int hatPosition = m_hatSupplier.getAsInt();
 
@@ -61,7 +63,7 @@ public class JoystickDriveCommand extends CommandBase {
         if (!(hatPosition >= 0 && hatPosition <= 360)) {
             return new Translation2d(0, 0);
         }
-        Translation2d pos = new Translation2d(-Constants.RearModule.translation.getX(), 0);
+        Translation2d pos = new Translation2d(-Constants.DriveConstants.rearConstants.translation.getX(), 0);
         pos.rotateBy(Rotation2d.fromDegrees(-hatPosition));
         return pos;
     }

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
+import com.team2383.diffy.Constants.ModuleConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
@@ -39,39 +40,13 @@ public class DiffSwerveModule implements Sendable {
     private final TalonFXSimCollection m_bottomMotorSim;
 
     // New fancy state space controller
-    private final LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                    // ---
-                    -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0, 0,
-                    // ---
-                    0, -Constants.ModuleConstants.kv / Constants.ModuleConstants.ka, 0,
-                    // ---
-                    Constants.ModuleConstants.kTurnGearRatio / 2.0, Constants.ModuleConstants.kTurnGearRatio / 2.0,
-                    0),
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                    // ---
-                    1 / Constants.ModuleConstants.ka, 0,
-                    // ---
-                    0, 1 / Constants.ModuleConstants.ka,
-                    // ---
-                    0, 0),
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                    1, 0, 0,
-                    0, 1, 0,
-                    0, 0, 1),
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                    0, 0,
-                    0, 0,
-                    0, 0));
+    private final LinearSystem<N3, N2, N3> m_diffySwervePlant;
 
-    private final LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-            VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+    private final LinearQuadraticRegulator<N3, N2, N3> m_controller;
 
-    private final KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
-            VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+    private final KalmanFilter<N3, N2, N3> m_observer;
 
-    private final LinearSystemLoop<N3, N2, N3> m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
-            m_observer, 12.0, 0.02);
+    private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
 
     // Encoder class that allows for the use of abs and quadrature encoders
     private final DoubleEncoder m_encoder;
@@ -149,34 +124,27 @@ public class DiffSwerveModule implements Sendable {
      * @param log            The robot's DataLog
      */
     public DiffSwerveModule(
-            int topMotorID,
-            int bottomMotorID,
-            int encoderPortA,
-            int encoderPortB,
-            int encoderPortAbs,
-            Rotation2d staticAngle,
-            Rotation2d moduleAngle,
-            String name,
-            String CANbus, DataLog log) {
+            ModuleConstants moduleConstants, String CANbus, DataLog log) {
         // Init all the fields
-        m_topMotor = new WPI_TalonFX(topMotorID, CANbus);
+        m_topMotor = new WPI_TalonFX(moduleConstants.kTopMotorID, CANbus);
         m_topMotorSim = m_topMotor.getSimCollection();
 
-        m_bottomMotor = new WPI_TalonFX(bottomMotorID, CANbus);
+        m_bottomMotor = new WPI_TalonFX(moduleConstants.kBottomMotorID, CANbus);
         m_bottomMotorSim = m_bottomMotor.getSimCollection();
 
-        m_encoder = new DoubleEncoder(encoderPortA, encoderPortB, encoderPortAbs);
+        m_encoder = new DoubleEncoder(moduleConstants.kEncoderPortA, moduleConstants.kEncoderPortB,
+                moduleConstants.kEncoderPortAbs);
 
-        m_name = name;
+        m_name = moduleConstants.name;
         m_log = log;
 
-        m_staticAngle = staticAngle;
-        m_moduleMountAngle = moduleAngle;
+        m_staticAngle = moduleConstants.staticAngle;
+        m_moduleMountAngle = moduleConstants.mountAngle;
 
         SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
                 true,
-                Constants.ModuleConstants.kMaxCurrent,
-                Constants.ModuleConstants.kMaxCurrent, 10);
+                Constants.GlobalModuleConstants.kMaxCurrent,
+                Constants.GlobalModuleConstants.kMaxCurrent, 10);
 
         m_topMotor.configSupplyCurrentLimit(supply);
         m_bottomMotor.configSupplyCurrentLimit(supply);
@@ -195,6 +163,42 @@ public class DiffSwerveModule implements Sendable {
 
         m_expectedSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/" + m_name + "/expectedAngle");
+
+        // Initialize state space controller
+        m_diffySwervePlant = new LinearSystem<>(
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        // ---
+                        -moduleConstants.kV / moduleConstants.kA, 0, 0,
+                        // ---
+                        0, -moduleConstants.kV / moduleConstants.kA, 0,
+                        // ---
+                        Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
+                        Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
+                        0),
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        // ---
+                        1 / moduleConstants.kA, 0,
+                        // ---
+                        0, 1 / moduleConstants.kA,
+                        // ---
+                        0, 0),
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        1, 0, 0,
+                        0, 1, 0,
+                        0, 0, 1),
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        0, 0,
+                        0, 0,
+                        0, 0));
+
+        m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
+                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+
+        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
+                VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+
+        m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
+                m_observer, 12.0, 0.02);
     }
 
     /**
@@ -254,11 +258,11 @@ public class DiffSwerveModule implements Sendable {
     public double getDriveSpeed(double topMotorSpeed, double bottomMotorSpeed) {
         double speed = ((topMotorSpeed - bottomMotorSpeed) / 2) /* Average sensor Velocity (raw / 100ms) */ *
                 (10.0 / 2048.0) /* Motor revolutions per second */ *
-                Constants.ModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
-                (Constants.ModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
-                                                                                 * Circumference in meters
-                                                                                 * (meters/second)
-                                                                                 */;
+                Constants.GlobalModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
+                (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
+                                                                                       * Circumference in meters
+                                                                                       * (meters/second)
+                                                                                       */;
 
         return speed;
     }
@@ -269,8 +273,8 @@ public class DiffSwerveModule implements Sendable {
      */
     public double driveSpeedToMotorVelocity(double driveSpeed) {
         return driveSpeed *
-                (1 / (Constants.ModuleConstants.kDriveWheelDiameterMeters * Math.PI)) *
-                (1 / Constants.ModuleConstants.kDriveGearRatio) * /* Output revolutions per second */
+                (1 / (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI)) *
+                (1 / Constants.GlobalModuleConstants.kDriveGearRatio) * /* Output revolutions per second */
                 2 * Math.PI;
     }
 

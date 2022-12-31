@@ -35,9 +35,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-            Constants.FrontLeftModule.translation,
-            Constants.FrontRightModule.translation,
-            Constants.RearModule.translation);
+            Constants.DriveConstants.frontLeftConstants.translation,
+            Constants.DriveConstants.frontRightConstants.translation,
+            Constants.DriveConstants.rearConstants.translation);
 
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getHeading());
 
@@ -46,24 +46,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private int m_counter;
 
     public DrivetrainSubsystem(DataLog log) {
-        m_frontLeftModule = new DiffSwerveModule(Constants.FrontLeftModule.kTopMotorID,
-                Constants.FrontLeftModule.kBottomMotorID, Constants.FrontLeftModule.kEncoderPortA,
-                Constants.FrontLeftModule.kEncoderPortB, Constants.FrontLeftModule.kEncoderPortAbs,
-                Constants.FrontLeftModule.staticAngle,
-                Constants.FrontLeftModule.mountAngle,
-                Constants.FrontLeftModule.name, Constants.kCANivoreBus, log);
-        m_frontRightModule = new DiffSwerveModule(Constants.FrontRightModule.kTopMotorID,
-                Constants.FrontRightModule.kBottomMotorID, Constants.FrontRightModule.kEncoderPortA,
-                Constants.FrontRightModule.kEncoderPortB, Constants.FrontRightModule.kEncoderPortAbs,
-                Constants.FrontRightModule.staticAngle,
-                Constants.FrontRightModule.mountAngle,
-                Constants.FrontRightModule.name, Constants.kCANivoreBus, log);
-        m_rearModule = new DiffSwerveModule(Constants.RearModule.kTopMotorID, Constants.RearModule.kBottomMotorID,
-                Constants.RearModule.kEncoderPortA, Constants.RearModule.kEncoderPortB,
-                Constants.RearModule.kEncoderPortAbs,
-                Constants.RearModule.staticAngle,
-                Constants.RearModule.mountAngle,
-                Constants.RearModule.name, Constants.kCANivoreBus, log);
+        m_frontLeftModule = new DiffSwerveModule(Constants.DriveConstants.frontLeftConstants,
+                Constants.kCANivoreBus, log);
+        m_frontRightModule = new DiffSwerveModule(Constants.DriveConstants.frontRightConstants,
+                Constants.kCANivoreBus, log);
+        m_rearModule = new DiffSwerveModule(Constants.DriveConstants.rearConstants,
+                Constants.kCANivoreBus, log);
 
         m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
         m_lastStates = new SwerveModuleState[m_modules.length];
@@ -72,9 +60,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         SmartDashboard.putData("Field", m_field);
 
-        addChild(Constants.FrontLeftModule.name, m_frontLeftModule);
-        addChild(Constants.FrontRightModule.name, m_frontRightModule);
-        addChild(Constants.RearModule.name, m_rearModule);
+        addChild(Constants.DriveConstants.frontLeftConstants.name, m_frontLeftModule);
+        addChild(Constants.DriveConstants.frontRightConstants.name, m_frontRightModule);
+        addChild(Constants.DriveConstants.rearConstants.name, m_rearModule);
 
         if (RobotBase.isSimulation()) {
             m_odometry.resetPosition(new Pose2d(new Translation2d(0, 0), new Rotation2d()), new Rotation2d());
@@ -140,7 +128,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.kMaxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.kMaxVelocity);
 
         double driveMaxVolts = 0;
 
@@ -150,8 +138,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         double driveMaxScale = 1;
 
-        if (driveMaxVolts > Constants.ModuleConstants.kDriveMaxVoltage) {
-            driveMaxScale = Constants.ModuleConstants.kDriveMaxVoltage / driveMaxVolts;
+        if (driveMaxVolts > Constants.GlobalModuleConstants.kDriveMaxVoltage) {
+            driveMaxScale = Constants.GlobalModuleConstants.kDriveMaxVoltage / driveMaxVolts;
         }
 
         for (DiffSwerveModule module : m_modules) {

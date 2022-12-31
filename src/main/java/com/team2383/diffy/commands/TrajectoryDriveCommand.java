@@ -27,7 +27,7 @@ public class TrajectoryDriveCommand extends CommandBase {
             new PIDController(5, 0, 0),
             new PIDController(5, 0, 0),
             new ProfiledPIDController(5, 0, 0,
-                    new Constraints(Constants.DriveConstants.kMaxAngularSpeed, 5)));
+                    new Constraints(Constants.DriveConstants.kMaxAngularVelocity, 5)));
 
     private final PathPlannerTrajectory trajectory;
 
