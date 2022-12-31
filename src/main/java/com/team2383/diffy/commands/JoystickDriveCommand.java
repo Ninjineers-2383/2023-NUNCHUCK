@@ -63,9 +63,10 @@ public class JoystickDriveCommand extends CommandBase {
         if (!(hatPosition >= 0 && hatPosition <= 360)) {
             return new Translation2d(0, 0);
         }
-        Translation2d pos = new Translation2d(-Constants.DriveConstants.rearConstants.translation.getX(), 0);
-        pos.rotateBy(Rotation2d.fromDegrees(-hatPosition));
-        return pos;
+        // Allows rotating around the swerve modules
+        Translation2d pos = new Translation2d((Math.sqrt(3) * Constants.DriveConstants.kTrackWidthMeters) / 3, 0);
+        pos = pos.rotateBy(Rotation2d.fromDegrees(-hatPosition));
+        return new Translation2d((Math.sqrt(3) * Constants.DriveConstants.kTrackWidthMeters) / 12, 0).plus(pos);
     }
 
     @Override

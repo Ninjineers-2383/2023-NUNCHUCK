@@ -6,6 +6,7 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
@@ -42,6 +44,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getHeading());
 
     private final Field2d m_field = new Field2d();
+    private final FieldObject2d m_COR;
 
     private int m_counter;
 
@@ -59,6 +62,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         loadWheelOffsets();
 
         SmartDashboard.putData("Field", m_field);
+        m_COR = m_field.getObject("COR");
 
         addChild(Constants.DriveConstants.frontLeftConstants.name, m_frontLeftModule);
         addChild(Constants.DriveConstants.frontRightConstants.name, m_frontRightModule);
@@ -124,7 +128,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         setModuleStates(swerveModuleStates);
 
-        SmartDashboard.putNumber("RotSpeed", rotSpeed);
+        m_COR.setPose(getPose().plus(new Transform2d(centerOfRotation, new Rotation2d())));
     }
 
     public void setModuleStates(SwerveModuleState[] states) {

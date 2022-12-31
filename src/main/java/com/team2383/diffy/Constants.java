@@ -9,7 +9,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Note: Translations calculated with the formula graphed here
- * https://www.desmos.com/calculator/yoi36dcace
+ * https://www.desmos.com/calculator/jj9i5bdjhe
+ * <p>
+ * The circle function is used in
+ * {@link com.team2383.diffy.commands.JoystickDriveCommand#getCenterOfRotation
+ * JoystickDriveCommand}
  */
 public final class Constants {
     public static final String kRIOBus = "rio";
@@ -86,8 +90,10 @@ public final class Constants {
         public final Rotation2d staticAngle;
         public final Rotation2d mountAngle;
 
-        public ModuleConstants(double kS, double kV, double kA, int kTopMotorID, int kBottomMotorID, int kEncoderPortA,
-                int kEncoderPortB, int kEncoderPortAbs, String name, Translation2d translation,
+        public ModuleConstants(double kS, double kV, double kA,
+                int kTopMotorID, int kBottomMotorID,
+                int kEncoderPortA, int kEncoderPortB, int kEncoderPortAbs,
+                String name, Translation2d translation,
                 Rotation2d staticAngle, Rotation2d mountAngle) {
 
             this.kS = kS;
