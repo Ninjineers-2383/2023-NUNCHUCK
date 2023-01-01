@@ -46,7 +46,7 @@ This paper was designed for High School students currently competing in First Ro
 \newpage
 \section{Designing the State Space Model}
 
-We need to design a continuos, time-invariant state space model of the system. This will allow us to estimate the response of the system to create a feedforward and feedback controller. The following is the general form of a state space model.
+We need to design a continuous, time-invariant state space model of the system. This will allow us to estimate the response of the system to create a feedforward and feedback controller. The following is the general form of a state space model.
 \begin{equation} \label{state-change}
     \dot{x} = Ax + Bu
 \end{equation}
@@ -130,14 +130,14 @@ This equation can then be written in state space form as
 \end{equation}
 
 \subsection{A and B Matrices}
-Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas needed to compute the different velocity components of the system
+Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas needed to compute the different velocity components of the system.
 \begin{align}
     \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t \\
     \dot{v_b}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + \frac{1}{K_{a_\mathit{drive}}}V_b \\
     \dot{\theta} & = \frac{v_t + v_b}{2} * K_\mathit{turn\_ratio}
 \end{align}
 
-We can now rewrite these equations as a system that has coefficients for every state and input
+We can now rewrite these equations as a system that has coefficients for every state and input.
 \begin{align}
     \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b                                                                                  \\
     \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b                                                                                  \\
@@ -145,7 +145,7 @@ We can now rewrite these equations as a system that has coefficients for every s
     \dot{\theta} & = \frac{K_\mathit{turn\_ratio}}{2}v_t + \frac{K_\mathit{turn\_ratio}}{2}v_b + 0\theta + 0V_t + 0V_b
 \end{align}
 
-Now that we have these linear equations we can turn them into the A and B matrix
+Now that we have these linear equations we can turn them into the A and B matrix.
 
 \begin{align}
     A & =
@@ -176,7 +176,7 @@ Because the output matrix is the same as the state matrix C is just the identity
 \end{align}
 
 \subsection{Full model}
-And now will all of these matrices we can write the full continuos model as
+And now will all of these matrices we can write the full continuous model as
 \begin{equation}
     \dot{\begin{bmatrix}
             v_t    \\
@@ -232,7 +232,7 @@ Now we can also add the following constants to the model (These will be differen
 Now that we have a state space model we need to validate that it is controllable, observable and stable.
 \subsection{Controllability}
 Controllability is a property of the system that allows any initial state to be driven to any desired state using control inputs in a finite time.
-The Controllability matrix for continuos time-invariant systems is defined as
+The Controllability matrix for continuous time-invariant systems is defined as
 \begin{equation}
     \mathit{R} = \begin{bmatrix}
         B & AB & A^2B & \dots & A^{n-1}B
@@ -247,7 +247,7 @@ We can now calculate the rank of the controllability matrix for our system and f
 
 \subsection{Observability}
 A system is said to be observable if, for every possible state, the current state can be estimated using only the information from outputs.
-The observability matrix for continuos time-invariant systems is defined as
+The observability matrix for continuous time-invariant systems is defined as
 \begin{equation}
     \mathit{O} = \begin{bmatrix}
         C      \\
@@ -264,7 +264,7 @@ And the system is said to be observable if the rank of the observability matrix 
     \mathit{rank}(\mathit{O}) = n
 \end{equation}
 
-Calculating this for our current system we find that the rank is indeed 3. This means that our system is observable and we can move on to the next step.
+Calculating this for our current system we find that the rank is 3. This means that our system is observable and we can move on to the next step.
 
 \subsection{Stability}
 A system is said to be stable if the eigenvalues of the A matrix are all negative.
