@@ -34,7 +34,14 @@
 \doublespacing
 
 \section{Introduction}
+\subsection*{What is Swerve?}
 Swerve is a type of drivetrain that is characterized by having at least two wheels that can each rotate and spin independently of each other (here rotate is define as a rotation around the robots up axis and spin is defined as a rotation around the modules y axis). This allows the robot to move in any direction and turn in place. Differential Swerve is a type of swerve drivetrain in which the rotation of the wheel is controlled by the difference of the motor velocities and the spin if the wheel is controlled by the average of the motor velocities. This allows for the combination of the torque produced by both motors when driving and turning. This is the main advantage over conventional (coaxial) swerve drivetrains in which rotation and spin are controlled by separate motors. The main disadvantage of differential swerve is that it is significantly more complex to control.
+
+\subsection{Purpose of this paper}
+By reading this paper you should be able to gain an understanding of how a relatively complex mechanism is analyzed and a state space model is created. You should then learn the steps to implement a simple Linear Quadratic Regulator (LQR) and then a Kalman Filter to filter out measurement noise.
+
+\subsection{Who should read this paper}
+This paper was designed for High School students currently competing in First Robotics Competition (FRC) although nothing in this paper is specific to this competition, swerve is commonly used in this competition and it provides many tools for state-space controls.
 
 \newpage
 \section{Designing the State Space Model}
@@ -46,6 +53,18 @@ We need to design a continuos, time-invariant state space model of the system. T
 \begin{equation} \label{output}
     y = Cx + Du
 \end{equation}
+
+\subsection*{What should we choose as our inputs, outputs, and states?}
+\subsubsection*{Inputs}
+In robotics you can commonly only input one value, voltage, but because differential swerve has two motors that work together to control the module we can pass in two inputs, the top motor input and the bottom motor input. In differential swerve we refer to the motors as top and bottom because there is one motor that drives the top gear of the differential and there is one motor that drives the bottom gear of the differential not because one of the motors is physically on top of the other.
+
+\subsubsection*{Outputs}
+Outputs in a state-space model are things that you can physically measure. Although, this makes it a little confusing as to what we should chose because there are many different things we can measure with each encoder (displacement, velocity, acceleration) and we have 3 of them. To figure out what to output we need to think about which of these is it actually important for us to measure.
+In swerve there are really two things that we need to know: the velocity of the wheel, and the rotation of the wheel. Even though it would be nice to have these as outputs we only have a way of directly measuring one of these with the module rotation encoder. For the wheel velocity we can instead output the velocity of both motors, we can then calculate the wheel velocity as the average of the motor speeds.
+So we are going to have three outputs: top motor velocity[radians/second], bottom motor velocity [radians/second], and wheel rotation [radians]
+
+\subsubsection*{States}
+To calculate the change in the state of the system we can only use the states and the inputs. We might be able to see that we can calculate how the output variables will change just by knowing the the current outputs and the inputs, this means that we can use these as the states. We now have the same states as outputs which means that our C matrix will be the identity matrix and our D matrix will be 0.
 
 \subsection{Inputs, Outputs, and States}
 The States will be in the form of
