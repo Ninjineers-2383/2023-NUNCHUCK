@@ -10,7 +10,7 @@ public class ThrottleSoftener {
      * <p>
      * soften(-1.0) = -1.0
      * <p>
-     * https://www.https://www.desmos.com/calculator/f4z37ovuvi
+     * https://www.desmos.com/calculator/f4z37ovuvi
      * 
      * @param input the input values [-1, 1]
      * @return the output value [-1, 1]
