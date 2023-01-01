@@ -39,5 +39,9 @@
     "Odometry",
     "teleop",
     "teleoperated"
-  ]
+  ],
+  "explorer.fileNesting.patterns": {
+    "simgui.json": "*.wpilog", 
+  },
+  "explorer.fileNesting.enabled": true,
 }

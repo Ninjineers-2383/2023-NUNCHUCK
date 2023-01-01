@@ -94,6 +94,8 @@ public class DiffSwerveModule implements Sendable {
     // The offset for the module encoder in degrees
     private double m_offset;
 
+    private final double kS;
+
     /**
      * Desired speed in meters per second
      */
@@ -164,6 +166,8 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/" + m_name + "/expectedAngle");
 
+        kS = moduleConstants.kS;
+
         // Initialize state space controller
         m_diffySwervePlant = new LinearSystem<>(
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
@@ -195,7 +199,7 @@ public class DiffSwerveModule implements Sendable {
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
         m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
-                VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+                VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
                 m_observer, 12.0, 0.02);
@@ -225,6 +229,7 @@ public class DiffSwerveModule implements Sendable {
         if (reset_counter < 200) {
             if (reset_counter == 199) {
                 m_encoder.reset();
+                m_systemLoop.setXHat(VecBuilder.fill(0, 0, Math.toRadians(getModuleAngle())));
             }
             reset_counter++;
         }
@@ -321,8 +326,10 @@ public class DiffSwerveModule implements Sendable {
         m_systemLoop.predict(0.020);
 
         m_topVoltage = m_systemLoop.getU(0);
+        m_topVoltage += Math.signum(m_topVoltage) * kS;
 
         m_bottomVoltage = m_systemLoop.getU(1);
+        m_bottomVoltage += Math.signum(m_bottomVoltage) * kS;
 
         return Math.max(Math.abs(m_topVoltage), Math.abs(m_bottomVoltage));
     }
@@ -409,6 +416,35 @@ public class DiffSwerveModule implements Sendable {
         }, null);
         builder.addDoubleProperty("Bottom Temperature", () -> {
             return m_bottomMotor.getTemperature();
+        }, null);
+
+        builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
+            return Math.toDegrees(m_systemLoop.getXHat(2));
+        }, null);
+        builder.addDoubleProperty("Estimated Top Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(0);
+        }, null);
+        builder.addDoubleProperty("Estimated Bottom Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(1);
+        }, null);
+
+        builder.addDoubleProperty("Top Motor Velocity", () -> {
+            return m_topMotor.getSelectedSensorVelocity() * (20 * Math.PI
+                    / 2048);
+        }, null);
+        builder.addDoubleProperty("Bottom Motor Velocity", () -> {
+            return m_bottomMotor.getSelectedSensorVelocity() * (20 * Math.PI
+                    / 2048);
+        }, null);
+
+        builder.addDoubleProperty("Top Motor Velocity Error", () -> {
+            return m_systemLoop.getError(0);
+        }, null);
+        builder.addDoubleProperty("Bottom Motor Velocity Error", () -> {
+            return m_systemLoop.getError(1);
+        }, null);
+        builder.addDoubleProperty("Module Angle Error", () -> {
+            return m_systemLoop.getError(2);
         }, null);
     }
 }
