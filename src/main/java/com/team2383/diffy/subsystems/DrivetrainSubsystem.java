@@ -4,13 +4,14 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -41,7 +42,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.DriveConstants.frontRightConstants.translation,
             Constants.DriveConstants.rearConstants.translation);
 
-    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getHeading());
+    private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+            getHeading(),
+            new Pose2d(),
+            m_kinematics,
+            VecBuilder.fill(0.01, 0.01, 0.01),
+            VecBuilder.fill(0.01),
+            VecBuilder.fill(0.01, 0.01, 0.01));
 
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
@@ -69,7 +76,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         addChild(Constants.DriveConstants.rearConstants.name, m_rearModule);
 
         if (RobotBase.isSimulation()) {
-            m_odometry.resetPosition(new Pose2d(new Translation2d(0, 0), new Rotation2d()), new Rotation2d());
+            m_poseEstimator.resetPosition(new Pose2d(new Translation2d(0, 0), new Rotation2d()), new Rotation2d());
         }
     }
 
@@ -83,9 +90,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_lastChassisSpeed = m_kinematics.toChassisSpeeds(m_lastStates[0], m_lastStates[1], m_lastStates[2]);
 
-        m_odometry.update(getHeading(), m_lastStates[0], m_lastStates[1], m_lastStates[2]);
+        m_poseEstimator.update(getHeading(), m_lastStates[0], m_lastStates[1], m_lastStates[2]);
 
-        m_field.setRobotPose(m_odometry.getPoseMeters());
+        m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
         if (RobotController.getUserButton() && m_counter == 0) {
             setWheelOffsets();
@@ -180,7 +187,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void resetHeading(Rotation2d currentHeading) {
         // getYaw is CW positive not CCW positive
         m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
-        m_odometry.resetPosition(m_odometry.getPoseMeters(), getHeading());
+        m_poseEstimator.resetPosition(m_poseEstimator.getEstimatedPosition(), getHeading());
     }
 
     /**
@@ -193,12 +200,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return m_odometry.getPoseMeters();
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     public void resetOdometry(Pose2d pose) {
         resetHeading(pose.getRotation());
-        m_odometry.resetPosition(pose, getHeading());
+        m_poseEstimator.resetPosition(pose, getHeading());
     }
 
     public void motorsOff() {
