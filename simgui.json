@@ -16,6 +16,11 @@
           "open": true
         }
       }
+    },
+    "RoboRIO": {
+      "window": {
+        "visible": true
+      }
     }
   },
   "NTProvider": {
@@ -62,16 +67,7 @@
   "NetworkTables": {
     "LiveWindow": {
       "DrivetrainSubsystem": {
-        "frontLeft": {
-          "open": true
-        },
-        "frontRight": {
-          "open": true
-        },
-        "open": true,
-        "rear": {
-          "open": true
-        }
+        "open": true
       },
       "Ungrouped": {
         "frontLeft": {
@@ -84,6 +80,9 @@
           "open": true
         }
       },
+      "open": true
+    },
+    "Preferences": {
       "open": true
     },
     "SmartDashboard": {

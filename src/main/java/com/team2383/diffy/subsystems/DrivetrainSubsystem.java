@@ -14,7 +14,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
+import com.team2383.diffy.Robot;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;
@@ -53,7 +56,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
 
-    private int m_counter;
+    private int m_counter1;
+    private int m_counter2;
 
     public DrivetrainSubsystem(DataLog log) {
         m_frontLeftModule = new DiffSwerveModule(Constants.DriveConstants.frontLeftConstants,
@@ -78,6 +82,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation()) {
             m_poseEstimator.resetPosition(new Pose2d(new Translation2d(0, 0), new Rotation2d()), new Rotation2d());
         }
+
+        resetHeading();
     }
 
     @Override
@@ -94,14 +100,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
-        if (RobotController.getUserButton() && m_counter == 0) {
-            setWheelOffsets();
-            m_counter = 100;
-            DataLogManager.log("INFO: User Button Pressed\nSetting all module rotation offsets\n");
+        if (RobotController.getUserButton()) {
+            if (m_counter1 == 0) {
+                m_counter2++;
+                m_counter1 = 100;
+                DataLogManager.log("Counter 2 = " + m_counter2);
+            }
+        } else {
+            if (m_counter2 == 1) {
+                setWheelOffsets();
+            } else if (m_counter2 == 2) {
+                setCompassOffset();
+                resetHeading();
+            }
+            m_counter2 = 0;
         }
 
-        if (m_counter > 0)
-            m_counter--;
+        if (m_counter1 > 0) {
+            m_counter1--;
+        }
     }
 
     @Override
@@ -184,10 +201,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *                       relative coordinates when CCW is position and 0 is
      *                       facing directly towards the opposing alliance wall
      */
-    public void resetHeading(Rotation2d currentHeading) {
-        // getYaw is CW positive not CCW positive
+    public void forceHeading(Rotation2d currentHeading) {
         m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
-        m_poseEstimator.resetPosition(m_poseEstimator.getEstimatedPosition(), getHeading());
+        m_poseEstimator.resetPosition(m_poseEstimator.getEstimatedPosition(), currentHeading);
+    }
+
+    /**
+     * Set the current heading to the calculated compass heading
+     * <p>
+     * Gyro offset needs to be saved to robot before this can be used.
+     * If the compass heading is not stored this will set the forward direction to
+     * north
+     */
+    public void resetHeading() {
+        // getYaw is CW positive not CCW positive
+        m_gyro.setAngleAdjustment(getCompassOffset());
+        m_poseEstimator.resetPosition(new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()),
+                getHeading());
+        resetEncoders();
     }
 
     /**
@@ -203,9 +234,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_poseEstimator.getEstimatedPosition();
     }
 
-    public void resetOdometry(Pose2d pose) {
-        resetHeading(pose.getRotation());
+    public void forceOdometry(Pose2d pose) {
+        forceHeading(pose.getRotation());
         m_poseEstimator.resetPosition(pose, getHeading());
+        resetEncoders();
+    }
+
+    public void setPosition(Translation2d position) {
+        m_poseEstimator.resetPosition(new Pose2d(position, getHeading()), getHeading());
+        resetEncoders();
     }
 
     public void motorsOff() {
@@ -228,5 +265,30 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
 
         DataLogManager.log("INFO: LoadWheelOffsets Complete\n");
+    }
+
+    public double getCompassOffset() {
+        // Compass is CW positive not CCW positive
+        double fieldCompassHeading = Preferences.getDouble("Compass", 0);
+        double currentCompassHeading = m_gyro.getCompassHeading();
+        // Use getYaw because this is being used to offset the gyro
+        double gyroHeading = -m_gyro.getYaw();
+
+        return gyroHeading + (currentCompassHeading - fieldCompassHeading);
+    }
+
+    public void setCompassOffset() {
+        // Compass is CW positive not CCW positive
+        double fieldCompassHeading = m_gyro.getCompassHeading();
+        Preferences.setDouble("Compass", fieldCompassHeading);
+
+        DataLogManager.log("INFO: Compass offset set to " + fieldCompassHeading + "\n");
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("Compass Heading", m_gyro::getCompassHeading, null);
     }
 }
