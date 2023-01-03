@@ -37,8 +37,11 @@
     "Holonomic",
     "Kalman",
     "Odometry",
+    "Penrose",
+    "pseudoinverse",
     "teleop",
-    "teleoperated"
+    "teleoperated",
+    "timestep"
   ],
   "explorer.fileNesting.patterns": {
     "simgui.json": "*.wpilog", 

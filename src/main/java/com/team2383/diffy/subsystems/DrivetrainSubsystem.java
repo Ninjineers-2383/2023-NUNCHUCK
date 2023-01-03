@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
-import com.team2383.diffy.Robot;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;

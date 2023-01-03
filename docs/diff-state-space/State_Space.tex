@@ -34,8 +34,8 @@
 \doublespacing
 
 \section{Introduction}
-\subsection*{What is Swerve?}
-Swerve is a type of drivetrain that is characterized by having at least two wheels that can each rotate and spin independently of each other (here rotate is define as a rotation around the robots up axis and spin is defined as a rotation around the modules y axis). This allows the robot to move in any direction and turn in place. Differential Swerve is a type of swerve drivetrain in which the rotation of the wheel is controlled by the difference of the motor velocities and the spin if the wheel is controlled by the average of the motor velocities. This allows for the combination of the torque produced by both motors when driving and turning. This is the main advantage over conventional (coaxial) swerve drivetrains in which rotation and spin are controlled by separate motors. The main disadvantage of differential swerve is that it is significantly more complex to control.
+\subsection{What is Swerve?}
+Swerve is a type of drivetrain that is characterized by having at least two wheels that can each rotate and spin independently of each other (here rotate is define as a rotation around the robots up axis and spin is defined as a rotation around the modules y axis). This allows the robot to move in any direction and turn in place. Differential Swerve is a type of swerve drivetrain in which the rotation of the wheel is controlled by the difference of the motor velocities and the spin of the wheel is controlled by the average of the motor velocities. This allows for the combination of the torque produced by both motors when driving and turning. This is the main advantage over conventional (coaxial) swerve drivetrains in which rotation and spin are controlled by separate motors. The main disadvantage of differential swerve is that it is significantly more complex to control.
 
 \subsection{Purpose of this paper}
 By reading this paper you should be able to gain an understanding of how a relatively complex mechanism is analyzed and a state space model is created. You should then learn the steps to implement a simple Linear Quadratic Regulator (LQR) and then a Kalman Filter to filter out measurement noise.
@@ -56,15 +56,15 @@ We need to design a continuous, time-invariant state space model of the system. 
 
 \subsection*{What should we choose as our inputs, outputs, and states?}
 \subsubsection*{Inputs}
-In robotics you can commonly only input one value, voltage, but because differential swerve has two motors that work together to control the module we can pass in two inputs, the top motor input and the bottom motor input. In differential swerve we refer to the motors as top and bottom because there is one motor that drives the top gear of the differential and there is one motor that drives the bottom gear of the differential not because one of the motors is physically on top of the other.
+In robotics you can commonly only input one value, voltage, but because differential swerve has two motors that work together to control the module we can pass in two inputs, the top motor voltage and the bottom motor voltage. In differential swerve we refer to the motors as top and bottom because there is one motor that drives the top gear of the differential and there is one motor that drives the bottom gear of the differential not because one of the motors is physically on top of the other.
 
 \subsubsection*{Outputs}
 Outputs in a state-space model are things that you can physically measure. Although, this makes it a little confusing as to what we should chose because there are many different things we can measure with each encoder (displacement, velocity, acceleration) and we have 3 of them. To figure out what to output we need to think about which of these is it actually important for us to measure.
 In swerve there are really two things that we need to know: the velocity of the wheel, and the rotation of the wheel. Even though it would be nice to have these as outputs we only have a way of directly measuring one of these with the module rotation encoder. For the wheel velocity we can instead output the velocity of both motors, we can then calculate the wheel velocity as the average of the motor speeds.
-So we are going to have three outputs: top motor velocity[radians/second], bottom motor velocity [radians/second], and wheel rotation [radians]
+So we are going to have three outputs: top motor velocity [radians/second], bottom motor velocity [radians/second], and wheel rotation [radians]
 
 \subsubsection*{States}
-To calculate the change in the state of the system we can only use the states and the inputs. We might be able to see that we can calculate how the output variables will change just by knowing the the current outputs and the inputs, this means that we can use these as the states. We now have the same states as outputs which means that our C matrix will be the identity matrix and our D matrix will be 0.
+To calculate the change in the state of the system we can only use the states and the inputs. We might be able to see that we can calculate how the output variables will change just by knowing the current outputs and the inputs, this means that we can use these as the states. We now have the same states as outputs which means that our C matrix will be the identity matrix and our D matrix will be 0.
 
 \subsection{Inputs, Outputs, and States}
 The States will be in the form of
@@ -77,7 +77,7 @@ The States will be in the form of
     \end{bmatrix}
 \end{equation}
 
-Where \(\theta\) is the angle of the wheel and\(v_t\) and \(v_b\) are the top and bottom motor velocities respectively. \\
+Where \(\theta\) is the angle of the wheel and \(v_t\) and \(v_b\) are the top and bottom motor velocities respectively. \\
 The velocity of the wheel is not included as a state because it is a linear combination of the motor velocities so it can be calculated from the current state.
 
 The inputs will be in the form of
@@ -130,7 +130,7 @@ This equation can then be written in state space form as
 \end{equation}
 
 \subsection{A and B Matrices}
-Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas needed to compute the different velocity components of the system.
+Now that we know how to calculate the angular velocity of a motor based on its constants and the input voltage we can start to create the formulas that describe the changes in state of a swerve module.
 \begin{align}
     \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + \frac{1}{K_{a_\mathit{drive}}}V_t \\
     \dot{v_b}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + \frac{1}{K_{a_\mathit{drive}}}V_b \\
@@ -139,9 +139,8 @@ Now that we know how to calculate the angular velocity of a motor based on its c
 
 We can now rewrite these equations as a system that has coefficients for every state and input.
 \begin{align}
-    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b                                                                                  \\
-    \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b                                                                                  \\
-    \dot{v_w}    & = -\frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_t + \frac{K_{v_\mathit{drive}}}{2K_{a_\mathit{drive}}}v_b + 0\theta + \frac{1}{2K_{a_\mathit{drive}}}V_t - \frac{1}{2K_{a_\mathit{drive}}}V_b \\
+    \dot{v_t}    & = \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_t + 0v_b + 0\theta + \frac{1}{K_{a_\mathit{drive}}}V_t + 0V_b \\
+    \dot{v_b}    & = 0v_t + \frac{-K_{v_\mathit{drive}}}{K_{a_\mathit{drive}}}v_b + 0\theta + 0V_t + \frac{1}{K_{a_\mathit{drive}}}V_b \\
     \dot{\theta} & = \frac{K_\mathit{turn\_ratio}}{2}v_t + \frac{K_\mathit{turn\_ratio}}{2}v_b + 0\theta + 0V_t + 0V_b
 \end{align}
 
@@ -164,7 +163,7 @@ Now that we have these linear equations we can turn them into the A and B matrix
 
 \subsection{C and D matrices}
 With these, we just need the C and D matrices.
-Because the output matrix is the same as the state matrix C is just the identity matrix.
+Because the output matrix is the same as the state matrix C is just the identity matrix and D = 0.
 \begin{align}
     C & =
     \begin{bmatrix}
@@ -243,7 +242,7 @@ And the system is said to be controllable if the rank of the controllability mat
     \mathit{rank}(\mathit{R}) = n
 \end{equation}
 
-We can now calculate the rank of the controllability matrix for our system and find that it is indeed 3. This means that out system is indeed controllable and we can move on to the next step.
+We can now calculate the rank of the controllability matrix for our system and find that it is 3. This means that out system is controllable and we can move on to the next step.
 
 \subsection{Observability}
 A system is said to be observable if, for every possible state, the current state can be estimated using only the information from outputs.
@@ -294,4 +293,59 @@ We also want to make sure that the wheel is turning correctly and is still stabl
 
 \newpage
 
+\section{Controller Design}
+Now that we have a state space model that accurately describes our plant we can start to design a controller to allow the modules to track a reference velocity and rotation.
+Here we don't have very strict requirements other than minimal oscillation and a fast response time.
+For this reference tracking control we need a feedforward controller to calculate the plant inputs for a specific reference and we need a feedback controller to account for un-modeled dynamics.
+We should also use a state estimator to reduce the impact of measurement noise on the system: for this we will use a Kalman filter.
+
+\subsection{Feedforward Controller}
+The feedforward controller we will be using is Plant Inversion.
+This controller is a linear controller that uses the state space model to calculate the inputs to the system to achieve a desired state.
+The controller is defined as
+\begin{equation}
+    u_k = B^+(r_{k+1} - Ar_k)
+\end{equation}
+Where \(B^+\) is the Moore-Penrose pseudoinverse of the B matrix, \(r_k\) is the reference at the current timestep, and \(r_{k+1}\) is the reference at the next timestep.
+
+A simple system could use this controller to track the reference. For example we can pass in the current state that we get from our sensors and the next reference which is what we want they system to do. This will then give us inputs which we can pass directly to the motors.
+The issue with this approach is that we don't have a way to account for un-modeled dynamics. This means that the system will not be able to track the reference perfectly.
+To account for this we add a feedback controller.
+
+\subsection{Feedback Controller}
+The feedback controller we will be using is the Linear Quadratic Regulator (LQR).
+The LQR controller works by minimizing a quadratic cost function defined by the equation
+\begin{equation}
+    J = \sum_{k=0}^\infty (Q(r_k - x_k)^2 + R u_k^2)
+\end{equation}
+The goal is to minimize this cost function while obeying the system dynamics.
+To create the Q and R matrices we use Bryson's rule to create the matrices in the form of
+\begin{align}
+    Q = \begin{bmatrix}
+            \frac{1}{x_{1,\mathit{max}}^2} & 0                              & \hdots & 0                              \\
+            0                              & \frac{1}{x_{2,\mathit{max}}^2} &        & \vdots                         \\
+            \vdots                         &                                & \ddots & 0                              \\
+            0                              & \hdots                         & 0      & \frac{1}{x_{n,\mathit{max}}^2}
+        \end{bmatrix}
+    R = \begin{bmatrix}
+            \frac{1}{u_{1,\mathit{max}}^2} & 0                              & \hdots & 0                              \\
+            0                              & \frac{1}{u_{2,\mathit{max}}^2} &        & \vdots                         \\
+            \vdots                         &                                & \ddots & 0                              \\
+            0                              & \hdots                         & 0      & \frac{1}{u_{n,\mathit{max}}^2}
+        \end{bmatrix}
+\end{align}
+
+We can now define the maximum state errors as \(x = [0.1, 0.1, 0.01]\) and the maximum input values as \(u = [12, 12]\).
+Using this you can now solve for the K matrix which is the feedback gain matrix.
+
+\subsection{Kalman Filter}
+The Kalman filter is a state estimator that uses the system dynamics and the sensor measurements to estimate the current state of the system.
+Because our sensor measurements are noisy approximations of the system state we need to use a state estimator to reduce the impact of this noise.
+The Kalman filter uses the system dynamics to predict the next state and then uses the sensor measurements to correct the prediction.
+
+The Kalman filter uses the state and measurement standard deviations which we can estimate as \([0.1, 0.1, 0.1]\) for the state and \([0.01, 0.01, 0.01]\) for the measurement.
+
+\subsection{Putting it all together}
+Now that we have a controller and a state estimator we can put them together to create a controller that can track a reference.
+To do this we go through a loop of setting the new reference, correcting the state estimation, predicting the next state, and calculating the new inputs.
 \end{document}
