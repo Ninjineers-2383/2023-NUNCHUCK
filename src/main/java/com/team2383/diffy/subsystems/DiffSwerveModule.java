@@ -40,12 +40,6 @@ public class DiffSwerveModule implements Sendable {
     private final TalonFXSimCollection m_bottomMotorSim;
 
     // New fancy state space controller
-    private final LinearSystem<N3, N2, N3> m_diffySwervePlant;
-
-    private final LinearQuadraticRegulator<N3, N2, N3> m_controller;
-
-    private final KalmanFilter<N3, N2, N3> m_observer;
-
     private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
 
     // Encoder class that allows for the use of abs and quadrature encoders
@@ -82,19 +76,19 @@ public class DiffSwerveModule implements Sendable {
     private double m_moduleAngle;
 
     // The static angle of the module
-    private Rotation2d m_staticAngle;
+    private final Rotation2d m_staticAngle;
 
     // The angle angle of the module top plate (used to calculate offset)
-    private Rotation2d m_moduleMountAngle;
+    private final Rotation2d m_moduleMountAngle;
 
     // Temporary storage for the current desired voltage
     private double m_topVoltage;
     private double m_bottomVoltage;
 
+    private final double m_kS;
+
     // The offset for the module encoder in degrees
     private double m_offset;
-
-    private final double kS;
 
     /**
      * Desired speed in meters per second
@@ -166,10 +160,10 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/" + m_name + "/expectedAngle");
 
-        kS = moduleConstants.kS;
+        m_kS = moduleConstants.kS;
 
         // Initialize state space controller
-        m_diffySwervePlant = new LinearSystem<>(
+        LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
                         // ---
                         -moduleConstants.kV / moduleConstants.kA, 0, 0,
@@ -195,21 +189,17 @@ public class DiffSwerveModule implements Sendable {
                         0, 0,
                         0, 0));
 
-        m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
+        LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
-        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
+        KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
                 m_observer, 12.0, 0.02);
     }
 
-    /**
-     * Gets the current state of the module
-     * Called from periodic
-     */
-    public SwerveModuleState getState() {
+    public void periodic() {
         double topMotorSpeed = m_topMotor.getSelectedSensorVelocity();
         double bottomMotorSpeed = m_bottomMotor.getSelectedSensorVelocity();
 
@@ -233,7 +223,13 @@ public class DiffSwerveModule implements Sendable {
             }
             reset_counter++;
         }
+    }
 
+    /**
+     * Gets the current state of the module
+     * Called from periodic
+     */
+    public SwerveModuleState getState() {
         return new SwerveModuleState(m_driveSpeed, Rotation2d.fromDegrees(m_moduleAngle));
     }
 
@@ -283,6 +279,10 @@ public class DiffSwerveModule implements Sendable {
                 2 * Math.PI;
     }
 
+    private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
+        return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
+    }
+
     /**
      * Get the angle of the module
      * <p>
@@ -302,7 +302,7 @@ public class DiffSwerveModule implements Sendable {
      * @param desiredState the desired state of the module
      * @return the max voltage of the motors
      */
-    public double setDesiredState(SwerveModuleState desiredState) {
+    public void setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
                 Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
 
@@ -318,20 +318,19 @@ public class DiffSwerveModule implements Sendable {
 
         m_systemLoop.correct(
                 VecBuilder.fill(
-                        m_topMotor.getSelectedSensorVelocity() * (20 * Math.PI / 2048),
-                        m_bottomMotor.getSelectedSensorVelocity() * (20 * Math.PI
-                                / 2048),
+                        sensorVelocityToRadiansPerSecond(m_topMotor.getSelectedSensorVelocity()),
+                        sensorVelocityToRadiansPerSecond(m_bottomMotor.getSelectedSensorVelocity()),
                         Math.toRadians(getModuleAngle())));
 
         m_systemLoop.predict(0.020);
 
         m_topVoltage = m_systemLoop.getU(0);
-        m_topVoltage += Math.signum(m_topVoltage) * kS;
+        m_topVoltage += Math.signum(m_topVoltage) * m_kS;
 
         m_bottomVoltage = m_systemLoop.getU(1);
-        m_bottomVoltage += Math.signum(m_bottomVoltage) * kS;
+        m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
 
-        return Math.max(Math.abs(m_topVoltage), Math.abs(m_bottomVoltage));
+        setVoltage();
     }
 
     /**
@@ -340,7 +339,7 @@ public class DiffSwerveModule implements Sendable {
      * @param driveMaxScale the max drive voltage divided by the maximum requested
      *                      voltage
      */
-    public void setVoltage(double driveMaxScale) {
+    private void setVoltage() {
         m_topMotor.setVoltage(m_topVoltage);
         m_bottomMotor.setVoltage(m_bottomVoltage);
     }
@@ -429,12 +428,10 @@ public class DiffSwerveModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity", () -> {
-            return m_topMotor.getSelectedSensorVelocity() * (20 * Math.PI
-                    / 2048);
+            return sensorVelocityToRadiansPerSecond(m_topMotor.getSelectedSensorVelocity());
         }, null);
         builder.addDoubleProperty("Bottom Motor Velocity", () -> {
-            return m_bottomMotor.getSelectedSensorVelocity() * (20 * Math.PI
-                    / 2048);
+            return sensorVelocityToRadiansPerSecond(m_bottomMotor.getSelectedSensorVelocity());
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity Error", () -> {

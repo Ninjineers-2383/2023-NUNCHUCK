@@ -90,6 +90,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Gyro Heading", getHeading().getDegrees());
 
         for (int i = 0; i < m_modules.length; i++) {
+            m_modules[i].periodic();
             m_lastStates[i] = m_modules[i].getState();
         }
 
@@ -157,20 +158,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.kMaxVelocity);
 
-        double driveMaxVolts = 0;
-
         for (int i = 0; i < m_modules.length; i++) {
-            driveMaxVolts = Math.max(driveMaxVolts, m_modules[i].setDesiredState(states[i]));
-        }
-
-        double driveMaxScale = 1;
-
-        if (driveMaxVolts > Constants.GlobalModuleConstants.kDriveMaxVoltage) {
-            driveMaxScale = Constants.GlobalModuleConstants.kDriveMaxVoltage / driveMaxVolts;
-        }
-
-        for (DiffSwerveModule module : m_modules) {
-            module.setVoltage(driveMaxScale);
+            m_modules[i].setDesiredState(states[i]);
         }
     }
 
