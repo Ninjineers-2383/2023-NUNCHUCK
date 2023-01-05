@@ -22,7 +22,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         // of 4 m/s and a max acceleration of 3 m/s^2
         // for every path in the group
         ArrayList<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName,
-                new PathConstraints(Constants.DriveConstants.kMaxVelocity, 3));
+                new PathConstraints(Constants.DriveConstants.kMaxVelocity - 0.5, 2));
         Pose2d initialPos = pathGroup.get(0).getInitialHolonomicPose();
         // drivetrain.forceOdometry(initialPos);
         drivetrain.setPosition(initialPos.getTranslation());

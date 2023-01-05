@@ -26,8 +26,8 @@ public class TrajectoryDriveCommand extends CommandBase {
     private final HolonomicDriveController driveController = new HolonomicDriveController(
             new PIDController(5, 0, 0),
             new PIDController(5, 0, 0),
-            new ProfiledPIDController(5, 0, 0,
-                    new Constraints(Constants.DriveConstants.kMaxAngularVelocity, 5)));
+            new ProfiledPIDController(4, 0, 0,
+                    new Constraints(Constants.DriveConstants.kMaxAngularVelocity, 2)));
 
     private final PathPlannerTrajectory trajectory;
 
@@ -46,7 +46,7 @@ public class TrajectoryDriveCommand extends CommandBase {
             DrivetrainSubsystem drivetrain, PathPlannerTrajectory trajectory, HashMap<String, Command> commandMap) {
         this.trajectory = trajectory;
 
-        this.driveController.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(0.1)));
+        this.driveController.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(0.2)));
 
         this.drivetrain = drivetrain;
 
