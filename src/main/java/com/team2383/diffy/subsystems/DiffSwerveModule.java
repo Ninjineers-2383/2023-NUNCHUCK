@@ -164,6 +164,7 @@ public class DiffSwerveModule implements Sendable {
 
         // Initialize state space controller
         LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
+                // Matrix A
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
                         // ---
                         -moduleConstants.kV / moduleConstants.kA, 0, 0,
@@ -173,6 +174,7 @@ public class DiffSwerveModule implements Sendable {
                         Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
                         Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
                         0),
+                // Matrix B
                 Matrix.mat(Nat.N3(), Nat.N2()).fill(
                         // ---
                         1 / moduleConstants.kA, 0,
@@ -180,18 +182,22 @@ public class DiffSwerveModule implements Sendable {
                         0, 1 / moduleConstants.kA,
                         // ---
                         0, 0),
+                // Matrix C
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
                         1, 0, 0,
                         0, 1, 0,
                         0, 0, 1),
+                // Matrix D
                 Matrix.mat(Nat.N3(), Nat.N2()).fill(
                         0, 0,
                         0, 0,
                         0, 0));
 
+        // LQR regulator
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
+        // Kalman filter
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
