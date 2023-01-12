@@ -113,4 +113,23 @@ public final class Constants {
             this.mountAngle = mountAngle;
         }
     }
+
+    public static final class TelescopeConstants {
+
+        // FF Values
+        // TODO: Tune these values
+        public final double kS = 0; 
+        public final double kV = 0;
+        public final double kA = 0;
+        public final double kG = 0;
+
+        public static final int kMotorID = 1;
+        
+        // TODO: Change these values to ones that match roboRIO
+        public static final int kEncoderPortA = 0;
+        public static final int kEncoderPortB = 1;
+        public static final int kEncoderPortAbs = 2;
+
+        
+    }
 }
