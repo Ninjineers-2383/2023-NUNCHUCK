@@ -8,8 +8,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -28,6 +32,8 @@ public class DoublePinkArmSubsystem {
 
     private final DoubleEncoder bottomAngleEncoder;
     private final DoubleEncoder topAngleEncoder;
+
+    private final LinearSystemLoop<N8, N5, N8> m_systemLoop;
 
     public DoublePinkArmSubsystem() {
         pivotMotor = new CANSparkMax(TelescopeConstants.kTopPivotMotorID, MotorType.kBrushless);
@@ -83,6 +89,15 @@ public class DoublePinkArmSubsystem {
                 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0));
+
+        LinearQuadraticRegulator<N8, N5, N8> controller = new LinearQuadraticRegulator<>(armPlant,
+            VecBuilder.fill(1, 1, 1, 1, 1, 0.001, 1, 0.001), VecBuilder.fill(12, 12, 12, 12, 12), 0.02);
+
+        KalmanFilter<N8, N5, N8> observer = new KalmanFilter<>(Nat.N8(), Nat.N8(), armPlant,
+            VecBuilder.fill(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01), 0.02);
+
+        m_systemLoop = new LinearSystemLoop<>(armPlant, controller,
+            observer, 12.0, 0.02);
     }
 
     public void periodic() {
