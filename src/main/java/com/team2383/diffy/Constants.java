@@ -142,4 +142,22 @@ public final class Constants {
 
         
     }
+
+    public static final class BottomPivotConstants {
+        public static final double kS = 0; 
+        public static final double kV = 0;
+        public static final double kA = 0;
+        public static final double kG = 0;
+
+        public static final double kMaxCurrent = 40.0;
+        
+        public static final int kBottomMotorLeftId = 1;
+        public static final int kBottomMotorRightId = 1;
+
+        public static final int kEncoderPortA = 0;
+        public static final int kEncoderPortB = 1;
+        public static final int kEncoderPortAbs = 2;
+
+        public static final int kgb = 1;
+    }
 }

@@ -390,7 +390,7 @@ public class DiffSwerveModule implements Sendable {
             return m_driveSpeed;
         }, null);
 
-        builder.addDoubleProperty("Desired Angle (Degrees", () -> {
+        builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
             return m_desiredAngle;
         }, null);
 
