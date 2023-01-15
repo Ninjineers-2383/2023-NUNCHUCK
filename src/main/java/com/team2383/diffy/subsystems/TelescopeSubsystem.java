@@ -114,7 +114,7 @@ public class TelescopeSubsystem implements Sendable {
             m_telescopeMotor.getSelectedSensorVelocity());
 
         SmartDashboard.putNumber("Simulated Extension", 
-            sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition()) * TelescopeConstants.kge);
+            getExtension());
     }
 
     public void setExtension(double desiredExtension, double desiredSpeed) {
@@ -122,7 +122,7 @@ public class TelescopeSubsystem implements Sendable {
         m_desiredSpeed = desiredSpeed;
 
         m_speed = sensorVelocityToRadiansPerSecond(m_telescopeMotor.getSelectedSensorVelocity());
-        m_extension = sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition()) * TelescopeConstants.kge;
+        m_extension = getExtension();
 
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredExtension));
 
@@ -134,6 +134,9 @@ public class TelescopeSubsystem implements Sendable {
 
     }
 
+    public double getExtension() {
+        return sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition()) * TelescopeConstants.kge;
+    }
     private void setVoltage() {
         m_telescopeMotor.setVoltage(m_voltage);
     }
@@ -152,7 +155,23 @@ public class TelescopeSubsystem implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        
+        builder.setSmartDashboardType("Telescope");
+
+        builder.addDoubleProperty("Desired Speed", () -> {
+            return m_desiredSpeed;
+        }, null);
+
+        builder.addDoubleProperty("Desired Extension (Pick a Unit)", () -> {
+            return m_desiredExtension;
+        }, null);
+
+        builder.addDoubleProperty("Speed", () -> {
+            return m_speed;
+        }, null);
+
+        builder.addDoubleProperty("Voltage", () -> {
+            return m_voltage;
+        }, null);
     }
     
 }

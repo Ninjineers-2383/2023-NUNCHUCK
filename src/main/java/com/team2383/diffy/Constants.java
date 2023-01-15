@@ -115,7 +115,6 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-
         // FF Values
         // TODO: Tune these values
         public static final double kS = 0; 
@@ -146,5 +145,24 @@ public final class Constants {
         public static final int kEncoderPortAbs = 2;
 
         public static final int kgb = 1;
+    }
+
+    public static final class TopPivotConstants {
+        // FF Values
+        // TODO: Tune these values
+        public static final double kS = 0; 
+        public static final double kV = 0;
+        public static final double kA = 0;
+        public static final double kG = 0;
+        
+        public static final double kMaxCurrent = 40.0;
+
+        public static final int kMotorID = 1;
+
+        public static final int kEncoderPortA = 0;
+        public static final int kEncoderPortB = 1;
+        public static final int kEncoderPortAbs = 2;
+
+        public static final int kgt = 1;
     }
 }
