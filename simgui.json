@@ -118,7 +118,7 @@
               "min": -180.0
             }
           ],
-          "height": 360,
+          "height": -4,
           "legendLocation": 6,
           "name": "Angle",
           "series": [
@@ -169,7 +169,7 @@
               "min": -4.3
             }
           ],
-          "height": 360,
+          "height": -4,
           "name": "Speed",
           "series": [
             {
@@ -202,7 +202,7 @@
               "autoFit": true
             }
           ],
-          "height": 412,
+          "height": -6,
           "series": [
             {
               "color": [

@@ -123,24 +123,11 @@ public final class Constants {
         public static final double kA = 0;
         public static final double kG = 0;
         
-        public static final int kTopPivotMotorID = 1;
+        public static final double kMaxCurrent = 40.0;
 
-        public static final int kLeftExtensionID = 1;
-        public static final int kRightExtensionID = 1;
-
-        public static final int kBottomMotorLeft = 1;
-        public static final int kBottomMotorRight = 1;
-        
-        // TODO: Change these values to ones that match roboRIO
-        public static final int kEncoderPortA = 0;
-        public static final int kEncoderPortB = 1;
-        public static final int kEncoderPortAbs = 2;
+        public static final int kExtensionID = 1;
 
         public static final int kge = 1;
-        public static final int kgb = 1;
-        public static final int kgt = 1;
-
-        
     }
 
     public static final class BottomPivotConstants {
