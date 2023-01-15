@@ -17,6 +17,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeSubsystem implements Sendable {
     //TODO: Comment
@@ -32,6 +33,9 @@ public class TelescopeSubsystem implements Sendable {
 
     private double m_desiredExtension;
     private double m_desiredSpeed;
+
+    private double m_speed;
+    private double m_extension;
 
     private final DataLog m_log;
 
@@ -91,6 +95,61 @@ public class TelescopeSubsystem implements Sendable {
         m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
         m_expectedExtension = new DoubleLogEntry(m_log, "/expectedExtension");
     }
+
+    public void periodic() {
+        m_motorCurrent.append(m_telescopeMotor.getStatorCurrent());
+
+        m_motorVel.append(m_speed);
+
+        m_moduleExtensionLog.append(m_extension);
+
+        m_expectedSpeed.append(m_desiredSpeed);
+        m_expectedExtension.append(m_desiredExtension);
+    }
+
+    public void simulate() {
+        m_telescopeMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
+
+        SmartDashboard.putNumber("Simulated Telescope Motor Velocity", 
+            m_telescopeMotor.getSelectedSensorVelocity());
+
+        SmartDashboard.putNumber("Simulated Extension", 
+            sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition()) * TelescopeConstants.kge);
+    }
+
+    public void setExtension(double desiredExtension, double desiredSpeed) {
+        m_desiredExtension = desiredExtension;
+        m_desiredSpeed = desiredSpeed;
+
+        m_speed = sensorVelocityToRadiansPerSecond(m_telescopeMotor.getSelectedSensorVelocity());
+        m_extension = sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition()) * TelescopeConstants.kge;
+
+        m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredExtension));
+
+        m_systemLoop.correct(VecBuilder.fill(m_speed, m_extension));
+
+        m_voltage = m_systemLoop.getU(0);
+
+        setVoltage();
+
+    }
+
+    private void setVoltage() {
+        m_telescopeMotor.setVoltage(m_voltage);
+    }
+
+    private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
+        return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
+    }
+
+    private double sensorPositionToRadians(double sensorPosition) {
+        return (sensorPosition * 2 * Math.PI) / 2048.0;
+    }
+
+    private double radiansPerSecondToSensorVelocity(double radiansPerSecond) {
+        return radiansPerSecond / ((2 * Math.PI * 2048) / 10.0);
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         
