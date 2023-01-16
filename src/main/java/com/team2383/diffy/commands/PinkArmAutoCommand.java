@@ -6,7 +6,7 @@ import com.team2383.diffy.subsystems.PinkArmSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class PinkArmCommand extends CommandBase {
+public class PinkArmAutoCommand extends CommandBase {
     private PinkArmSubsystem m_pinkArm;
 
     private DoubleSupplier m_bottomAngle;
@@ -16,7 +16,7 @@ public class PinkArmCommand extends CommandBase {
     private DoubleSupplier m_topAngle;
     private DoubleSupplier m_topSpeed;
 
-    public PinkArmCommand(PinkArmSubsystem pinkArm, DoubleSupplier desiredBottomAngle, DoubleSupplier desiredBottomSpeed, DoubleSupplier desiredExtension, 
+    public PinkArmAutoCommand(PinkArmSubsystem pinkArm, DoubleSupplier desiredBottomAngle, DoubleSupplier desiredBottomSpeed, DoubleSupplier desiredExtension, 
         DoubleSupplier desiredExtensionSpeed, DoubleSupplier desiredTopAngle, DoubleSupplier desiredTopSpeed) {
         m_pinkArm = pinkArm;
         m_bottomAngle = desiredBottomAngle;
