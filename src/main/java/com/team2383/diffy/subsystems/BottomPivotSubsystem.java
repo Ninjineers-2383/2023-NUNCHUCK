@@ -22,7 +22,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BottomPivotSubsystem implements Sendable {
-    //TODO: Comment
+    // TODO: Comment
     private final WPI_TalonFX m_leftMotor;
     private final TalonFXSimCollection m_leftMotorSim;
 
@@ -31,9 +31,6 @@ public class BottomPivotSubsystem implements Sendable {
 
     private final DoubleEncoder m_bottomAngleEncoder;
 
-    private final LinearSystem<N3, N2, N3> m_bottomPivotPlant;
-    private final LinearQuadraticRegulator<N3, N2, N3> m_controller;
-    private final KalmanFilter<N3, N2, N3> m_observer;
     private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
 
     private double m_leftVoltage;
@@ -66,46 +63,45 @@ public class BottomPivotSubsystem implements Sendable {
         m_rightMotor = new WPI_TalonFX(BottomPivotConstants.kBottomMotorRightId);
         m_rightMotorSim = new TalonFXSimCollection(m_rightMotor);
 
-        m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA, 
-            BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
+        m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
+                BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
 
-        m_bottomPivotPlant = new LinearSystem<N3, N2, N3>(
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                -BottomPivotConstants.kV / BottomPivotConstants.kA, 0, 0,
-                0, -BottomPivotConstants.kV / BottomPivotConstants.kA, 0,
-                BottomPivotConstants.kgb / 2, BottomPivotConstants.kgb / 2, 0),
+        LinearSystem<N3, N2, N3> m_bottomPivotPlant = new LinearSystem<>(
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        -BottomPivotConstants.kV / BottomPivotConstants.kA, 0, 0,
+                        0, -BottomPivotConstants.kV / BottomPivotConstants.kA, 0,
+                        BottomPivotConstants.kgb / 2, BottomPivotConstants.kgb / 2, 0),
 
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                1/BottomPivotConstants.kA, 0,                    
-                0, 1/BottomPivotConstants.kA,
-                0, 0), 
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        1 / BottomPivotConstants.kA, 0,
+                        0, 1 / BottomPivotConstants.kA,
+                        0, 0),
 
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1), 
-                
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                0, 0,
-                0, 0,
-                0, 0
-            ));
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        1, 0, 0,
+                        0, 1, 0,
+                        0, 0, 1),
+
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        0, 0,
+                        0, 0,
+                        0, 0));
 
         m_log = log;
-    
-        m_controller = new LinearQuadraticRegulator<>(m_bottomPivotPlant,
-            VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
-        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_bottomPivotPlant,
-            VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
-    
+        LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_bottomPivotPlant,
+                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+
+        KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_bottomPivotPlant,
+                VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+
         m_systemLoop = new LinearSystemLoop<>(m_bottomPivotPlant, m_controller,
-            m_observer, 12.0, 0.02);
+                m_observer, 12.0, 0.02);
 
         SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
-            true,
-            BottomPivotConstants.kMaxCurrent,
-            BottomPivotConstants.kMaxCurrent, 10);
+                true,
+                BottomPivotConstants.kMaxCurrent,
+                BottomPivotConstants.kMaxCurrent, 10);
 
         m_leftMotor.configSupplyCurrentLimit(supply);
         m_rightMotor.configSupplyCurrentLimit(supply);
@@ -120,18 +116,18 @@ public class BottomPivotSubsystem implements Sendable {
 
         m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/expectedAngle");
-        
+
     }
 
     public void periodic() {
         m_leftMotorCurrent.append(m_leftMotor.getStatorCurrent());
         m_rightMotorCurrent.append(m_rightMotor.getStatorCurrent());
-    
+
         m_leftMotorVel.append(m_leftSpeed);
         m_rightMotorVel.append(m_rightSpeed);
-    
+
         m_moduleAngleLog.append(m_angle);
-    
+
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
     }
@@ -141,10 +137,10 @@ public class BottomPivotSubsystem implements Sendable {
         m_rightMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(1)));
 
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
-        m_leftMotor.getSelectedSensorVelocity());
+                m_leftMotor.getSelectedSensorVelocity());
 
         SmartDashboard.putNumber("Simulated Right Motor Output Velocity",
-        m_rightMotor.getSelectedSensorVelocity());
+                m_rightMotor.getSelectedSensorVelocity());
 
         m_bottomAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
 
@@ -159,7 +155,7 @@ public class BottomPivotSubsystem implements Sendable {
         m_rightSpeed = sensorVelocityToRadiansPerSecond(m_rightMotor.getSelectedSensorVelocity());
         m_angle = getAngle();
 
-        //TODO Reverse motors if necessary
+        // TODO Reverse motors if necessary
         m_systemLoop.setNextR(VecBuilder.fill(desiredSpeed, desiredSpeed, Math.toRadians(desiredAngle)));
 
         m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));

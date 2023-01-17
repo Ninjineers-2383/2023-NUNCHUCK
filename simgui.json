@@ -15,6 +15,9 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
       }
     },
     "RoboRIO": {
@@ -27,6 +30,9 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
+      "/LiveWindow/PinkArmSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[15]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
@@ -41,6 +47,7 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX [1]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [20]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [21]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [22]": "Motor Controller",
@@ -67,9 +74,26 @@
   "NetworkTables": {
     "LiveWindow": {
       "DrivetrainSubsystem": {
+        "frontLeft": {
+          "open": true
+        }
+      },
+      "PinkArmSubsystem": {
+        "Bottom Pivot": {
+          "open": true
+        },
+        "Telescope": {
+          "open": true
+        },
+        "Top Pivot": {
+          "open": true
+        },
         "open": true
       },
       "Ungrouped": {
+        "Talon FX [1]": {
+          "open": true
+        },
         "frontLeft": {
           "open": true
         },
@@ -118,7 +142,7 @@
               "min": -180.0
             }
           ],
-          "height": -4,
+          "height": 273,
           "legendLocation": 6,
           "name": "Angle",
           "series": [
@@ -169,7 +193,7 @@
               "min": -4.3
             }
           ],
-          "height": -4,
+          "height": 273,
           "name": "Speed",
           "series": [
             {
@@ -192,7 +216,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -202,7 +229,7 @@
               "autoFit": true
             }
           ],
-          "height": -6,
+          "height": 801,
           "series": [
             {
               "color": [
@@ -230,6 +257,27 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Gyro Heading"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "height": 399,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Desired Angle (Degrees)"
             }
           ]
         }

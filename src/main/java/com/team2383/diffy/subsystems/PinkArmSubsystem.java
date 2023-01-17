@@ -1,6 +1,7 @@
 package com.team2383.diffy.subsystems;
 
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PinkArmSubsystem extends SubsystemBase {
@@ -16,6 +17,10 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_bottomPivot = new BottomPivotSubsystem(m_log);
         m_telescope = new TelescopeSubsystem(m_log);
         m_topPivot = new TopPivotSubsystem(m_log);
+
+        addChild("Bottom Pivot", m_bottomPivot);
+        addChild("Telescope", m_telescope);
+        addChild("Top Pivot", m_topPivot);
     }
 
     @Override
@@ -32,11 +37,12 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_topPivot.simulate();
     }
 
-    public void setDesiredState(double desiredBottomAngle, double desiredBottomSpeed, double desiredExtension, 
-        double desiredExtensionSpeed, double desiredTopAngle, double desiredTopSpeed) {
+    public void setDesiredState(double desiredBottomAngle, double desiredBottomSpeed, double desiredExtension,
+            double desiredExtensionSpeed, double desiredTopAngle, double desiredTopSpeed) {
 
         m_bottomPivot.setAngle(desiredBottomAngle, desiredBottomSpeed);
         m_telescope.setExtension(desiredExtension, desiredExtensionSpeed);
         m_topPivot.setAngle(desiredTopAngle, desiredTopSpeed);
     }
+
 }

@@ -18,12 +18,12 @@
     {
       "name": "WPIlibUnitTests",
       "workingDirectory": "${workspaceFolder}/build/jni/release",
-      "vmargs": [ "-Djava.library.path=${workspaceFolder}/build/jni/release" ],
+      "vmargs": ["-Djava.library.path=${workspaceFolder}/build/jni/release"],
       "env": {
-        "LD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release" ,
+        "LD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release",
         "DYLD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release"
       }
-    },
+    }
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
   "latex-workshop.latex.autoBuild.run": "onSave",
@@ -40,12 +40,13 @@
     "Odometry",
     "Penrose",
     "pseudoinverse",
+    "Tele",
     "teleop",
     "teleoperated",
     "timestep"
   ],
   "explorer.fileNesting.patterns": {
-    "simgui.json": "*.wpilog", 
+    "simgui.json": "*.wpilog"
   },
-  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.enabled": true
 }
