@@ -74,18 +74,13 @@
   "NetworkTables": {
     "LiveWindow": {
       "DrivetrainSubsystem": {
-        "frontLeft": {
-          "open": true
-        }
+        "open": true
       },
       "PinkArmSubsystem": {
         "Bottom Pivot": {
           "open": true
         },
         "Telescope": {
-          "open": true
-        },
-        "Top Pivot": {
           "open": true
         },
         "open": true
@@ -103,8 +98,7 @@
         "navX-Sensor[4]": {
           "open": true
         }
-      },
-      "open": true
+      }
     },
     "Preferences": {
       "open": true
@@ -142,7 +136,7 @@
               "min": -180.0
             }
           ],
-          "height": 273,
+          "height": 360,
           "legendLocation": 6,
           "name": "Angle",
           "series": [
@@ -193,7 +187,7 @@
               "min": -4.3
             }
           ],
-          "height": 273,
+          "height": 360,
           "name": "Speed",
           "series": [
             {
@@ -268,7 +262,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 399,
+          "height": 863,
           "series": [
             {
               "color": [
@@ -278,6 +272,15 @@
                 1.0
               ],
               "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Desired Angle (Degrees)"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Simulated Encoder Rotation"
             }
           ]
         }

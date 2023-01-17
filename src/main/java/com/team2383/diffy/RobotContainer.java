@@ -45,12 +45,13 @@ public class RobotContainer {
             || m_driverTurnController.getTrigger());
     private final IntSupplier m_povSupplier = () -> m_driverTurnController.getPOV();
 
-    private final IntSupplier m_bottomArm = m_operatorController.getAButton() ? () -> 1
-            : m_operatorController.getYButton() ? () -> -1 : () -> 0;
-    private final IntSupplier m_topArm = m_operatorController.getBButton() ? () -> 1
-            : m_operatorController.getXButton() ? () -> -1 : () -> 0;
-    private final IntSupplier m_extend = m_operatorController.getLeftBumper() ? () -> 1
-            : m_operatorController.getRightBumper() ? () -> -1 : () -> 0;
+    private final BooleanSupplier m_bottomArmUp = () -> m_operatorController.getAButton();
+    private final BooleanSupplier m_bottomArmDown = () -> m_operatorController.getYButton();
+    private final BooleanSupplier m_topArmUp = () -> m_operatorController.getXButton();
+    private final BooleanSupplier m_topArmDown = () -> m_operatorController.getBButton();
+    private final BooleanSupplier m_extensionUp = () -> m_operatorController.getLeftBumper();
+    private final BooleanSupplier m_extensionDown = () -> m_operatorController.getRightBumper();
+ 
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
@@ -58,8 +59,8 @@ public class RobotContainer {
 
     private final JoystickDriveCommand m_dDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
-    private final PinkArmTeleCommand m_pinkArmCommand = new PinkArmTeleCommand(m_pinkArmSubsystem, m_bottomArm,
-            m_topArm, m_extend);
+    private final PinkArmTeleCommand m_pinkArmCommand = new PinkArmTeleCommand(m_pinkArmSubsystem, m_bottomArmDown,
+            m_bottomArmUp, m_topArmDown, m_topArmUp, m_extensionDown, m_extensionUp);
 
     // This is just an example event map. It would be better to have a constant,
     // global event map
