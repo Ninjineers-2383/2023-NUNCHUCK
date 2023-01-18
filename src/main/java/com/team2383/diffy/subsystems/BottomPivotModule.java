@@ -21,7 +21,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class BottomPivotSubsystem implements Sendable {
+public class BottomPivotModule implements Sendable {
     // TODO: Comment
     private final WPI_TalonFX m_leftMotor;
     private final TalonFXSimCollection m_leftMotorSim;
@@ -56,7 +56,7 @@ public class BottomPivotSubsystem implements Sendable {
     private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedAngle;
 
-    public BottomPivotSubsystem(DataLog log) {
+    public BottomPivotModule(DataLog log) {
         m_leftMotor = new WPI_TalonFX(BottomPivotConstants.kBottomMotorLeftId);
         m_leftMotorSim = new TalonFXSimCollection(m_leftMotor);
 

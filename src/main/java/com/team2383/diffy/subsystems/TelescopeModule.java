@@ -19,7 +19,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class TelescopeSubsystem implements Sendable {
+public class TelescopeModule implements Sendable {
     //TODO: Comment
     private final WPI_TalonFX m_telescopeMotor;
     private final TalonFXSimCollection m_telescopeMotorSim;
@@ -48,7 +48,7 @@ public class TelescopeSubsystem implements Sendable {
     private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedExtension;
 
-    public TelescopeSubsystem(DataLog log) {
+    public TelescopeModule(DataLog log) {
         m_telescopeMotor = new WPI_TalonFX(TelescopeConstants.kExtensionID);
 
         m_telescopeMotorSim = new TalonFXSimCollection(m_telescopeMotor);

@@ -4,18 +4,18 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PinkArmSubsystem extends SubsystemBase {
-    private BottomPivotSubsystem m_bottomPivot;
-    private TelescopeSubsystem m_telescope;
-    private TopPivotSubsystem m_topPivot;
+    private BottomPivotModule m_bottomPivot;
+    private TelescopeModule m_telescope;
+    private TopPivotModule m_topPivot;
 
     private DataLog m_log;
 
     public PinkArmSubsystem(DataLog log) {
         m_log = log;
 
-        m_bottomPivot = new BottomPivotSubsystem(m_log);
-        m_telescope = new TelescopeSubsystem(m_log);
-        m_topPivot = new TopPivotSubsystem(m_log);
+        m_bottomPivot = new BottomPivotModule(m_log);
+        m_telescope = new TelescopeModule(m_log);
+        m_topPivot = new TopPivotModule(m_log);
 
         addChild("Bottom Pivot", m_bottomPivot);
         addChild("Telescope", m_telescope);
