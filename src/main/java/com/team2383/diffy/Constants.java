@@ -133,7 +133,10 @@ public final class Constants {
         public static final double kS = 0.01;
         public static final double kV = 0.01;
         public static final double kA = 0.001;
-        public static final double kG = 0;
+        
+        public static final double pivotLength = 0.5;
+        public static final double gravity = 9.8;
+        public static final double armMass = 10;
 
         public static final double kMaxCurrent = 40.0;
 
@@ -164,5 +167,11 @@ public final class Constants {
         public static final int kEncoderPortAbs = 15;
 
         public static final int kgt = 1;
+    }
+
+    public static final class PinkArmConstants {
+        public static final double BottomPivotVelocity = .1;
+        public static final double TopPivotVelocity = .1;
+        public static final double TelescopeVelocity = .1;
     }
 }

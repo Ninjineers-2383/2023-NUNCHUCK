@@ -147,7 +147,7 @@ public class BottomPivotSubsystem implements Sendable {
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double desiredAngle, double desiredSpeed) {
+    public void setAngle(double desiredAngle, double desiredSpeed, double extension, double pivotAngle) {
         m_desiredAngle = desiredAngle;
         m_desiredSpeed = desiredSpeed;
 
@@ -164,7 +164,17 @@ public class BottomPivotSubsystem implements Sendable {
 
         m_leftVoltage = m_systemLoop.getU(0);
 
+        m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
+
+        m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
+
         m_rightVoltage = m_systemLoop.getU(1);
+
+        m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
+
+        m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
 
         setVoltage();
     }

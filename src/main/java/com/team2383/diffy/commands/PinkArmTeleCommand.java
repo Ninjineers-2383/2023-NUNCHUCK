@@ -38,7 +38,7 @@ public class PinkArmTeleCommand extends CommandBase {
     public void execute() {
         System.out.println(m_bottomAnglePosition);
         if (m_bottomAngleUp.getAsBoolean()) {
-            m_bottomAnglePosition +=10;
+            m_bottomAnglePosition += 10;
         } else if (m_bottomAngleDown.getAsBoolean()) {
             m_bottomAnglePosition -= 10;
         }
