@@ -174,4 +174,15 @@ public final class Constants {
         public static final double TopPivotVelocity = .1;
         public static final double TelescopeVelocity = .1;
     }
+
+    public static final class FeederConstants {
+        // TODO: Tune SS control values
+
+        public static final double kV = 0.01;
+        public static final double kA = 0.001;
+
+        public static final int kTopMotorID = 26;
+        public static final int kBottomMotorID = 27;
+        public static final int kClawMotorID = 28;
+    }
 }
