@@ -1,5 +1,7 @@
 package com.team2383.diffy.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants.FeederConstants;
 
 import edu.wpi.first.math.Matrix;
@@ -15,6 +17,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FeederSubsystem extends SubsystemBase {
     //TODO: Comment
@@ -23,17 +26,17 @@ public class FeederSubsystem extends SubsystemBase {
     private final CANSparkMax m_clawMotor;
 
     private final LinearSystem<N3, N3, N3> m_feederPlant;
-    private final LinearQuadraticRegulator<N2, N1, N2> m_controller;
-    private final KalmanFilter<N2, N1, N2> m_observer;
-    private final LinearSystemLoop<N2, N1, N2> m_systemLoop;
+    private final LinearQuadraticRegulator<N3, N3, N3> m_controller;
+    private final KalmanFilter<N3, N3, N3> m_observer;
+    private final LinearSystemLoop<N3, N3, N3> m_systemLoop;
 
 
     public FeederSubsystem() {
-        m_topMotor = new CANSparkMax(Constants.FeederConstants.kTopMotorID, MotorType.kBrushless);
-        m_bottomMotor = new CANSparkMax(Constants.FeederConstants.kBottomMotorID, MotorType.kBrushless);
-        m_clawMotor = new CANSparkMax(Constants.FeederConstants.kClawMotorID, MotorType.kBrushless);
+        m_topMotor = new CANSparkMax(FeederConstants.kTopMotorID, MotorType.kBrushless);
+        m_bottomMotor = new CANSparkMax(FeederConstants.kBottomMotorID, MotorType.kBrushless);
+        m_clawMotor = new CANSparkMax(FeederConstants.kClawMotorID, MotorType.kBrushless);
 
-        m_feederPlant = new LinearSystem<N3, N3, N3>(
+        m_feederPlant = new LinearSystem<>(
             // A Matrix
             Matrix.mat(Nat.N3(), Nat.N3()).fill(
                 -FeederConstants.kV / FeederConstants.kA, 0, 0,
@@ -60,15 +63,14 @@ public class FeederSubsystem extends SubsystemBase {
         );
         
         m_controller = new LinearQuadraticRegulator<>(m_feederPlant, 
-            VecBuilder.fill(1, 1), VecBuilder.fill(12), 0.02);
+            VecBuilder.fill(1, 1, 1), VecBuilder.fill(12, 12, 12), 0.02);
 
-        m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_feederPlant, 
-            VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
+        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_feederPlant, 
+            VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.1, 0.1, 0.1), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_feederPlant, m_controller, 
             m_observer, 12.0, 0.02);
-
-
+    }
     public void periodic() {
      
     }
