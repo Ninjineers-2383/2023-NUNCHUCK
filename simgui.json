@@ -74,9 +74,6 @@
   "NetworkTables": {
     "LiveWindow": {
       "PinkArmSubsystem": {
-        "Bottom Pivot": {
-          "open": true
-        },
         "open": true
       },
       "Ungrouped": {
@@ -108,7 +105,8 @@
             "open": true
           },
           "open": true
-        }
+        },
+        "open": true
       },
       "frontLeft": {
         "open": true
@@ -214,7 +212,7 @@
               "autoFit": true
             }
           ],
-          "height": 801,
+          "height": 668,
           "series": [
             {
               "color": [
@@ -253,7 +251,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 863,
+          "height": 636,
           "series": [
             {
               "color": [

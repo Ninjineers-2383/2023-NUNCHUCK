@@ -58,10 +58,10 @@ public class BottomPivotModule implements Sendable {
 
     public BottomPivotModule(DataLog log) {
         m_leftMotor = new WPI_TalonFX(BottomPivotConstants.kBottomMotorLeftId);
-        m_leftMotorSim = new TalonFXSimCollection(m_leftMotor);
+        m_leftMotorSim = m_leftMotor.getSimCollection();
 
         m_rightMotor = new WPI_TalonFX(BottomPivotConstants.kBottomMotorRightId);
-        m_rightMotorSim = new TalonFXSimCollection(m_rightMotor);
+        m_rightMotorSim = m_rightMotor.getSimCollection();
 
         m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
                 BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
@@ -93,7 +93,7 @@ public class BottomPivotModule implements Sendable {
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_bottomPivotPlant,
-                VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+                VecBuilder.fill(1, 1, 1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_bottomPivotPlant, m_controller,
                 m_observer, 12.0, 0.02);
@@ -140,6 +140,8 @@ public class BottomPivotModule implements Sendable {
         m_leftMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
         m_rightMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(1)));
 
+        System.out.println(m_leftMotor.getSelectedSensorVelocity());
+        
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.getSelectedSensorVelocity());
 
@@ -147,14 +149,13 @@ public class BottomPivotModule implements Sendable {
                 m_rightMotor.getSelectedSensorVelocity());
 
         m_bottomAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
-        System.out.println(m_systemLoop.getXHat(2));
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
     public void setAngle(double desiredAngle, double desiredSpeed, double extension, double pivotAngle) {
         m_desiredAngle = desiredAngle;
         m_desiredSpeed = desiredSpeed;
-        System.out.println(m_angle);
+
         // TODO Reverse motors if necessary
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredSpeed, Math.toRadians(m_desiredAngle)));
 
@@ -166,15 +167,15 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
         
-        m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
+        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
 
         m_rightVoltage = m_systemLoop.getU(1);
 
         m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
 
-        m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
+        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
 
         setVoltage();
     }
