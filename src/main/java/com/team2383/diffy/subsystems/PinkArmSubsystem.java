@@ -38,7 +38,6 @@ public class PinkArmSubsystem extends SubsystemBase {
 
     public void setDesiredState(double desiredBottomAngle, double desiredBottomSpeed, double desiredExtension,
             double desiredExtensionSpeed, double desiredTopAngle, double desiredTopSpeed) {
-
         m_bottomPivot.setAngle(desiredBottomAngle, desiredBottomSpeed, m_telescope.getExtension(), m_bottomPivot.getAngle());
         m_telescope.setExtension(desiredExtension, desiredExtensionSpeed);
         m_topPivot.setAngle(desiredTopAngle, desiredTopSpeed);

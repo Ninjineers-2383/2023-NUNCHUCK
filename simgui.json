@@ -73,14 +73,8 @@
   },
   "NetworkTables": {
     "LiveWindow": {
-      "DrivetrainSubsystem": {
-        "open": true
-      },
       "PinkArmSubsystem": {
         "Bottom Pivot": {
-          "open": true
-        },
-        "Telescope": {
           "open": true
         },
         "open": true
@@ -98,9 +92,7 @@
         "navX-Sensor[4]": {
           "open": true
         }
-      }
-    },
-    "Preferences": {
+      },
       "open": true
     },
     "SmartDashboard": {
@@ -120,8 +112,7 @@
       },
       "frontLeft": {
         "open": true
-      },
-      "open": true
+      }
     }
   },
   "Plot": {
@@ -275,12 +266,12 @@
             },
             {
               "color": [
-                0.7686275243759155,
-                0.30588236451148987,
+                0.8666667342185974,
+                0.5176470875740051,
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Simulated Encoder Rotation"
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Angle"
             }
           ]
         }

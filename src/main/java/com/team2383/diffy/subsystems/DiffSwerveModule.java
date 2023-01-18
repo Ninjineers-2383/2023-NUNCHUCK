@@ -253,7 +253,6 @@ public class DiffSwerveModule implements Sendable {
                 m_bottomMotor.getSelectedSensorVelocity());
 
         m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
-
         SmartDashboard.putNumber("Simulated/" + m_name + "/Encoder/Rotation", getModuleAngle());
     }
 

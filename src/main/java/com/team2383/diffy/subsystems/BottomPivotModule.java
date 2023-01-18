@@ -120,6 +120,10 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void periodic() {
+        m_leftSpeed = sensorVelocityToRadiansPerSecond(m_leftMotor.getSelectedSensorVelocity());
+        m_rightSpeed = sensorVelocityToRadiansPerSecond(m_rightMotor.getSelectedSensorVelocity());
+        m_angle = getAngle();
+
         m_leftMotorCurrent.append(m_leftMotor.getStatorCurrent());
         m_rightMotorCurrent.append(m_rightMotor.getStatorCurrent());
 
@@ -143,20 +147,16 @@ public class BottomPivotModule implements Sendable {
                 m_rightMotor.getSelectedSensorVelocity());
 
         m_bottomAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
-
+        System.out.println(m_systemLoop.getXHat(2));
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
     public void setAngle(double desiredAngle, double desiredSpeed, double extension, double pivotAngle) {
         m_desiredAngle = desiredAngle;
         m_desiredSpeed = desiredSpeed;
-
-        m_leftSpeed = sensorVelocityToRadiansPerSecond(m_leftMotor.getSelectedSensorVelocity());
-        m_rightSpeed = sensorVelocityToRadiansPerSecond(m_rightMotor.getSelectedSensorVelocity());
-        m_angle = getAngle();
-
+        System.out.println(m_angle);
         // TODO Reverse motors if necessary
-        m_systemLoop.setNextR(VecBuilder.fill(desiredSpeed, desiredSpeed, Math.toRadians(desiredAngle)));
+        m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredSpeed, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));
 
@@ -165,7 +165,7 @@ public class BottomPivotModule implements Sendable {
         m_leftVoltage = m_systemLoop.getU(0);
 
         m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
-
+        
         m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
             BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
 
@@ -206,6 +206,10 @@ public class BottomPivotModule implements Sendable {
 
         builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
             return m_desiredAngle;
+        }, null);
+
+        builder.addDoubleProperty("Angle", () -> {
+            return m_angle;
         }, null);
 
         builder.addDoubleProperty("Left Speed", () -> {
