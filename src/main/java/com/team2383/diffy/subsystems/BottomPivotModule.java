@@ -1,6 +1,5 @@
 package com.team2383.diffy.subsystems;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -25,9 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class BottomPivotModule implements Sendable {
     // TODO: Comment
     private final WPI_TalonFX m_leftMotor;
-    private final TalonFXSimCollection m_leftMotorSim;
-
     private final WPI_TalonFX m_rightMotor;
+
+    private final TalonFXSimCollection m_leftMotorSim;
     private final TalonFXSimCollection m_rightMotorSim;
 
     private final DoubleEncoder m_bottomAngleEncoder;
@@ -38,7 +37,6 @@ public class BottomPivotModule implements Sendable {
     private double m_rightVoltage;
 
     private double m_desiredAngle;
-    private double m_desiredSpeed;
 
     private double m_leftSpeed;
     private double m_rightSpeed;
@@ -54,7 +52,6 @@ public class BottomPivotModule implements Sendable {
 
     private final DoubleLogEntry m_moduleAngleLog;
 
-    private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedAngle;
 
     private int reset_counter = 0;
@@ -87,7 +84,6 @@ public class BottomPivotModule implements Sendable {
 
         m_moduleAngleLog = new DoubleLogEntry(m_log, "/moduleAngle");
 
-        m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/expectedAngle");
 
         LinearSystem<N3, N2, N3> m_bottomPivotPlant = new LinearSystem<>(
@@ -112,10 +108,10 @@ public class BottomPivotModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_bottomPivotPlant,
-                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+                VecBuilder.fill(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0.001), VecBuilder.fill(12, 12), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_bottomPivotPlant,
-                VecBuilder.fill(10, 10, 10), VecBuilder.fill(1, 1, 1), 0.02);
+                VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_bottomPivotPlant, m_controller,
                 m_observer, 12.0, 0.02);
@@ -135,7 +131,6 @@ public class BottomPivotModule implements Sendable {
 
         m_moduleAngleLog.append(m_angle);
 
-        m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
 
         if (reset_counter < 200) {
@@ -162,12 +157,11 @@ public class BottomPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double desiredAngle, double desiredSpeed, double extension, double pivotAngle) {
+    public void setAngle(double desiredAngle, double extension, double pivotAngle) {
         m_desiredAngle = desiredAngle;
-        m_desiredSpeed = desiredSpeed;
 
         // TODO Reverse motors if necessary
-        m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredSpeed, Math.toRadians(m_desiredAngle)));
+        m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));
 
@@ -198,10 +192,6 @@ public class BottomPivotModule implements Sendable {
         return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
     }
 
-    private double radiansPerSecondToSensorVelocity(double radiansPerSecond) {
-        return radiansPerSecond / ((2 * Math.PI * 2048) / 10.0);
-    }
-
     public void setVoltage() {
         m_leftMotor.setVoltage(m_leftVoltage);
         m_rightMotor.setVoltage(m_rightVoltage);
@@ -210,10 +200,6 @@ public class BottomPivotModule implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Bottom Pivot");
-
-        builder.addDoubleProperty("Desired Speed", () -> {
-            return m_desiredSpeed;
-        }, null);
 
         builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
             return m_desiredAngle;
@@ -236,6 +222,16 @@ public class BottomPivotModule implements Sendable {
         }, null);
         builder.addDoubleProperty("Right Voltage", () -> {
             return m_rightVoltage;
+        }, null);
+
+        builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
+            return Math.toDegrees(m_systemLoop.getXHat(2));
+        }, null);
+        builder.addDoubleProperty("Estimated Left Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(0);
+        }, null);
+        builder.addDoubleProperty("Estimated Right Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(1);
         }, null);
     }
 }

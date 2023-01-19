@@ -1,7 +1,9 @@
 package com.team2383.diffy.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.VictorSPXSimCollection;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.FeederConstants;
 
 import edu.wpi.first.math.Matrix;
@@ -13,13 +15,20 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FeederSubsystem extends SubsystemBase {
     //TODO: Comment
-    private final CANSparkMax m_topMotor;
-    private final CANSparkMax m_bottomMotor;
-    private final CANSparkMax m_clawMotor;
+    private final VictorSPX m_topMotor;
+    private final VictorSPX m_bottomMotor;
+    private final VictorSPX m_clawMotor; 
 
+    // Sim Support
+    private final VictorSPXSimCollection m_topMotorSim;
+    private final VictorSPXSimCollection m_bottomMotorSim;
+    private final VictorSPXSimCollection m_clawMotorSim;
+
+    // SS Controller
     private final LinearSystem<N3, N3, N3> m_feederPlant;
     private final LinearQuadraticRegulator<N3, N3, N3> m_controller;
     private final KalmanFilter<N3, N3, N3> m_observer;
@@ -27,10 +36,15 @@ public class FeederSubsystem extends SubsystemBase {
 
 
     public FeederSubsystem() {
-        m_topMotor = new CANSparkMax(FeederConstants.kTopMotorID, MotorType.kBrushless);
-        m_bottomMotor = new CANSparkMax(FeederConstants.kBottomMotorID, MotorType.kBrushless);
-        m_clawMotor = new CANSparkMax(FeederConstants.kClawMotorID, MotorType.kBrushless);
+        // Declare motor instances
+        m_topMotor = new VictorSPX(Constants.FeederConstants.kTopMotorID);
+        m_bottomMotor = new VictorSPX(Constants.FeederConstants.kBottomMotorID);
+        m_clawMotor = new VictorSPX(Constants.FeederConstants.kClawMotorID);
 
+        m_topMotorSim = m_topMotor.getSimCollection();
+        m_bottomMotorSim = m_bottomMotor.getSimCollection();
+        m_clawMotorSim = m_clawMotor.getSimCollection();
+       
         m_feederPlant = new LinearSystem<>(
             // A Matrix
             Matrix.mat(Nat.N3(), Nat.N3()).fill(
@@ -66,14 +80,26 @@ public class FeederSubsystem extends SubsystemBase {
         m_systemLoop = new LinearSystemLoop<>(m_feederPlant, m_controller, 
             m_observer, 12.0, 0.02);
     }
+
     public void periodic() {
      
     }
 
-    public void setPower(double top, double bottom) {
-        m_topMotor.set(top);
-        m_bottomMotor.set(bottom);
+    public void simulate() {
+        // Set simulated VictorSPX voltage
+        m_topMotorSim.setBusVoltage((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+        m_bottomMotorSim.setBusVoltage((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+
+        SmartDashboard.putNumber("Simulated Top Motor Output Velocity",
+                m_topMotor.getSelectedSensorVelocity());
+
+        SmartDashboard.putNumber("Simulated Bottom Motor Output Velocity",
+                m_bottomMotor.getSelectedSensorVelocity());
     }
 
- 
+    public void setPower(double top, double bottom) {
+        // Set discrete motor power
+        m_topMotor.set(ControlMode.PercentOutput, top);
+        m_bottomMotor.set(ControlMode.PercentOutput, bottom);
+    }
 }

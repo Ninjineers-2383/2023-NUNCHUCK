@@ -131,7 +131,7 @@ public final class Constants {
 
     public static final class BottomPivotConstants {
         public static final double kS = 0.01;
-        public static final double kV = 0.01;
+        public static final double kV = 0.1;
         public static final double kA = 0.001;
         
         public static final double pivotLength = 0.5;
@@ -147,7 +147,7 @@ public final class Constants {
         public static final int kEncoderPortB = 11;
         public static final int kEncoderPortAbs = 12;
 
-        public static final double kgb = 1 / 6.0;
+        public static final double kgb = 1 / 100.0;
     }
 
     public static final class TopPivotConstants {
