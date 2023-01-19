@@ -14,6 +14,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
@@ -233,12 +234,25 @@ public class DiffSwerveModule implements Sendable {
         return new SwerveModuleState(m_driveSpeed, Rotation2d.fromDegrees(m_moduleAngle));
     }
 
-    public void simulate() {
-        m_topMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+                getDriveDistanceMeters(
+                        m_topMotor.getSelectedSensorPosition(),
+                        m_bottomMotor.getSelectedSensorPosition()),
+                Rotation2d.fromDegrees(m_moduleAngle));
+    }
 
+    public void simulate() {
+
+        double topMotorVel = (m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0;
+        m_topMotorSim.setIntegratedSensorVelocity(
+                (int) topMotorVel);
+        m_topMotorSim.addIntegratedSensorPosition((int) (topMotorVel * 10 * 0.02));
+
+        double bottomMotorVel = (m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0;
         m_bottomMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+                (int) bottomMotorVel);
+        m_bottomMotorSim.addIntegratedSensorPosition((int) (bottomMotorVel * 10 * 0.02));
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
                 m_topMotor.getSelectedSensorVelocity());
@@ -266,6 +280,13 @@ public class DiffSwerveModule implements Sendable {
                                                                                        */;
 
         return speed;
+    }
+
+    public double getDriveDistanceMeters(double topMotorTicks, double bottomMotorTicks) {
+        return ((topMotorTicks - bottomMotorTicks) / 2) *
+                (1 / 2048.0) *
+                Constants.GlobalModuleConstants.kDriveGearRatio *
+                (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI);
     }
 
     /**

@@ -15,6 +15,9 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
       }
     },
     "RoboRIO": {
@@ -52,6 +55,7 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
@@ -104,6 +108,20 @@
         "open": true
       },
       "open": true
+    },
+    "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
+      "Preferences": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "PPSwerveControllerCommand_field": {
+          "open": true
+        },
+        "open": true
+      }
     }
   },
   "Plot": {
@@ -118,7 +136,7 @@
               "min": -180.0
             }
           ],
-          "height": 273,
+          "height": 270,
           "legendLocation": 6,
           "name": "Angle",
           "series": [
@@ -169,7 +187,7 @@
               "min": -4.3
             }
           ],
-          "height": 273,
+          "height": 270,
           "name": "Speed",
           "series": [
             {

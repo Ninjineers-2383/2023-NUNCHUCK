@@ -12,8 +12,12 @@ import java.util.function.IntSupplier;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.subsystems.DrivetrainSubsystem;
@@ -44,7 +48,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
 
-    private final JoystickDriveCommand m_dDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
     // This is just an example event map. It would be better to have a constant,
@@ -56,6 +60,17 @@ public class RobotContainer {
             put("intakeDown", null);
         }
     };
+
+    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
+            m_drivetrainSubsystem::getPose,
+            m_drivetrainSubsystem::forceOdometry,
+            m_drivetrainSubsystem.m_kinematics,
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(0.5, 0, 0),
+            m_drivetrainSubsystem::setModuleStates,
+            eventMap,
+            true,
+            m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -69,13 +84,14 @@ public class RobotContainer {
         DataLogManager.logNetworkTables(true);
         DriverStation.startDataLog(DataLogManager.getLog(), true);
 
+        LiveWindow.enableAllTelemetry();
     }
 
     private void configureButtonBindings() {
     }
 
     private void configureDefaultCommands() {
-        m_drivetrainSubsystem.setDefaultCommand(m_dDriveCommand);
+        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
     }
 
     /**
@@ -84,6 +100,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new FullAutoCommand(m_drivetrainSubsystem, "Forward", eventMap);
+        return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
     }
 }
