@@ -175,7 +175,7 @@ public final class Constants {
         public static final double TelescopeVelocity = .1;
     }
 
-    public static final class FeederConstants {
+    public static final class IntakeConstants {
         // TODO: Tune SS control values
 
         public static final double kV = 0.01;
