@@ -140,27 +140,27 @@ public final class Constants {
 
         public static final double kMaxCurrent = 40.0;
 
-        public static final int kBottomMotorLeftId = 1;
-        public static final int kBottomMotorRightId = 1;
+        public static final int kBottomMotorLeftId = 29;
+        public static final int kBottomMotorRightId = 30;
 
         public static final int kEncoderPortA = 10;
         public static final int kEncoderPortB = 11;
         public static final int kEncoderPortAbs = 12;
 
-        public static final int kgb = 1 / 28;
+        public static final double kgb = 1 / 6.0;
     }
 
     public static final class TopPivotConstants {
         // FF Values
         // TODO: Tune these values
         public static final double kS = 0.01;
-        public static final double kV = 0.01;
+        public static final double kV = 0.01465;
         public static final double kA = 0.001;
         public static final double kG = 0.01;
 
         public static final double kMaxCurrent = 40.0;
 
-        public static final int kMotorID = 1;
+        public static final int kMotorID = 31;
 
         public static final int kEncoderPortA = 13;
         public static final int kEncoderPortB = 14;

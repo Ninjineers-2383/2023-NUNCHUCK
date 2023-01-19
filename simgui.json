@@ -47,6 +47,8 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX [10]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [11]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [1]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [20]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [21]": "Motor Controller",
@@ -54,6 +56,9 @@
       "/LiveWindow/Ungrouped/Talon FX [23]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [24]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [25]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [29]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [30]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [31]": "Motor Controller",
       "/LiveWindow/Ungrouped/frontLeft/Drive PID": "PIDController",
       "/LiveWindow/Ungrouped/frontRight/Drive PID": "PIDController",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
@@ -74,6 +79,9 @@
   "NetworkTables": {
     "LiveWindow": {
       "PinkArmSubsystem": {
+        "Bottom Pivot": {
+          "open": true
+        },
         "open": true
       },
       "Ungrouped": {
@@ -110,7 +118,8 @@
       },
       "frontLeft": {
         "open": true
-      }
+      },
+      "open": true
     }
   },
   "Plot": {
@@ -251,7 +260,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 636,
+          "height": 853,
           "series": [
             {
               "color": [

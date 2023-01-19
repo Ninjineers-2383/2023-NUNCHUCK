@@ -1,5 +1,6 @@
 package com.team2383.diffy.subsystems;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -56,6 +57,8 @@ public class BottomPivotModule implements Sendable {
     private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedAngle;
 
+    private int reset_counter = 0;
+
     public BottomPivotModule(DataLog log) {
         m_leftMotor = new WPI_TalonFX(BottomPivotConstants.kBottomMotorLeftId);
         m_leftMotorSim = m_leftMotor.getSimCollection();
@@ -65,6 +68,27 @@ public class BottomPivotModule implements Sendable {
 
         m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
                 BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
+
+        m_log = log;
+
+        SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
+                true,
+                BottomPivotConstants.kMaxCurrent,
+                BottomPivotConstants.kMaxCurrent, 10);
+
+        m_leftMotor.configSupplyCurrentLimit(supply);
+        m_rightMotor.configSupplyCurrentLimit(supply);
+
+        m_leftMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
+        m_rightMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
+
+        m_leftMotorVel = new DoubleLogEntry(m_log, "/topMotorVel");
+        m_rightMotorVel = new DoubleLogEntry(m_log, "/bottomMotorVel");
+
+        m_moduleAngleLog = new DoubleLogEntry(m_log, "/moduleAngle");
+
+        m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
+        m_expectedAngle = new DoubleLogEntry(m_log, "/expectedAngle");
 
         LinearSystem<N3, N2, N3> m_bottomPivotPlant = new LinearSystem<>(
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
@@ -87,41 +111,20 @@ public class BottomPivotModule implements Sendable {
                         0, 0,
                         0, 0));
 
-        m_log = log;
-
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_bottomPivotPlant,
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_bottomPivotPlant,
-                VecBuilder.fill(1, 1, 1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
+                VecBuilder.fill(10, 10, 10), VecBuilder.fill(1, 1, 1), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_bottomPivotPlant, m_controller,
                 m_observer, 12.0, 0.02);
-
-        SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
-                true,
-                BottomPivotConstants.kMaxCurrent,
-                BottomPivotConstants.kMaxCurrent, 10);
-
-        m_leftMotor.configSupplyCurrentLimit(supply);
-        m_rightMotor.configSupplyCurrentLimit(supply);
-
-        m_leftMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
-        m_rightMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
-
-        m_leftMotorVel = new DoubleLogEntry(m_log, "/topMotorVel");
-        m_rightMotorVel = new DoubleLogEntry(m_log, "/bottomMotorVel");
-
-        m_moduleAngleLog = new DoubleLogEntry(m_log, "/moduleAngle");
-
-        m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
-        m_expectedAngle = new DoubleLogEntry(m_log, "/expectedAngle");
-
     }
 
     public void periodic() {
         m_leftSpeed = sensorVelocityToRadiansPerSecond(m_leftMotor.getSelectedSensorVelocity());
         m_rightSpeed = sensorVelocityToRadiansPerSecond(m_rightMotor.getSelectedSensorVelocity());
+
         m_angle = getAngle();
 
         m_leftMotorCurrent.append(m_leftMotor.getStatorCurrent());
@@ -134,14 +137,20 @@ public class BottomPivotModule implements Sendable {
 
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);
+
+        if (reset_counter < 200) {
+            if (reset_counter == 199) {
+                m_bottomAngleEncoder.reset();
+                m_systemLoop.setXHat(VecBuilder.fill(0, 0, Math.toRadians(getAngle())));
+            }
+            reset_counter++;
+        }
     }
 
     public void simulate() {
-        m_leftMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
-        m_rightMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(1)));
+        m_leftMotorSim.setIntegratedSensorVelocity((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+        m_rightMotorSim.setIntegratedSensorVelocity((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
 
-        System.out.println(m_leftMotor.getSelectedSensorVelocity());
-        
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.getSelectedSensorVelocity());
 
@@ -149,6 +158,7 @@ public class BottomPivotModule implements Sendable {
                 m_rightMotor.getSelectedSensorVelocity());
 
         m_bottomAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
+
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
@@ -165,14 +175,14 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage = m_systemLoop.getU(0);
 
-        m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
+        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
         
         // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
         //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
 
         m_rightVoltage = m_systemLoop.getU(1);
 
-        m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
+        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
 
         // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
         //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));

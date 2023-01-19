@@ -38,11 +38,11 @@ public class PinkArmTeleCommand extends CommandBase {
     @Override
     public void execute() {
         if (m_bottomAngleUp.getAsBoolean()) {
-            m_bottomAnglePosition += 0.02;
-            m_bottomAngleSpeed = 10;
+            m_bottomAnglePosition += 1;
+            m_bottomAngleSpeed += 1;
         } else if (m_bottomAngleDown.getAsBoolean()) {
-            m_bottomAnglePosition -= 0.02;
-            m_bottomAngleSpeed = -10;
+            m_bottomAnglePosition -= 1;
+            m_bottomAngleSpeed -= 1;
         } else {
             m_bottomAngleSpeed = 0;
         }
