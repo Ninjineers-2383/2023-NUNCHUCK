@@ -17,7 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
  */
 public final class Constants {
     public static final String kRIOBus = "rio";
-    public static final String kCANivoreBus = "rio"; // TODO: Change to canivore when available
+    public static final String kCANivoreBus = "Drivetrain CANivore"; // TODO: Change to canivore when available
 
     public static final class DriveConstants {
         public static final double kMaxVelocity = 4; // meters per second
