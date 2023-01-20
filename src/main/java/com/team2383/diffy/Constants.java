@@ -15,9 +15,16 @@ import edu.wpi.first.math.geometry.Translation2d;
  * {@link com.team2383.diffy.commands.JoystickDriveCommand#getCenterOfRotation
  * JoystickDriveCommand}
  */
+
 public final class Constants {
+
+    /** 
+     * Note: CANivore string name is created
+     * in phoenix tuner.
+     */
+
     public static final String kRIOBus = "rio";
-    public static final String kCANivoreBus = "Drivetrain CANivore"; // TODO: Change to canivore when available
+    public static final String kCANivoreBus = "Drivetrain CANivore"; 
 
     public static final class DriveConstants {
         public static final double kMaxVelocity = 4; // meters per second
