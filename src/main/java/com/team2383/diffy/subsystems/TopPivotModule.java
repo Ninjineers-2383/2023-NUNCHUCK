@@ -54,17 +54,17 @@ public class TopPivotModule implements Sendable{
 
     public TopPivotModule(DataLog log) {
         m_pivotMotor = new WPI_TalonFX(TopPivotConstants.kMotorID);
-        m_pivotMotorSim = new TalonFXSimCollection(m_pivotMotor);
+        m_pivotMotorSim = m_pivotMotor.getSimCollection();
 
         m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA, 
             TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
 
         m_topPivotPlant = new LinearSystem<N2, N1, N2>(
             Matrix.mat(Nat.N2(), Nat.N2()).fill(
-                -TopPivotConstants.kV / TelescopeConstants.kA, 0,
+                -TopPivotConstants.kV / TopPivotConstants.kA, 0,
                 TopPivotConstants.kgt, 0), 
             Matrix.mat(Nat.N2(), Nat.N1()).fill(
-                1 / TelescopeConstants.kA,
+                1 / TopPivotConstants.kA,
                 0), 
             Matrix.mat(Nat.N2(), Nat.N2()).fill(
                 1, 0,
@@ -74,7 +74,7 @@ public class TopPivotModule implements Sendable{
                 0));
 
         m_controller = new LinearQuadraticRegulator<>(m_topPivotPlant, 
-            VecBuilder.fill(1, 0.1), VecBuilder.fill(12), 0.02);
+            VecBuilder.fill(Double.POSITIVE_INFINITY, 0.1), VecBuilder.fill(12), 0.02);
     
         m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_topPivotPlant, 
             VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
@@ -95,6 +95,9 @@ public class TopPivotModule implements Sendable{
     }
 
     public void periodic() {
+        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.getSelectedSensorVelocity());
+        m_angle = getAngle();
+
         m_motorCurrent.append(m_pivotMotor.getStatorCurrent());
 
         m_motorVel.append(m_speed);
@@ -106,7 +109,7 @@ public class TopPivotModule implements Sendable{
     }
 
     public void simulate() {
-        m_pivotMotorSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
+        m_pivotMotorSim.setIntegratedSensorVelocity((int) (m_systemLoop.getXHat(0) / (2 * Math.PI) * 2048 / 10.0));
 
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
         m_pivotMotor.getSelectedSensorVelocity());
@@ -116,9 +119,8 @@ public class TopPivotModule implements Sendable{
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double desiredAngle, double desiredSpeed) {
-        m_desiredAngle = desiredAngle;
-        m_desiredSpeed = desiredSpeed;
+    public void setAngle(double desiredSpeed) {
+        m_desiredAngle += desiredSpeed;
 
         m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.getSelectedSensorVelocity());
         m_angle = getAngle();
@@ -127,6 +129,8 @@ public class TopPivotModule implements Sendable{
 
         m_systemLoop.correct(VecBuilder.fill(m_speed, Math.toRadians(m_angle)));
 
+        m_systemLoop.predict(0.02);
+
         m_voltage = m_systemLoop.getU(0);
 
         setVoltage();
@@ -134,10 +138,6 @@ public class TopPivotModule implements Sendable{
 
     private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
         return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
-    }
-
-    private double radiansPerSecondToSensorVelocity(double radiansPerSecond) {
-        return radiansPerSecond / ((2 * Math.PI * 2048) / 10.0);
     }
 
     public double getAngle() {
@@ -162,6 +162,18 @@ public class TopPivotModule implements Sendable{
 
         builder.addDoubleProperty("Speed", () -> {
             return m_speed;
+        }, null);
+
+        builder.addDoubleProperty("Angle (Degrees)", () -> {
+            return m_angle;
+        }, null);
+
+        builder.addDoubleProperty("Estimated Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(0);
+        }, null);
+
+        builder.addDoubleProperty("Estimated Angle (x hat)", () -> {
+            return Math.toDegrees(m_systemLoop.getXHat(1));
         }, null);
 
         builder.addDoubleProperty("Voltage", () -> {

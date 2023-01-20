@@ -119,14 +119,15 @@ public final class Constants {
         // TODO: Tune these values
         public static final double kS = 0.01;
         public static final double kV = 0.01;
-        public static final double kA = 0.001;
+        public static final double kA = 0.009;
         public static final double kG = 0;
 
         public static final double kMaxCurrent = 40.0;
 
-        public static final int kExtensionID = 1;
+        public static final int kExtensionLeftID = 1;
+        public static final int kExtensionRightID = 2;
 
-        public static final int kge = 1;
+        public static final double kge = 1.0;
     }
 
     public static final class BottomPivotConstants {

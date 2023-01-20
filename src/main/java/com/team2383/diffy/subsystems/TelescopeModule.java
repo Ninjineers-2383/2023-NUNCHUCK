@@ -21,12 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeModule implements Sendable {
     //TODO: Comment
-    private final WPI_TalonFX m_telescopeMotorLeft;
-    private final WPI_TalonFX m_telescopeMotorRight;
+    private final WPI_TalonFX m_telescopeMotor;
 
-    private final TalonFXSimCollection m_telescopeMotorLeftSim;
-    private final TalonFXSimCollection m_telescopeMotorRightSim;
-
+    private final TalonFXSimCollection m_telescopeMotorSim;
 
     private final LinearSystem<N2, N1, N2> m_telescopePlant;
     private final LinearQuadraticRegulator<N2, N1, N2> m_controller;
@@ -39,6 +36,7 @@ public class TelescopeModule implements Sendable {
     private double m_desiredSpeed;
 
     private double m_speed;
+    private double m_position;
     private double m_extension;
 
     private final DataLog m_log;
@@ -53,11 +51,9 @@ public class TelescopeModule implements Sendable {
     private final DoubleLogEntry m_expectedExtension;
 
     public TelescopeModule(DataLog log) {
-        m_telescopeMotorLeft = new WPI_TalonFX(TelescopeConstants.kExtensionID);
-        m_telescopeMotorRight = new WPI_TalonFX(TelescopeConstants.kExtensionID);
+        m_telescopeMotor = new WPI_TalonFX(TelescopeConstants.kExtensionLeftID);
 
-        m_telescopeMotorLeftSim = new TalonFXSimCollection(m_telescopeMotorLeft);
-        m_telescopeMotorRightSim = new TalonFXSimCollection(m_telescopeMotorRight);
+        m_telescopeMotorSim = m_telescopeMotor.getSimCollection();
 
         m_telescopePlant = new LinearSystem<N2, N1, N2>(
             Matrix.mat(Nat.N2(), Nat.N2()).fill(
@@ -75,10 +71,10 @@ public class TelescopeModule implements Sendable {
         );
         
         m_controller = new LinearQuadraticRegulator<>(m_telescopePlant, 
-            VecBuilder.fill(1, 1), VecBuilder.fill(12), 0.02);
+            VecBuilder.fill(Double.POSITIVE_INFINITY, 1), VecBuilder.fill(12), 0.02);
 
         m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_telescopePlant, 
-            VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
+            VecBuilder.fill(0.01, 0.01), VecBuilder.fill(0.1, 0.1), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_telescopePlant, m_controller, 
             m_observer, 12.0, 0.02);
@@ -88,8 +84,7 @@ public class TelescopeModule implements Sendable {
             TelescopeConstants.kMaxCurrent,
             TelescopeConstants.kMaxCurrent, 10);
     
-        m_telescopeMotorLeft.configSupplyCurrentLimit(supply);
-        m_telescopeMotorRight.configSupplyCurrentLimit(supply);
+        m_telescopeMotor.configSupplyCurrentLimit(supply);
 
         m_log = log;
 
@@ -101,10 +96,16 @@ public class TelescopeModule implements Sendable {
 
         m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
         m_expectedExtension = new DoubleLogEntry(m_log, "/expectedExtension");
+
+        m_position = 0;
     }
 
     public void periodic() {
-        m_motorCurrent.append(m_telescopeMotorLeft.getStatorCurrent());
+        m_speed = sensorVelocityToRadiansPerSecond(m_telescopeMotor.getSelectedSensorVelocity());
+
+        m_extension = getExtension();
+
+        m_motorCurrent.append(m_telescopeMotor.getStatorCurrent());
 
         m_motorVel.append(m_speed);
 
@@ -115,41 +116,45 @@ public class TelescopeModule implements Sendable {
     }
 
     public void simulate() {
-        m_telescopeMotorLeftSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
-        m_telescopeMotorRightSim.setIntegratedSensorVelocity((int) radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0)));
+        double velocity = (m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0;
+        m_position += velocity * 0.02 * 10.0;
+
+        m_telescopeMotorSim.setIntegratedSensorVelocity((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+        m_telescopeMotorSim.setIntegratedSensorRawPosition((int) m_position);
 
         SmartDashboard.putNumber("Simulated Telescope Motor Velocity", 
-            m_telescopeMotorLeft.getSelectedSensorVelocity() );
+            m_telescopeMotor.getSelectedSensorVelocity());
 
-        SmartDashboard.putNumber("Simulated Extension", 
-            getExtension());
+        SmartDashboard.putNumber("Simulated Telescope Motor Position", 
+            m_telescopeMotor.getSelectedSensorPosition());
+
+        SmartDashboard.putNumber("Simulated Extension", getExtension());
     }
 
-    public void setExtension(double desiredExtension, double desiredSpeed) {
-        m_desiredExtension = desiredExtension;
-        m_desiredSpeed = desiredSpeed;
+    public void setExtension(double desiredSpeed) {
+        m_desiredExtension += desiredSpeed;
 
-        m_speed = sensorVelocityToRadiansPerSecond(m_telescopeMotorLeft.getSelectedSensorVelocity());
+        m_speed = sensorVelocityToRadiansPerSecond(m_telescopeMotor.getSelectedSensorVelocity());
+
         m_extension = getExtension();
 
-        m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, m_desiredExtension));
+        m_systemLoop.setNextR(VecBuilder.fill(0, m_desiredExtension));
 
         m_systemLoop.correct(VecBuilder.fill(m_speed, m_extension));
+
+        m_systemLoop.predict(0.020);
 
         m_voltage = m_systemLoop.getU(0);
 
         setVoltage();
-
     }
 
     public double getExtension() {
-        return sensorPositionToRadians((
-            m_telescopeMotorLeft.getSelectedSensorPosition() + m_telescopeMotorRight.getSelectedSensorVelocity()) / 2) 
-            * TelescopeConstants.kge;
+        return sensorPositionToRadians(m_telescopeMotor.getSelectedSensorPosition());
     }
+
     private void setVoltage() {
-        m_telescopeMotorLeft.setVoltage(m_voltage);
-        m_telescopeMotorRight.setVoltage(m_voltage);
+        m_telescopeMotor.setVoltage(m_voltage);
     }
 
     private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
@@ -158,10 +163,6 @@ public class TelescopeModule implements Sendable {
 
     private double sensorPositionToRadians(double sensorPosition) {
         return (sensorPosition * 2 * Math.PI) / 2048.0;
-    }
-
-    private double radiansPerSecondToSensorVelocity(double radiansPerSecond) {
-        return radiansPerSecond / ((2 * Math.PI * 2048) / 10.0);
     }
 
     @Override
@@ -180,8 +181,20 @@ public class TelescopeModule implements Sendable {
             return m_speed;
         }, null);
 
+        builder.addDoubleProperty("Extension", () -> {
+            return m_extension;
+        }, null);
+
         builder.addDoubleProperty("Voltage", () -> {
             return m_voltage;
+        }, null);
+
+        builder.addDoubleProperty("Estimated Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(0);
+        }, null);
+
+        builder.addDoubleProperty("Estimated Extension (x hat)", () -> {
+            return m_systemLoop.getXHat(1);
         }, null);
     }
     

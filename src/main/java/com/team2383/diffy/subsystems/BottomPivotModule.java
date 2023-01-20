@@ -157,10 +157,9 @@ public class BottomPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double desiredAngle, double extension, double pivotAngle) {
-        m_desiredAngle = desiredAngle;
+    public void setAngle(double angularVelocity, double extension) {
+        m_desiredAngle += angularVelocity;
 
-        // TODO Reverse motors if necessary
         m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));
@@ -169,17 +168,17 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage = m_systemLoop.getU(0);
 
-        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
+        m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
         
         // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         m_rightVoltage = m_systemLoop.getU(1);
 
-        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
+        m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
 
         // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(pivotAngle));
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         setVoltage();
     }
@@ -227,9 +226,11 @@ public class BottomPivotModule implements Sendable {
         builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
             return Math.toDegrees(m_systemLoop.getXHat(2));
         }, null);
+
         builder.addDoubleProperty("Estimated Left Velocity (x hat)", () -> {
             return m_systemLoop.getXHat(0);
         }, null);
+
         builder.addDoubleProperty("Estimated Right Velocity (x hat)", () -> {
             return m_systemLoop.getXHat(1);
         }, null);

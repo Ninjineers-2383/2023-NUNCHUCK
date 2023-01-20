@@ -57,6 +57,7 @@
       "/LiveWindow/Ungrouped/Talon FX [24]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [25]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [29]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [2]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [30]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [31]": "Motor Controller",
       "/LiveWindow/Ungrouped/frontLeft/Drive PID": "PIDController",
@@ -79,7 +80,7 @@
   "NetworkTables": {
     "LiveWindow": {
       "PinkArmSubsystem": {
-        "Bottom Pivot": {
+        "Top Pivot": {
           "open": true
         },
         "open": true
@@ -111,8 +112,7 @@
           },
           "Top Motor Simulator": {
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true
       },
@@ -311,6 +311,124 @@
                 1.0
               ],
               "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Desired Speed"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <3>": {
+      "plots": [
+        {
+          "height": 289,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Desired Extension (Pick a Unit)"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Estimated Extension (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Extension"
+            }
+          ]
+        },
+        {
+          "height": 289,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Estimated Velocity (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Speed"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <4>": {
+      "plots": [
+        {
+          "height": 286,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Estimated Angle (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Angle (Degrees)"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Desired Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "height": 286,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Estimated Velocity (x hat)"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Speed"
             }
           ]
         }

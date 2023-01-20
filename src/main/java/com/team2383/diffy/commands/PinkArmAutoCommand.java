@@ -31,7 +31,7 @@ public class PinkArmAutoCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_pinkArm.setDesiredState(m_bottomAngle.getAsDouble(), 
-            m_extension.getAsDouble(), m_extensionSpeed.getAsDouble(), m_topAngle.getAsDouble(), m_topSpeed.getAsDouble());
+        // m_pinkArm.setDesiredState(m_bottomAngle.getAsDouble(), 
+        //     m_extension.getAsDouble(), m_extensionSpeed.getAsDouble(), m_topAngle.getAsDouble(), m_topSpeed.getAsDouble());
     }
 }

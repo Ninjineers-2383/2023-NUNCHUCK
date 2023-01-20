@@ -16,10 +16,9 @@ public class PinkArmTeleCommand extends CommandBase {
     private BooleanSupplier m_topAngleUp;
     private BooleanSupplier m_topAngleDown;
 
-    double m_bottomAnglePosition = 0;
     double m_bottomAngleSpeed = 0;
-    double m_topAnglePosition = 0;
-    double m_extensionPosition = 0;
+    double m_topAngleSpeed = 0;
+    double m_extensionSpeed = 0;
 
     public PinkArmTeleCommand(PinkArmSubsystem pinkArm,
             BooleanSupplier bottomAngleUp, BooleanSupplier bottomAngleDown, BooleanSupplier extensionUp, 
@@ -38,23 +37,28 @@ public class PinkArmTeleCommand extends CommandBase {
     @Override
     public void execute() {
         if (m_bottomAngleUp.getAsBoolean()) {
-            m_bottomAnglePosition += 2;
+            m_bottomAngleSpeed = 1;
         } else if (m_bottomAngleDown.getAsBoolean()) {
-            m_bottomAnglePosition -= 2;
+            m_bottomAngleSpeed = -1;
+        } else {
+            m_bottomAngleSpeed = 0;
         }
 
         if (m_extensionUp.getAsBoolean()) {
-            m_extensionPosition += 10;
+            m_extensionSpeed = 0.1;
         } else if (m_extensionDown.getAsBoolean()) {
-            m_extensionPosition -= 10;
-        }
-        if (m_topAngleUp.getAsBoolean()) {
-            m_topAnglePosition += 10;
-        } else if (m_topAngleDown.getAsBoolean()) {
-            m_topAnglePosition -= 10;
+            m_extensionSpeed = -0.1;
+        } else {
+            m_extensionSpeed = 0;
         }
 
-        m_pinkArm.setDesiredState(m_bottomAnglePosition,
-                m_extensionPosition, 10.0, m_topAnglePosition, 10.0);
+        if (m_topAngleUp.getAsBoolean()) {
+            m_topAngleSpeed = 1;
+        } else if (m_topAngleDown.getAsBoolean()) {
+            m_topAngleSpeed = -1;
+        }
+
+        m_pinkArm.setDesiredState(m_bottomAngleSpeed,
+                m_extensionSpeed, m_topAngleSpeed);
     }
 }
