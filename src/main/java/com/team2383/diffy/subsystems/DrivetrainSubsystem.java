@@ -1,5 +1,7 @@
 package com.team2383.diffy.subsystems;
 
+import org.photonvision.EstimatedRobotPose;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
+import com.team2383.diffy.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;
@@ -34,6 +37,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule[] m_modules;
     private final SwerveModuleState[] m_lastStates;
     private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
+
+    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
     private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -100,6 +105,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(getHeading(), getModulePositions());
 
+        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+
+        if (cam_pose != null) {
+            m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
+        }
+
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
         if (RobotController.getUserButton()) {
@@ -134,6 +145,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
         // all other angles
         m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+
+        m_camera.simulate(getPose());
     }
 
     /**

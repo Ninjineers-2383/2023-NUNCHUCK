@@ -56,12 +56,18 @@
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
+      "/SmartDashboard/cam1 Sim Field": "Field2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/cam1 Sim Field": {
         "window": {
           "visible": true
         }
@@ -118,6 +124,12 @@
       },
       "SmartDashboard": {
         "PPSwerveControllerCommand_field": {
+          "open": true
+        },
+        "open": true
+      },
+      "photonvision": {
+        "cam1": {
           "open": true
         },
         "open": true

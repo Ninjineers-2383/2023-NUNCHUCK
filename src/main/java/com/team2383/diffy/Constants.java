@@ -4,8 +4,12 @@
 
 package com.team2383.diffy;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * Note: Translations calculated with the formula graphed here
@@ -18,13 +22,40 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public final class Constants {
 
-    /** 
+    /**
      * Note: CANivore string name is created
      * in phoenix tuner.
      */
 
     public static final String kRIOBus = "rio";
-    public static final String kCANivoreBus = "Drivetrain CANivore"; 
+    public static final String kCANivoreBus = "Drivetrain CANivore";
+
+    public static final class VisionConstants {
+        public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
+                new PhotonCameraData("cam1",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+                new PhotonCameraData("cam2",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+                new PhotonCameraData("cam3",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+        };
+    }
+
+    public static final class PhotonCameraData {
+        public final String name;
+        public final Transform3d transform;
+
+        public PhotonCameraData(String name, Transform3d transform) {
+            this.name = name;
+            this.transform = transform;
+        }
+    }
 
     public static final class DriveConstants {
         public static final double kMaxVelocity = 4; // meters per second
