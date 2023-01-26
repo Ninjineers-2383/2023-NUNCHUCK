@@ -14,6 +14,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
@@ -164,7 +165,6 @@ public class DiffSwerveModule implements Sendable {
 
         // Initialize state space controller
         LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
-                // Matrix A
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
                         // ---
                         -moduleConstants.kV / moduleConstants.kA, 0, 0,
@@ -174,7 +174,6 @@ public class DiffSwerveModule implements Sendable {
                         Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
                         Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
                         0),
-                // Matrix B
                 Matrix.mat(Nat.N3(), Nat.N2()).fill(
                         // ---
                         1 / moduleConstants.kA, 0,
@@ -182,22 +181,18 @@ public class DiffSwerveModule implements Sendable {
                         0, 1 / moduleConstants.kA,
                         // ---
                         0, 0),
-                // Matrix C
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
                         1, 0, 0,
                         0, 1, 0,
                         0, 0, 1),
-                // Matrix D
                 Matrix.mat(Nat.N3(), Nat.N2()).fill(
                         0, 0,
                         0, 0,
                         0, 0));
 
-        // LQR regulator
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
                 VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
-        // Kalman filter
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
@@ -239,12 +234,25 @@ public class DiffSwerveModule implements Sendable {
         return new SwerveModuleState(m_driveSpeed, Rotation2d.fromDegrees(m_moduleAngle));
     }
 
-    public void simulate() {
-        m_topMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+                getDriveDistanceMeters(
+                        m_topMotor.getSelectedSensorPosition(),
+                        m_bottomMotor.getSelectedSensorPosition()),
+                Rotation2d.fromDegrees(m_moduleAngle));
+    }
 
+    public void simulate() {
+
+        double topMotorVel = (m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0;
+        m_topMotorSim.setIntegratedSensorVelocity(
+                (int) topMotorVel);
+        m_topMotorSim.addIntegratedSensorPosition((int) (topMotorVel * 10 * 0.02));
+
+        double bottomMotorVel = (m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0;
         m_bottomMotorSim.setIntegratedSensorVelocity(
-                (int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+                (int) bottomMotorVel);
+        m_bottomMotorSim.addIntegratedSensorPosition((int) (bottomMotorVel * 10 * 0.02));
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
                 m_topMotor.getSelectedSensorVelocity());
@@ -253,6 +261,7 @@ public class DiffSwerveModule implements Sendable {
                 m_bottomMotor.getSelectedSensorVelocity());
 
         m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
+
         SmartDashboard.putNumber("Simulated/" + m_name + "/Encoder/Rotation", getModuleAngle());
     }
 
@@ -271,6 +280,13 @@ public class DiffSwerveModule implements Sendable {
                                                                                        */;
 
         return speed;
+    }
+
+    public double getDriveDistanceMeters(double topMotorTicks, double bottomMotorTicks) {
+        return ((topMotorTicks - bottomMotorTicks) / 2) *
+                (1 / 2048.0) *
+                Constants.GlobalModuleConstants.kDriveGearRatio *
+                (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI);
     }
 
     /**
@@ -389,7 +405,7 @@ public class DiffSwerveModule implements Sendable {
             return m_driveSpeed;
         }, null);
 
-        builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
+        builder.addDoubleProperty("Desired Angle (Degrees", () -> {
             return m_desiredAngle;
         }, null);
 

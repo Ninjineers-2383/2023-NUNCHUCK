@@ -2,7 +2,6 @@ package com.team2383.diffy.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.team2383.diffy.Constants.TelescopeConstants;
 import com.team2383.diffy.Constants.TopPivotConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 

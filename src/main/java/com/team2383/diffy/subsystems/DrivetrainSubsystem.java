@@ -1,10 +1,11 @@
 package com.team2383.diffy.subsystems;
 
+import org.photonvision.EstimatedRobotPose;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
+import com.team2383.diffy.helpers.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;
@@ -35,6 +38,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModuleState[] m_lastStates;
     private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
 
+    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
+
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
     private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
@@ -44,13 +49,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.DriveConstants.frontRightConstants.translation,
             Constants.DriveConstants.rearConstants.translation);
 
-    private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
-            getHeading(),
-            new Pose2d(),
-            m_kinematics,
-            VecBuilder.fill(0.01, 0.01, 0.01),
-            VecBuilder.fill(0.01),
-            VecBuilder.fill(0.01, 0.01, 0.01));
+    private final SwerveDrivePoseEstimator m_poseEstimator;
 
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
@@ -67,6 +66,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.kCANivoreBus, log);
 
         m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
+
+        m_poseEstimator = new SwerveDrivePoseEstimator(
+                m_kinematics,
+                getHeading(),
+                getModulePositions(),
+                new Pose2d());
+
         m_lastStates = new SwerveModuleState[m_modules.length];
 
         loadWheelOffsets();
@@ -79,7 +85,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         addChild(Constants.DriveConstants.rearConstants.name, m_rearModule);
 
         if (RobotBase.isSimulation()) {
-            m_poseEstimator.resetPosition(new Pose2d(new Translation2d(0, 0), new Rotation2d()), new Rotation2d());
+            m_poseEstimator.resetPosition(new Rotation2d(), getModulePositions(),
+                    new Pose2d(new Translation2d(0, 0), new Rotation2d()));
         }
 
         resetHeading();
@@ -96,7 +103,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_lastChassisSpeed = m_kinematics.toChassisSpeeds(m_lastStates[0], m_lastStates[1], m_lastStates[2]);
 
-        m_poseEstimator.update(getHeading(), m_lastStates[0], m_lastStates[1], m_lastStates[2]);
+        m_poseEstimator.update(getHeading(), getModulePositions());
+
+        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+
+        if (cam_pose != null) {
+            m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
+        }
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
@@ -132,6 +145,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
         // all other angles
         m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+
+        m_camera.simulate(getPose());
     }
 
     /**
@@ -191,7 +206,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void forceHeading(Rotation2d currentHeading) {
         m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
-        m_poseEstimator.resetPosition(m_poseEstimator.getEstimatedPosition(), currentHeading);
+        m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
     }
 
     /**
@@ -204,8 +219,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void resetHeading() {
         // getYaw is CW positive not CCW positive
         m_gyro.setAngleAdjustment(getCompassOffset());
-        m_poseEstimator.resetPosition(new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()),
-                getHeading());
+        m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
+                new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         resetEncoders();
     }
 
@@ -222,14 +237,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_poseEstimator.getEstimatedPosition();
     }
 
+    private SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] { m_frontLeftModule.getPosition(), m_frontRightModule.getPosition(),
+                m_rearModule.getPosition() };
+    }
+
     public void forceOdometry(Pose2d pose) {
         forceHeading(pose.getRotation());
-        m_poseEstimator.resetPosition(pose, getHeading());
+        m_poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
         resetEncoders();
     }
 
     public void setPosition(Translation2d position) {
-        m_poseEstimator.resetPosition(new Pose2d(position, getHeading()), getHeading());
+        m_poseEstimator.resetPosition(getHeading(), getModulePositions(), new Pose2d(position, getHeading()));
         resetEncoders();
     }
 

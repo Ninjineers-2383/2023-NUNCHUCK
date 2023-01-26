@@ -3,6 +3,7 @@ package com.team2383.diffy.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.VictorSPXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMax;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.FeederConstants;
 
@@ -22,7 +23,6 @@ public class FeederSubsystem extends SubsystemBase {
     private final VictorSPX m_topMotor;
     private final VictorSPX m_bottomMotor;
     private final VictorSPX m_clawMotor; 
-
     // Sim Support
     private final VictorSPXSimCollection m_topMotorSim;
     private final VictorSPXSimCollection m_bottomMotorSim;

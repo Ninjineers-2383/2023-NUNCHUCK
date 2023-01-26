@@ -56,6 +56,8 @@ public class PinkArmTeleCommand extends CommandBase {
             m_topAngleSpeed = 1;
         } else if (m_topAngleDown.getAsBoolean()) {
             m_topAngleSpeed = -1;
+        } else {
+            m_topAngleSpeed = 0;
         }
 
         m_pinkArm.setDesiredState(m_bottomAngleSpeed,
