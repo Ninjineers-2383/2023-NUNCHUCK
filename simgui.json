@@ -1,23 +1,10 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "Talon FX[20]/Integrated Sensor": {
+      "SPARK MAX [29]": {
         "header": {
           "open": true
         }
-      },
-      "Talon FX[21]/Integrated Sensor": {
-        "header": {
-          "open": true
-        }
-      },
-      "navX-Sensor[0]": {
-        "header": {
-          "open": true
-        }
-      },
-      "window": {
-        "visible": false
       }
     },
     "RoboRIO": {
@@ -65,6 +52,7 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/cam1 Sim Field": "Field2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
@@ -101,6 +89,12 @@
       },
       "open": true
     },
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
     "SmartDashboard": {
       "Simulated": {
         "frontLeft": {
@@ -120,6 +114,11 @@
         "open": true
       },
       "open": true
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
     }
   },
   "Plot": {

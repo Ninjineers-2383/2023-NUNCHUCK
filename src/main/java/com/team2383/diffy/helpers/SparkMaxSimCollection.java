@@ -1,6 +1,8 @@
 package com.team2383.diffy.helpers;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
+import com.team2383.diffy.Robot;
 
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDouble;
@@ -8,21 +10,35 @@ import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 
 public class SparkMaxSimCollection {
-    private final SimDevice m_device;
+    private SimDeviceSim m_deviceSim;
+    private SimDevice m_device;
     private SimDouble m_velocity;
     private SimDouble m_position;
     private SimDouble m_voltage;
+    private REVPhysicsSim m_physicsSim;
 
-    public SparkMaxSimCollection(CANSparkMax motor) {
-        String deviceKey = "SPARK MAX [" + motor.getDeviceId() + "]";
+    public SparkMaxSimCollection(CANSparkMax motor) {        
 
-        m_device = SimDevice.create(deviceKey);
+        m_device = SimDevice.create("Spark Max", motor.getDeviceId());
 
-        m_velocity = m_device.createDouble("Velocity", Direction.kOutput, 0.0);
+        System.out.println(m_device);
 
-        m_position = m_device.createDouble("Position", Direction.kOutput, 0.0);
+        if (m_device != null) {
+            System.out.println("Success");
+            m_position = m_device.createDouble("Position", Direction.kOutput, 0.0);
 
-        m_voltage = m_device.createDouble("Voltage", Direction.kInput, 0.0);
+            m_velocity = m_device.createDouble("Velocity", Direction.kOutput, 0.0);
+
+            m_voltage = m_device.createDouble("Voltage", Direction.kInput, 0.0);
+
+            m_physicsSim = new REVPhysicsSim();
+
+            m_physicsSim.addSparkMax(motor, 89, 89);
+
+            m_physicsSim.run();
+            
+        }
+
 
     }
 

@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team2383.diffy.Robot;
 import com.team2383.diffy.Constants.BottomPivotConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
@@ -23,6 +24,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BottomPivotModule implements Sendable {
@@ -33,8 +35,8 @@ public class BottomPivotModule implements Sendable {
     private final CANSparkMax m_rightMotor;
     private final CANSparkMax m_leftMotor;
 
-    // private final SparkMaxSimCollection m_leftMotorSim;
-    // private final SparkMaxSimCollection m_rightMotorSim;
+    private final SparkMaxSimCollection m_leftMotorSim;
+    private final SparkMaxSimCollection m_rightMotorSim;
 
     // private final TalonFXSimCollection m_leftMotorSim;
     // private final TalonFXSimCollection m_rightMotorSim;
@@ -67,11 +69,12 @@ public class BottomPivotModule implements Sendable {
     private int reset_counter = 0;
 
     public BottomPivotModule(DataLog log) {
-        m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
-        // m_leftMotorSim = m_leftMotor.getSimCollection();
+        m_leftMotor = new CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
+ 
+        m_leftMotorSim = new SparkMaxSimCollection(m_leftMotor);
 
-        m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
-        // m_rightMotorSim = m_rightMotor.getSimCollection();
+        m_rightMotor = new CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
+        m_rightMotorSim = new SparkMaxSimCollection(m_rightMotor);
 
         m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
                 BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
@@ -153,8 +156,8 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void simulate() {
-        // m_leftMotorSim.setVelocity((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
-        // m_rightMotorSim.setVelocity((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+        m_leftMotorSim.setVelocity((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
+        m_rightMotorSim.setVelocity((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
 
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.get());
@@ -180,15 +183,15 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
         
-        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+        m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         m_rightVoltage = m_systemLoop.getU(1);
 
         m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
 
-        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+        m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         setVoltage();
     }
