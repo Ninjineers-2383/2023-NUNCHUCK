@@ -30,10 +30,10 @@ public class PhotonCameraWrapper {
         }
 
         for (int i = 0; i < numCameras; i++) {
-            photonCameras[i] = new PhotonCamera(VisionConstants.kPhotonCameras[i].name);
-            photonPoseEstimators[i] = new PhotonPoseEstimator(
-                    atfl, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCameras[i],
-                    VisionConstants.kPhotonCameras[i].transform);
+            // photonCameras[i] = new PhotonCamera(VisionConstants.kPhotonCameras[i].name);
+            // photonPoseEstimators[i] = new PhotonPoseEstimator(
+            //         atfl, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCameras[i],
+            //         VisionConstants.kPhotonCameras[i].transform);
         }
 
         if (Robot.isSimulation()) {
@@ -65,17 +65,17 @@ public class PhotonCameraWrapper {
      */
     public EstimatedRobotPose getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         EstimatedRobotPose latestPose = null;
-        int len = Robot.isReal() ? photonCameras.length : 1;
-        for (int i = 0; i < len; i++) {
-            photonPoseEstimators[i].setReferencePose(prevEstimatedRobotPose);
-            Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimators[i].update();
-            if (estimatedRobotPose.isEmpty()) {
-                continue;
-            }
-            if (latestPose == null || estimatedRobotPose.get().timestampSeconds > latestPose.timestampSeconds) {
-                latestPose = estimatedRobotPose.get();
-            }
-        }
+        // int len = Robot.isReal() ? photonCameras.length : 1;
+        // for (int i = 0; i < len; i++) {
+        //     photonPoseEstimators[i].setReferencePose(prevEstimatedRobotPose);
+        //     Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimators[i].update();
+        //     if (estimatedRobotPose.isEmpty()) {
+        //         continue;
+        //     }
+        //     if (latestPose == null || estimatedRobotPose.get().timestampSeconds > latestPose.timestampSeconds) {
+        //         latestPose = estimatedRobotPose.get();
+        //     }
+        // }
 
         return latestPose;
     }

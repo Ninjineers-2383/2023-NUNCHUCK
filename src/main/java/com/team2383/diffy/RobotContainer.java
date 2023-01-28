@@ -11,7 +11,7 @@ import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -33,17 +33,16 @@ import com.team2383.diffy.subsystems.DrivetrainSubsystem;
  */
 public class RobotContainer {
     // The controls are defined here
-    private final Joystick m_driverMoveController = new Joystick(0);
-    private final Joystick m_driverTurnController = new Joystick(1);
+    private final GenericHID m_driverMoveController = new GenericHID(0);
+    // private final Joystick m_driverTurnController = new Joystick(1);
     // private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveX = () -> m_driverMoveController.getX();
-    private final DoubleSupplier m_driveY = () -> m_driverMoveController.getY();
-    private final DoubleSupplier m_driveOmega = () -> m_driverTurnController.getX();
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getTrigger()
-            || m_driverTurnController.getTrigger());
-    private final IntSupplier m_povSupplier = () -> m_driverTurnController.getPOV();
+    private final DoubleSupplier m_driveX = () -> m_driverMoveController.getRawAxis(1)/0.6;
+    private final DoubleSupplier m_driveY = () -> m_driverMoveController.getRawAxis(0)/0.6;
+    private final DoubleSupplier m_driveOmega = () -> m_driverMoveController.getRawAxis(3)/0.6;
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getRawButton(1));
+    private final IntSupplier m_povSupplier = () -> -1;
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
