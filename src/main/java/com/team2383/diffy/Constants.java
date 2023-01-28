@@ -21,29 +21,15 @@ import edu.wpi.first.math.geometry.Translation3d;
  */
 
 public final class Constants {
-
-    /**
-     * Note: CANivore string name is created
-     * in phoenix tuner.
-     */
-
     public static final String kRIOBus = "rio";
-    public static final String kCANivoreBus = "Drivetrain CANivore";
+    public static final String kCANivoreBus = "Drive";
 
     public static final class VisionConstants {
         public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
-                new PhotonCameraData("cam1",
+                new PhotonCameraData("Microsoft_LifeCam_HD-3000",
                         new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
-                new PhotonCameraData("cam2",
-                        new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
-                new PhotonCameraData("cam3",
-                        new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+                                new Translation3d(-4, -5.5, 1.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), Math.PI))),
         };
     }
 

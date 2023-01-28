@@ -1,11 +1,13 @@
 package com.team2383.diffy.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
+import com.ctre.phoenixpro.configs.MotorOutputConfigs;
+import com.ctre.phoenixpro.configs.Slot2Configs;
+import com.ctre.phoenixpro.controls.NeutralOut;
+import com.ctre.phoenixpro.controls.VoltageOut;
+import com.ctre.phoenixpro.hardware.TalonFX;
+import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenixpro.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -28,17 +30,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
+import com.team2383.diffy.Constants.GlobalModuleConstants;
 import com.team2383.diffy.Constants.ModuleConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
-    private final WPI_TalonFX m_topMotor;
-    private final WPI_TalonFX m_bottomMotor;
+    private final TalonFX m_topMotor;
+    private final TalonFX m_bottomMotor;
 
     // Simulation motor controllers
-    private final TalonFXSimCollection m_topMotorSim;
-    private final TalonFXSimCollection m_bottomMotorSim;
+    private final TalonFXSimState m_topMotorSim;
+    private final TalonFXSimState m_bottomMotorSim;
+
+    private final VoltageOut m_voltageOut = new VoltageOut(0, true, false);
 
     // New fancy state space controller
     private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
@@ -123,11 +128,11 @@ public class DiffSwerveModule implements Sendable {
     public DiffSwerveModule(
             ModuleConstants moduleConstants, String CANbus, DataLog log) {
         // Init all the fields
-        m_topMotor = new WPI_TalonFX(moduleConstants.kTopMotorID, CANbus);
-        m_topMotorSim = m_topMotor.getSimCollection();
+        m_topMotor = new TalonFX(moduleConstants.kTopMotorID, CANbus);
+        m_topMotorSim = m_topMotor.getSimState();
 
-        m_bottomMotor = new WPI_TalonFX(moduleConstants.kBottomMotorID, CANbus);
-        m_bottomMotorSim = m_bottomMotor.getSimCollection();
+        m_bottomMotor = new TalonFX(moduleConstants.kBottomMotorID, CANbus);
+        m_bottomMotorSim = m_bottomMotor.getSimState();
 
         m_encoder = new DoubleEncoder(moduleConstants.kEncoderPortA, moduleConstants.kEncoderPortB,
                 moduleConstants.kEncoderPortAbs);
@@ -138,16 +143,18 @@ public class DiffSwerveModule implements Sendable {
         m_staticAngle = moduleConstants.staticAngle;
         m_moduleMountAngle = moduleConstants.mountAngle;
 
-        SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
-                true,
-                Constants.GlobalModuleConstants.kMaxCurrent,
-                Constants.GlobalModuleConstants.kMaxCurrent, 10);
+        CurrentLimitsConfigs supply = new CurrentLimitsConfigs();
+        supply.SupplyCurrentLimit = GlobalModuleConstants.kMaxCurrent;
+        supply.SupplyCurrentLimitEnable = true;
 
-        m_topMotor.configSupplyCurrentLimit(supply);
-        m_bottomMotor.configSupplyCurrentLimit(supply);
+        m_topMotor.getConfigurator().apply(supply);
+        m_bottomMotor.getConfigurator().apply(supply);
 
-        m_topMotor.setNeutralMode(NeutralMode.Coast);
-        m_bottomMotor.setNeutralMode(NeutralMode.Coast);
+        MotorOutputConfigs configs = new MotorOutputConfigs();
+        configs.NeutralMode = NeutralModeValue.Coast;
+
+        m_topMotor.getConfigurator().apply(configs);
+        m_bottomMotor.getConfigurator().apply(configs);
 
         m_topMotorCurrent = new DoubleLogEntry(m_log, "/" + m_name + "/topMotorCurrent");
         m_bottomMotorCurrent = new DoubleLogEntry(m_log, "/" + m_name + "/bottomMotorCurrent");
@@ -201,15 +208,15 @@ public class DiffSwerveModule implements Sendable {
     }
 
     public void periodic() {
-        double topMotorSpeed = m_topMotor.getSelectedSensorVelocity();
-        double bottomMotorSpeed = m_bottomMotor.getSelectedSensorVelocity();
+        double topMotorSpeed = m_topMotor.getRotorVelocity().refresh().getValue();
+        double bottomMotorSpeed = m_bottomMotor.getRotorVelocity().refresh().getValue();
 
         m_driveSpeed = getDriveSpeed(topMotorSpeed, bottomMotorSpeed);
         m_moduleAngle = getModuleAngle();
 
         // data logging
-        m_topMotorCurrent.append(m_topMotor.getStatorCurrent());
-        m_bottomMotorCurrent.append(m_bottomMotor.getStatorCurrent());
+        m_topMotorCurrent.append(m_topMotor.getStatorCurrent().refresh().getValue());
+        m_bottomMotorCurrent.append(m_bottomMotor.getStatorCurrent().refresh().getValue());
 
         m_topMotorVel.append(topMotorSpeed);
         m_bottomMotorVel.append(bottomMotorSpeed);
@@ -237,28 +244,26 @@ public class DiffSwerveModule implements Sendable {
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
                 getDriveDistanceMeters(
-                        m_topMotor.getSelectedSensorPosition(),
-                        m_bottomMotor.getSelectedSensorPosition()),
+                        m_topMotor.getRotorVelocity().refresh().getValue(),
+                        m_bottomMotor.getRotorVelocity().refresh().getValue()),
                 Rotation2d.fromDegrees(m_moduleAngle));
     }
 
     public void simulate() {
 
-        double topMotorVel = (m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0;
-        m_topMotorSim.setIntegratedSensorVelocity(
-                (int) topMotorVel);
-        m_topMotorSim.addIntegratedSensorPosition((int) (topMotorVel * 10 * 0.02));
+        double topMotorVel = m_systemLoop.getXHat(0) / (2 * Math.PI);
+        m_topMotorSim.setRotorVelocity(topMotorVel);
+        m_topMotorSim.addRotorPosition(topMotorVel * 0.02);
 
-        double bottomMotorVel = (m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0;
-        m_bottomMotorSim.setIntegratedSensorVelocity(
-                (int) bottomMotorVel);
-        m_bottomMotorSim.addIntegratedSensorPosition((int) (bottomMotorVel * 10 * 0.02));
+        double bottomMotorVel = m_systemLoop.getXHat(1) / (2 * Math.PI);
+        m_bottomMotorSim.setRotorVelocity(bottomMotorVel);
+        m_bottomMotorSim.addRotorPosition(bottomMotorVel * 0.02);
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
-                m_topMotor.getSelectedSensorVelocity());
+                m_topMotor.getRotorVelocity().refresh().getValue());
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Bottom Motor Simulator/Output Velocity",
-                m_bottomMotor.getSelectedSensorVelocity());
+                m_bottomMotor.getRotorVelocity().refresh().getValue());
 
         m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
 
@@ -271,8 +276,7 @@ public class DiffSwerveModule implements Sendable {
      * @returns the speed of the module in m/s
      */
     public double getDriveSpeed(double topMotorSpeed, double bottomMotorSpeed) {
-        double speed = ((topMotorSpeed - bottomMotorSpeed) / 2) /* Average sensor Velocity (raw / 100ms) */ *
-                (10.0 / 2048.0) /* Motor revolutions per second */ *
+        double speed = 
                 Constants.GlobalModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
                 (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
                                                                                        * Circumference in meters
@@ -284,7 +288,6 @@ public class DiffSwerveModule implements Sendable {
 
     public double getDriveDistanceMeters(double topMotorTicks, double bottomMotorTicks) {
         return ((topMotorTicks - bottomMotorTicks) / 2) *
-                (1 / 2048.0) *
                 Constants.GlobalModuleConstants.kDriveGearRatio *
                 (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI);
     }
@@ -301,7 +304,7 @@ public class DiffSwerveModule implements Sendable {
     }
 
     private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
-        return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
+        return sensorVelocity * 2 * Math.PI;
     }
 
     /**
@@ -339,17 +342,17 @@ public class DiffSwerveModule implements Sendable {
 
         m_systemLoop.correct(
                 VecBuilder.fill(
-                        sensorVelocityToRadiansPerSecond(m_topMotor.getSelectedSensorVelocity()),
-                        sensorVelocityToRadiansPerSecond(m_bottomMotor.getSelectedSensorVelocity()),
+                        sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().refresh().getValue()),
+                        sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().refresh().getValue()),
                         Math.toRadians(getModuleAngle())));
 
         m_systemLoop.predict(0.020);
 
         m_topVoltage = m_systemLoop.getU(0);
-        m_topVoltage += Math.signum(m_topVoltage) * m_kS;
+        // m_topVoltage += Math.signum(m_topVoltage) * m_kS;
 
         m_bottomVoltage = m_systemLoop.getU(1);
-        m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
+        // m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
 
         setVoltage();
     }
@@ -361,32 +364,34 @@ public class DiffSwerveModule implements Sendable {
      *                      voltage
      */
     private void setVoltage() {
-        m_topMotor.setVoltage(m_topVoltage);
-        m_bottomMotor.setVoltage(m_bottomVoltage);
+        m_topMotor.setControl(m_voltageOut.withOutput(m_topVoltage));
+        m_bottomMotor.setControl(m_voltageOut.withOutput(m_bottomVoltage));
     }
 
     public void resetEncoders() {
-        m_topMotor.setSelectedSensorPosition(0);
-        m_bottomMotor.setSelectedSensorPosition(0);
+        m_topMotor.getConfigurator().setRotorPosition(0);
+        m_bottomMotor.getConfigurator().setRotorPosition(0);
         m_encoder.reset();
     }
 
     public void motorsOff() {
-        m_topMotor.set(ControlMode.PercentOutput, 0);
-        m_bottomMotor.set(ControlMode.PercentOutput, 0);
+        m_topMotor.setControl(new NeutralOut());
+        m_bottomMotor.setControl(new NeutralOut());
     }
 
     public void setZeroOffset() {
         m_encoder.reset();
         double steerPosition = m_encoder.get() + m_moduleMountAngle.getDegrees();
-        m_topMotor.config_kP(2, steerPosition, 1000);
+        Slot2Configs configs = new Slot2Configs();
+        configs.kP = steerPosition;
+        m_topMotor.getConfigurator().apply(configs);
         loadZeroOffset();
     }
 
     public void loadZeroOffset() {
-        SlotConfiguration slot = new SlotConfiguration();
-        m_topMotor.getSlotConfigs(slot, 2, 5000);
-        m_offset = slot.kP - m_moduleMountAngle.getDegrees();
+        Slot2Configs configs = new Slot2Configs();
+        m_topMotor.getConfigurator().refresh(configs, 5000);
+        m_offset = configs.kP - m_moduleMountAngle.getDegrees();
         DataLogManager.log(String.format("INFO: %s steerPosition %f\n", m_name, m_offset));
 
         if (Robot.isSimulation()) {
@@ -431,12 +436,12 @@ public class DiffSwerveModule implements Sendable {
             return m_bottomVoltage;
         }, null);
 
-        builder.addDoubleProperty("Top Temperature", () -> {
-            return m_topMotor.getTemperature();
-        }, null);
-        builder.addDoubleProperty("Bottom Temperature", () -> {
-            return m_bottomMotor.getTemperature();
-        }, null);
+        // builder.addDoubleProperty("Top Temperature", () -> {
+        //     return m_topMotor.getTemperature();
+        // }, null);
+        // builder.addDoubleProperty("Bottom Temperature", () -> {
+        //     return m_bottomMotor.getTemperature();
+        // }, null);
 
         builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
             return Math.toDegrees(m_systemLoop.getXHat(2));
@@ -449,10 +454,10 @@ public class DiffSwerveModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity", () -> {
-            return sensorVelocityToRadiansPerSecond(m_topMotor.getSelectedSensorVelocity());
+            return sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().refresh().getValue());
         }, null);
         builder.addDoubleProperty("Bottom Motor Velocity", () -> {
-            return sensorVelocityToRadiansPerSecond(m_bottomMotor.getSelectedSensorVelocity());
+            return sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().refresh().getValue());
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity Error", () -> {
