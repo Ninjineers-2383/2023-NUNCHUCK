@@ -56,4 +56,17 @@ public class Ninja_CANSparkMax extends CANSparkMax {
             super.setVoltage(voltage);
         }
     }
+    
+    public void setPosition(double pos) {
+        if (m_device != null) {
+            m_position.set(pos);
+        }
+    }
+
+    public double getPosition() {
+        if (m_device != null) {
+            return m_position.get();
+        }
+        return 0.0;
+    }
 }

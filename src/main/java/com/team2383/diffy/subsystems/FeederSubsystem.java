@@ -3,7 +3,6 @@ package com.team2383.diffy.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.VictorSPXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.revrobotics.CANSparkMax;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.FeederConstants;
 
@@ -22,11 +21,11 @@ public class FeederSubsystem extends SubsystemBase {
     //TODO: Comment
     private final VictorSPX m_topMotor;
     private final VictorSPX m_bottomMotor;
-    private final VictorSPX m_clawMotor; 
+    //private final VictorSPX m_clawMotor; 
     // Sim Support
     private final VictorSPXSimCollection m_topMotorSim;
     private final VictorSPXSimCollection m_bottomMotorSim;
-    private final VictorSPXSimCollection m_clawMotorSim;
+    //private final VictorSPXSimCollection m_clawMotorSim;
 
     // SS Controller
     private final LinearSystem<N3, N3, N3> m_feederPlant;
@@ -39,11 +38,11 @@ public class FeederSubsystem extends SubsystemBase {
         // Declare motor instances
         m_topMotor = new VictorSPX(Constants.FeederConstants.kTopMotorID);
         m_bottomMotor = new VictorSPX(Constants.FeederConstants.kBottomMotorID);
-        m_clawMotor = new VictorSPX(Constants.FeederConstants.kClawMotorID);
+        //m_clawMotor = new VictorSPX(Constants.FeederConstants.kClawMotorID);
 
         m_topMotorSim = m_topMotor.getSimCollection();
         m_bottomMotorSim = m_bottomMotor.getSimCollection();
-        m_clawMotorSim = m_clawMotor.getSimCollection();
+        //m_clawMotorSim = m_clawMotor.getSimCollection();
        
         m_feederPlant = new LinearSystem<>(
             // A Matrix
