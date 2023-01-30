@@ -1,15 +1,9 @@
 package com.team2383.diffy.subsystems;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Robot;
 import com.team2383.diffy.Constants.BottomPivotConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
-import com.team2383.diffy.helpers.SparkMaxSimCollection;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -24,22 +18,13 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BottomPivotModule implements Sendable {
     // TODO: Comment
-    // private final WPI_TalonFX m_rightMotor;
-    // private final WPI_TalonFX m_leftMotor;
 
-    private final CANSparkMax m_rightMotor;
-    private final CANSparkMax m_leftMotor;
-
-    private final SparkMaxSimCollection m_leftMotorSim;
-    private final SparkMaxSimCollection m_rightMotorSim;
-
-    // private final TalonFXSimCollection m_leftMotorSim;
-    // private final TalonFXSimCollection m_rightMotorSim;
+    private final Ninja_CANSparkMax m_rightMotor;
+    private final Ninja_CANSparkMax m_leftMotor;
 
     private final DoubleEncoder m_bottomAngleEncoder;
 
@@ -69,22 +54,14 @@ public class BottomPivotModule implements Sendable {
     private int reset_counter = 0;
 
     public BottomPivotModule(DataLog log) {
-        m_leftMotor = new CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
- 
-        m_leftMotorSim = new SparkMaxSimCollection(m_leftMotor);
+        m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
 
-        m_rightMotor = new CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
-        m_rightMotorSim = new SparkMaxSimCollection(m_rightMotor);
+        m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
 
         m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
                 BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
 
         m_log = log;
-
-        // SupplyCurrentLimitConfiguration supply = new SupplyCurrentLimitConfiguration(
-        //         true,
-        //         BottomPivotConstants.kMaxCurrent,
-        //         BottomPivotConstants.kMaxCurrent, 10);
 
         m_leftMotor.setSmartCurrentLimit(40);
         m_rightMotor.setSmartCurrentLimit(40);
@@ -156,8 +133,8 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void simulate() {
-        m_leftMotorSim.setVelocity((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
-        m_rightMotorSim.setVelocity((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+        m_leftMotor.set((int) (radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0))));
+        m_rightMotor.set((int) (radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(1))));
 
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.get());
@@ -171,8 +148,11 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void setAngle(double angularVelocity, double extension) {
-        m_desiredAngle += angularVelocity;
 
+        m_desiredAngle += angularVelocity;
+        if (m_desiredAngle > BottomPivotConstants.kUpperBound || m_desiredAngle < BottomPivotConstants.kLowerBound)  {
+            m_desiredAngle -= angularVelocity;
+        }
         m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
 
         m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));
@@ -181,17 +161,17 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage = m_systemLoop.getU(0);
 
-        m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
+        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
         
-        m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         m_rightVoltage = m_systemLoop.getU(1);
 
-        m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
+        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
 
-        m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
-            BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
         setVoltage();
     }
@@ -202,6 +182,10 @@ public class BottomPivotModule implements Sendable {
 
     private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
         return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
+    }
+
+    private double radiansPerSecondToSensorVelocity(double angularVelocity) {
+        return (angularVelocity / (2 * Math.PI)) * 2048.0 / 10.0;
     }
 
     public void setVoltage() {
