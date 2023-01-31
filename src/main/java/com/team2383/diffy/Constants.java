@@ -124,7 +124,6 @@ public final class Constants {
         public static final double kS = 0.01;
         public static final double kV = 0.01;
         public static final double kA = 0.009;
-        public static final double kG = 0;
 
         public static final double kUpperBound = 10;
         public static final double kLowerBound = 0;
@@ -134,13 +133,7 @@ public final class Constants {
         public static final int kExtensionLeftID = 1;
         public static final int kExtensionRightID = 2;
 
-        public static final double kge = 1 / 16.5;
-
-        public static final double kTicksToInchesConstant = Math.PI / 396.0;
-
         public static final double kRadPerSecToInchesPerSec =  19.25 / 192.0;
-
-        public static final double kSensorVelocityToInchesPerSecConstant = 115.5;
     }
 
     public static final class BottomPivotConstants {

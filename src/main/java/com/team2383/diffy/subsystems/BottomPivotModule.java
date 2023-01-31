@@ -55,8 +55,10 @@ public class BottomPivotModule implements Sendable {
 
     public BottomPivotModule(DataLog log) {
         m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
-
         m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
+
+        m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
+        m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
         m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
                 BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
@@ -108,8 +110,8 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void periodic() {
-        m_leftSpeed = sensorVelocityToRadiansPerSecond(m_leftMotor.get());
-        m_rightSpeed = sensorVelocityToRadiansPerSecond(m_rightMotor.get());
+        m_leftSpeed = m_leftMotor.get();
+        m_rightSpeed = m_rightMotor.get();
 
         m_angle = getAngle();
 
@@ -133,8 +135,8 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void simulate() {
-        m_leftMotor.set((int) (radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(0))));
-        m_rightMotor.set((int) (radiansPerSecondToSensorVelocity(m_systemLoop.getXHat(1))));
+        m_leftMotor.set(m_systemLoop.getXHat(0));
+        m_rightMotor.set(m_systemLoop.getXHat(1));
 
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.get());

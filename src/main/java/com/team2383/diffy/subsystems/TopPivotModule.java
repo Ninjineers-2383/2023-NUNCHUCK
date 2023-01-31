@@ -53,6 +53,8 @@ public class TopPivotModule implements Sendable{
     public TopPivotModule(DataLog log) {
         m_pivotMotor = new Ninja_CANSparkMax(TopPivotConstants.kMotorID, MotorType.kBrushless);
 
+        m_pivotMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
+        
         m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA, 
             TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
 
@@ -92,7 +94,7 @@ public class TopPivotModule implements Sendable{
     }
 
     public void periodic() {
-        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.get());
+        m_speed = m_pivotMotor.get();
         m_angle = getAngle();
 
         m_motorCurrent.append(m_pivotMotor.getOutputCurrent());
@@ -106,7 +108,7 @@ public class TopPivotModule implements Sendable{
     }
 
     public void simulate() {
-        m_pivotMotor.set((int) (m_systemLoop.getXHat(0) / (2 * Math.PI) * 2048 / 10.0));
+        m_pivotMotor.set(m_systemLoop.getXHat(0));
 
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
         m_pivotMotor.get());
@@ -124,7 +126,7 @@ public class TopPivotModule implements Sendable{
             desiredSpeed = 0;
         }
 
-        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.get());
+        m_speed = m_pivotMotor.get();
         m_angle = getAngle();
 
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, Math.toRadians(m_desiredAngle)));
@@ -136,10 +138,6 @@ public class TopPivotModule implements Sendable{
         m_voltage = m_systemLoop.getU(0);
 
         setVoltage();
-    }
-
-    private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
-        return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
     }
 
     public double getAngle() {
