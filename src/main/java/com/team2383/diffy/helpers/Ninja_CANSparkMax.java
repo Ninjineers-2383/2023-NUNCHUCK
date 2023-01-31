@@ -17,10 +17,7 @@ public class Ninja_CANSparkMax extends CANSparkMax {
 
         m_device = SimDevice.create("Spark Max", this.getDeviceId());
 
-        System.out.println(m_device);
-
         if (m_device != null) {
-            System.out.println("Success");
             m_position = m_device.createDouble("Position", Direction.kOutput, 0.0);
 
             m_velocity = m_device.createDouble("Velocity", Direction.kOutput, 0.0);
@@ -44,7 +41,7 @@ public class Ninja_CANSparkMax extends CANSparkMax {
         if (m_device != null) {
             return m_velocity.get();
         } else {
-            return super.get();
+            return super.getEncoder().getVelocity();
         }
     }
 
@@ -54,6 +51,18 @@ public class Ninja_CANSparkMax extends CANSparkMax {
             m_voltage.set(voltage);
         } else {
             super.setVoltage(voltage);
+        }
+    }
+
+    public void setVelocityConversionFactor(double factor) {
+        if (m_device == null) {
+            super.getEncoder().setVelocityConversionFactor(factor);
+        }
+    }
+
+    public void setPositionConversionFactor(double factor) {
+        if (m_device == null) {
+            super.getEncoder().setPositionConversionFactor(factor);
         }
     }
     
@@ -66,7 +75,8 @@ public class Ninja_CANSparkMax extends CANSparkMax {
     public double getPosition() {
         if (m_device != null) {
             return m_position.get();
+        } else {
+            return super.getEncoder().getPosition();
         }
-        return 0.0;
     }
 }

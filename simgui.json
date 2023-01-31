@@ -115,7 +115,7 @@
     "transitory": {
       "LiveWindow": {
         "PinkArmSubsystem": {
-          "Bottom Pivot": {
+          "Telescope": {
             "open": true
           },
           "open": true
@@ -265,7 +265,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 413,
+          "height": 408,
           "series": [
             {
               "color": [
@@ -288,7 +288,7 @@
           ]
         },
         {
-          "height": 413,
+          "height": 408,
           "series": [
             {
               "color": [
@@ -324,7 +324,7 @@
     "Plot <3>": {
       "plots": [
         {
-          "height": 294,
+          "height": 289,
           "series": [
             {
               "color": [
@@ -356,7 +356,7 @@
           ]
         },
         {
-          "height": 294,
+          "height": 289,
           "series": [
             {
               "color": [
@@ -383,7 +383,7 @@
     "Plot <4>": {
       "plots": [
         {
-          "height": 290,
+          "height": 286,
           "series": [
             {
               "color": [
@@ -415,7 +415,7 @@
           ]
         },
         {
-          "height": 290,
+          "height": 286,
           "series": [
             {
               "color": [

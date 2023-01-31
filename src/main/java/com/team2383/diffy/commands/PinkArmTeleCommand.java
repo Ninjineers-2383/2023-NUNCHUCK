@@ -45,9 +45,9 @@ public class PinkArmTeleCommand extends CommandBase {
         }
 
         if (m_extensionUp.getAsBoolean()) {
-            m_extensionSpeed = 0.1;
+            m_extensionSpeed = 1;
         } else if (m_extensionDown.getAsBoolean()) {
-            m_extensionSpeed = -0.1;
+            m_extensionSpeed = -1;
         } else {
             m_extensionSpeed = 0;
         }

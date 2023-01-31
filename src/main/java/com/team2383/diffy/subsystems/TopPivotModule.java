@@ -1,9 +1,9 @@
 package com.team2383.diffy.subsystems;
 
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants.TopPivotConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
+import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -22,8 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TopPivotModule implements Sendable{
     //TODO: Comment
-    private final WPI_TalonFX m_pivotMotor;
-    private final TalonFXSimCollection m_pivotMotorSim;
+    private final Ninja_CANSparkMax m_pivotMotor;
 
     private final DoubleEncoder m_topAngleEncoder;
 
@@ -52,8 +51,7 @@ public class TopPivotModule implements Sendable{
     private final DoubleLogEntry m_expectedAngle;
 
     public TopPivotModule(DataLog log) {
-        m_pivotMotor = new WPI_TalonFX(TopPivotConstants.kMotorID);
-        m_pivotMotorSim = m_pivotMotor.getSimCollection();
+        m_pivotMotor = new Ninja_CANSparkMax(TopPivotConstants.kMotorID, MotorType.kBrushless);
 
         m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA, 
             TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
@@ -94,10 +92,10 @@ public class TopPivotModule implements Sendable{
     }
 
     public void periodic() {
-        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.getSelectedSensorVelocity());
+        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.get());
         m_angle = getAngle();
 
-        m_motorCurrent.append(m_pivotMotor.getStatorCurrent());
+        m_motorCurrent.append(m_pivotMotor.getOutputCurrent());
 
         m_motorVel.append(m_speed);
 
@@ -108,10 +106,10 @@ public class TopPivotModule implements Sendable{
     }
 
     public void simulate() {
-        m_pivotMotorSim.setIntegratedSensorVelocity((int) (m_systemLoop.getXHat(0) / (2 * Math.PI) * 2048 / 10.0));
+        m_pivotMotor.set((int) (m_systemLoop.getXHat(0) / (2 * Math.PI) * 2048 / 10.0));
 
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
-        m_pivotMotor.getSelectedSensorVelocity());
+        m_pivotMotor.get());
 
         m_topAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(1)).getDegrees());
 
@@ -121,7 +119,12 @@ public class TopPivotModule implements Sendable{
     public void setAngle(double desiredSpeed) {
         m_desiredAngle += desiredSpeed;
 
-        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.getSelectedSensorVelocity());
+        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound)  {
+            m_desiredAngle -= desiredSpeed;
+            desiredSpeed = 0;
+        }
+
+        m_speed = sensorVelocityToRadiansPerSecond(m_pivotMotor.get());
         m_angle = getAngle();
 
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, Math.toRadians(m_desiredAngle)));

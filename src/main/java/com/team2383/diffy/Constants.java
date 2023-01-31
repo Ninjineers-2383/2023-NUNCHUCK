@@ -126,12 +126,21 @@ public final class Constants {
         public static final double kA = 0.009;
         public static final double kG = 0;
 
+        public static final double kUpperBound = 10;
+        public static final double kLowerBound = 0;
+
         public static final double kMaxCurrent = 40.0;
 
         public static final int kExtensionLeftID = 1;
         public static final int kExtensionRightID = 2;
 
-        public static final double kge = 1.0;
+        public static final double kge = 1 / 16.5;
+
+        public static final double kTicksToInchesConstant = Math.PI / 396.0;
+
+        public static final double kRadPerSecToInchesPerSec =  19.25 / 192.0;
+
+        public static final double kSensorVelocityToInchesPerSecConstant = 115.5;
     }
 
     public static final class BottomPivotConstants {
@@ -155,7 +164,7 @@ public final class Constants {
         public static final int kEncoderPortB = 11;
         public static final int kEncoderPortAbs = 12;
 
-        public static final double kgb = 1 / 12.0;
+        public static final double kgb = 1 / 112.5;
     }
 
     public static final class TopPivotConstants {
@@ -166,15 +175,20 @@ public final class Constants {
         public static final double kA = 0.001;
         public static final double kG = 0.01;
 
+        public static final double kUpperBound = 10;
+        public static final double kLowerBound = 0;
+
         public static final double kMaxCurrent = 40.0;
-
+// 5 to 5 to 16 to 72
         public static final int kMotorID = 31;
+// top 9 to 9 to 20 to 54
 
+// extension 12 to 16 to 22
         public static final int kEncoderPortA = 13;
         public static final int kEncoderPortB = 14;
         public static final int kEncoderPortAbs = 15;
 
-        public static final int kgt = 1;
+        public static final double kgt = 1 / 218.7;
     }
 
     public static final class PinkArmConstants {
