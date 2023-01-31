@@ -182,14 +182,6 @@ public class BottomPivotModule implements Sendable {
         return m_bottomAngleEncoder.get();
     }
 
-    private double sensorVelocityToRadiansPerSecond(double sensorVelocity) {
-        return sensorVelocity * (10.0 / 2048.0) * (2 * Math.PI);
-    }
-
-    private double radiansPerSecondToSensorVelocity(double angularVelocity) {
-        return (angularVelocity / (2 * Math.PI)) * 2048.0 / 10.0;
-    }
-
     public void setVoltage() {
         m_leftMotor.setVoltage(m_leftVoltage);
         m_rightMotor.setVoltage(m_rightVoltage);
