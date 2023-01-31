@@ -137,4 +137,8 @@ public final class Constants {
             this.mountAngle = mountAngle;
         }
     }
+
+    public static final class DickConstants {
+        public static final int port = 8;
+    }
 }

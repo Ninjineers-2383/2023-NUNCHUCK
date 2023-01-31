@@ -1,36 +1,30 @@
 package com.team2383.diffy.subsystems;
 
-import 
-import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
+import com.team2383.diffy.Constants.DickConstants;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DickSubsystem extends SubsystemBase{
 
-    private final VictorSPX m_dick;
+    private final CANSparkMax m_dick;
 
     public DickSubsystem() {
 
-        m_dick = new VictorSPX(DickConstants.port);
-        m_dick.setNeutralMode(NeutralMode.Coast);
+        m_dick = new CANSparkMax(DickConstants.port, MotorType.kBrushless);
+        m_dick.setIdleMode(IdleMode.kCoast);
         m_dick.setInverted(false);
 
-        CurrentLimitsConfigs supply = new CurrentLimitsConfigs();
-        supply.SupplyCurrentLimit = 20;
-        supply.SupplyCurrentLimitEnable = true;
-
-        m_dick.get
-    
     }
 
+    // Idk what to put in here lol
     @Override
-    public void periodic() {
-    }
+    public void periodic() {}
     
-    public void spin(double speed) {
-        if(dickLog.)
-            m_dick.set(ControlMode.PercentOutput, speed);
+    public void erect(double speed) {
+        m_dick.set(speed);
     }
 }
