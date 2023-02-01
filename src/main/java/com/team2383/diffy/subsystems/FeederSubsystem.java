@@ -13,6 +13,9 @@ import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,7 +39,18 @@ public class FeederSubsystem extends SubsystemBase {
     private double m_bottomVoltage;
     private double m_topVoltage;
 
-    public FeederSubsystem() {
+    private DataLog m_log;
+
+    private final DoubleLogEntry m_topMotorCurrent;
+    private final DoubleLogEntry m_bottomMotorCurrent;
+
+    private final DoubleLogEntry m_topMotorVel;
+    private final DoubleLogEntry m_bottomMotorVel;
+
+    private final DoubleLogEntry m_expectedTopSpeed;
+    private final DoubleLogEntry m_expectedBottomSpeed;
+
+    public FeederSubsystem(DataLog log) {
         // Declare motor instances
         m_topMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kTopMotorID, MotorType.kBrushless);
         m_bottomMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kBottomMotorID, MotorType.kBrushless);
@@ -71,14 +85,39 @@ public class FeederSubsystem extends SubsystemBase {
 
         m_systemLoop = new LinearSystemLoop<>(m_feederPlant, m_controller, 
             m_observer, 12.0, 0.02);
+
+        m_log = log;
+
+        m_topMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
+        m_bottomMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
+
+
+        m_topMotorVel = new DoubleLogEntry(m_log, "/topMotorVel");
+        m_bottomMotorVel = new DoubleLogEntry(m_log, "/bottomMotorVel");
+
+        m_expectedTopSpeed = new DoubleLogEntry(m_log, "/topExpectedVel");
+        m_expectedBottomSpeed = new DoubleLogEntry(m_log, "/bottomExpectedVel");
+
+        addChild("Feeder", this);
     }
 
+    @Override
     public void periodic() {
         m_topSpeed = m_topMotor.get();
         m_bottomSpeed = m_bottomMotor.get();
+
+        m_topMotorCurrent.append(m_topMotor.getOutputCurrent());
+        m_bottomMotorCurrent.append(m_bottomMotor.getOutputCurrent());
+
+        m_topMotorVel.append(m_topSpeed);
+        m_bottomMotorVel.append(m_bottomSpeed);
+
+        m_expectedTopSpeed.append(m_desiredTopSpeed);
+        m_expectedBottomSpeed.append(m_desiredBottomSpeed);
     }
 
-    public void simulate() {
+    @Override
+    public void simulationPeriodic() {
         // Set simulated VictorSPX voltage
         m_bottomMotor.set(m_systemLoop.getXHat(0));
         m_topMotor.set(m_systemLoop.getXHat(1));
@@ -111,4 +150,42 @@ public class FeederSubsystem extends SubsystemBase {
         m_bottomMotor.setVoltage(m_bottomVoltage);
         m_topMotor.setVoltage(m_topVoltage);
     }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Telescope");
+
+        builder.addDoubleProperty("Desired Bottom Speed", () -> {
+            return m_desiredBottomSpeed;
+        }, null);
+
+        builder.addDoubleProperty("Desired Top Speed", () -> {
+            return m_desiredTopSpeed;
+        }, null);
+
+        builder.addDoubleProperty("Top Speed", () -> {
+            return m_topSpeed;
+        }, null);
+
+        builder.addDoubleProperty("Bottom Speed", () -> {
+            return m_bottomSpeed;
+        }, null);
+
+        builder.addDoubleProperty("Top Voltage", () -> {
+            return m_topVoltage;
+        }, null);
+        
+        builder.addDoubleProperty("Bottom Voltage", () -> {
+            return m_bottomVoltage;
+        }, null);
+
+        builder.addDoubleProperty("Estimated Bottom Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(0);
+        }, null);
+
+        builder.addDoubleProperty("Estimated Top Velocity (x hat)", () -> {
+            return m_systemLoop.getXHat(1);
+        }, null);
+    }
+
 }
