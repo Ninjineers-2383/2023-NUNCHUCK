@@ -1,10 +1,9 @@
 package com.team2383.diffy.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.VictorSPXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.FeederConstants;
+import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -19,86 +18,97 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FeederSubsystem extends SubsystemBase {
     //TODO: Comment
-    private final VictorSPX m_topMotor;
-    private final VictorSPX m_bottomMotor;
-    //private final VictorSPX m_clawMotor; 
-    // Sim Support
-    private final VictorSPXSimCollection m_topMotorSim;
-    private final VictorSPXSimCollection m_bottomMotorSim;
-    //private final VictorSPXSimCollection m_clawMotorSim;
+    private final Ninja_CANSparkMax m_topMotor;
+    private final Ninja_CANSparkMax m_bottomMotor;
 
     // SS Controller
-    private final LinearSystem<N3, N3, N3> m_feederPlant;
-    private final LinearQuadraticRegulator<N3, N3, N3> m_controller;
-    private final KalmanFilter<N3, N3, N3> m_observer;
-    private final LinearSystemLoop<N3, N3, N3> m_systemLoop;
+    private final LinearSystem<N2, N2, N2> m_feederPlant;
+    private final LinearQuadraticRegulator<N2, N2, N2> m_controller;
+    private final KalmanFilter<N2, N2, N2> m_observer;
+    private final LinearSystemLoop<N2, N2, N2> m_systemLoop;
 
+    private double m_topSpeed;
+    private double m_bottomSpeed;
+
+    private double m_desiredTopSpeed;
+    private double m_desiredBottomSpeed;
+
+    private double m_bottomVoltage;
+    private double m_topVoltage;
 
     public FeederSubsystem() {
         // Declare motor instances
-        m_topMotor = new VictorSPX(Constants.FeederConstants.kTopMotorID);
-        m_bottomMotor = new VictorSPX(Constants.FeederConstants.kBottomMotorID);
-        //m_clawMotor = new VictorSPX(Constants.FeederConstants.kClawMotorID);
-
-        m_topMotorSim = m_topMotor.getSimCollection();
-        m_bottomMotorSim = m_bottomMotor.getSimCollection();
-        //m_clawMotorSim = m_clawMotor.getSimCollection();
+        m_topMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kTopMotorID, MotorType.kBrushless);
+        m_bottomMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kBottomMotorID, MotorType.kBrushless);
        
         m_feederPlant = new LinearSystem<>(
             // A Matrix
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                -FeederConstants.kV / FeederConstants.kA, 0, 0,
-                0, -FeederConstants.kV / FeederConstants.kA, 0,
-                0, 0, -FeederConstants.kV / FeederConstants.kA),
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                -FeederConstants.kV / FeederConstants.kA, 0,
+                0, -FeederConstants.kV / FeederConstants.kA),
 
             // B Matrix
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                1 / FeederConstants.kA, 0, 0,
-                0, 1 / FeederConstants.kA, 0,
-                0, 0, 1 / FeederConstants.kA),
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                1 / FeederConstants.kA, 0,
+                0, 1 / FeederConstants.kA),
 
             // C Matrix
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1), 
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                1, 0,
+                0, 1), 
 
             // D Matrix
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                0, 0, 0,
-                0, 0, 0,
-                0, 0, 0)
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                0, 0,
+                0, 0)
         );
         
         m_controller = new LinearQuadraticRegulator<>(m_feederPlant, 
-            VecBuilder.fill(1, 1, 1), VecBuilder.fill(12, 12, 12), 0.02);
+            VecBuilder.fill(1, 1), VecBuilder.fill(12, 12), 0.02);
 
-        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_feederPlant, 
-            VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.1, 0.1, 0.1), 0.02);
+        m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_feederPlant, 
+            VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_feederPlant, m_controller, 
             m_observer, 12.0, 0.02);
     }
 
     public void periodic() {
-     
+        m_topSpeed = m_topMotor.get();
+        m_bottomSpeed = m_bottomMotor.get();
     }
 
     public void simulate() {
         // Set simulated VictorSPX voltage
-        m_topMotorSim.setBusVoltage((int) ((m_systemLoop.getXHat(0) / (2 * Math.PI)) * 2048 / 10.0));
-        m_bottomMotorSim.setBusVoltage((int) ((m_systemLoop.getXHat(1) / (2 * Math.PI)) * 2048 / 10.0));
+        m_bottomMotor.set(m_systemLoop.getXHat(0));
+        m_topMotor.set(m_systemLoop.getXHat(1));
 
-        SmartDashboard.putNumber("Simulated Top Motor Output Velocity",
-                m_topMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Simulated Top Motor Feeder Big Booty Bitches Output Velocity",
+                m_topMotor.get());
 
-        SmartDashboard.putNumber("Simulated Bottom Motor Output Velocity",
-                m_bottomMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Simulated Bottom Motor Feeder Output Velocity",
+                m_bottomMotor.get());
     }
 
     public void setPower(double top, double bottom) {
         // Set discrete motor power
-        m_topMotor.set(ControlMode.PercentOutput, top);
-        m_bottomMotor.set(ControlMode.PercentOutput, bottom);
+        m_desiredTopSpeed = top;
+        m_desiredBottomSpeed = bottom;
+
+        m_systemLoop.setNextR(VecBuilder.fill(m_desiredBottomSpeed, m_desiredTopSpeed));
+
+        m_systemLoop.correct(VecBuilder.fill(m_bottomSpeed, m_topSpeed));
+
+        m_systemLoop.predict(0.02);
+
+        m_bottomVoltage = m_systemLoop.getU(0);
+        m_topVoltage = m_systemLoop.getU(1);
+
+        setVoltage();
+    }
+
+    public void setVoltage() {
+        m_bottomMotor.setVoltage(m_bottomVoltage);
+        m_topMotor.setVoltage(m_topVoltage);
     }
 }

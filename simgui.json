@@ -117,8 +117,7 @@
         "PinkArmSubsystem": {
           "Telescope": {
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true
       },

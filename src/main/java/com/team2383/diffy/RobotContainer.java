@@ -18,9 +18,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.PinkArmTeleCommand;
 import com.team2383.diffy.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.FeederSubsystem;
 import com.team2383.diffy.subsystems.PinkArmSubsystem;
 
 /**
@@ -52,16 +54,22 @@ public class RobotContainer {
     private final BooleanSupplier m_topArmDown = () -> m_operatorController.getBButton();
     private final BooleanSupplier m_extensionUp = () -> m_operatorController.getLeftBumper();
     private final BooleanSupplier m_extensionDown = () -> m_operatorController.getRightBumper();
- 
+
+    private final BooleanSupplier m_intake = () -> m_operatorController.getLeftStickButton();
+    private final BooleanSupplier m_outtake = () -> m_operatorController.getRightStickButton();
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final PinkArmSubsystem m_pinkArmSubsystem = new PinkArmSubsystem(DataLogManager.getLog());
+    private final FeederSubsystem m_feeder = new FeederSubsystem();
 
     private final JoystickDriveCommand m_dDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+
     private final PinkArmTeleCommand m_pinkArmCommand = new PinkArmTeleCommand(m_pinkArmSubsystem, m_bottomArmDown,
             m_bottomArmUp, m_topArmDown, m_topArmUp, m_extensionDown, m_extensionUp);
+
+    private final FeederCommand m_feederCommand = new FeederCommand(m_feeder, m_intake, m_outtake);
 
     // This is just an example event map. It would be better to have a constant,
     // global event map
@@ -95,6 +103,7 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         m_drivetrainSubsystem.setDefaultCommand(m_dDriveCommand);
         m_pinkArmSubsystem.setDefaultCommand(m_pinkArmCommand);
+        m_feeder.setDefaultCommand(m_feederCommand);
     }
 
     /**
