@@ -12,12 +12,20 @@ import java.util.function.IntSupplier;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.autos.TwoConeAuto;
+import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.PinkArmTeleCommand;
 import com.team2383.diffy.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.FeederSubsystem;
+import com.team2383.diffy.subsystems.PinkArmSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,10 +37,9 @@ import com.team2383.diffy.subsystems.DrivetrainSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The controls are defined here
     private final Joystick m_driverMoveController = new Joystick(0);
     private final Joystick m_driverTurnController = new Joystick(1);
-    // private final XboxController m_operatorController = new XboxController(2);
+    private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
     private final DoubleSupplier m_driveX = () -> m_driverMoveController.getX();
@@ -42,11 +49,28 @@ public class RobotContainer {
             || m_driverTurnController.getTrigger());
     private final IntSupplier m_povSupplier = () -> m_driverTurnController.getPOV();
 
+    private final BooleanSupplier m_bottomArmUp = () -> m_operatorController.getAButton();
+    private final BooleanSupplier m_bottomArmDown = () -> m_operatorController.getYButton();
+    private final BooleanSupplier m_topArmUp = () -> m_operatorController.getXButton();
+    private final BooleanSupplier m_topArmDown = () -> m_operatorController.getBButton();
+    private final BooleanSupplier m_extensionUp = () -> m_operatorController.getLeftBumper();
+    private final BooleanSupplier m_extensionDown = () -> m_operatorController.getRightBumper();
+
+    private final BooleanSupplier m_intake = () -> m_operatorController.getLeftStickButton();
+    private final BooleanSupplier m_outtake = () -> m_operatorController.getRightStickButton();
+
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private final PinkArmSubsystem m_pinkArmSubsystem = new PinkArmSubsystem(DataLogManager.getLog());
+    private final FeederSubsystem m_feeder = new FeederSubsystem(DataLogManager.getLog());
 
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+
+    private final PinkArmTeleCommand m_pinkArmCommand = new PinkArmTeleCommand(m_pinkArmSubsystem, m_bottomArmDown,
+            m_bottomArmUp, m_topArmDown, m_topArmUp, m_extensionDown, m_extensionUp);
+
+    private final FeederCommand m_feederCommand = new FeederCommand(m_feeder, m_intake, m_outtake);
 
     // This is just an example event map. It would be better to have a constant,
     // global event map
@@ -87,7 +111,7 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        m_drivetrainSubsystem.setDefaultCommand(m_dDriveCommand);
+        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
     }
 
     /**

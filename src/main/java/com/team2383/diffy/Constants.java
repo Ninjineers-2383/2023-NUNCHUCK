@@ -155,10 +155,11 @@ public final class Constants {
 
         public static final double kRadPerSecToInchesPerSec =  19.25 / 192.0;
     
+    }
+
     public static final class DickConstants {
         public static final int port = 8;
     }
-}
 
     public static final class BottomPivotConstants {
         public static final double kS = 0.01;
@@ -196,11 +197,8 @@ public final class Constants {
         public static final double kLowerBound = 0;
 
         public static final double kMaxCurrent = 40.0;
-// 5 to 5 to 16 to 72
         public static final int kMotorID = 31;
-// top 9 to 9 to 20 to 54
 
-// extension 12 to 16 to 22
         public static final int kEncoderPortA = 13;
         public static final int kEncoderPortB = 14;
         public static final int kEncoderPortAbs = 15;
@@ -223,32 +221,5 @@ public final class Constants {
         public static final int kTopMotorID = 26;
         public static final int kBottomMotorID = 27;
         public static final int kClawMotorID = 28;
-    }
-
-    public static final class VisionConstants {
-        public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
-                new PhotonCameraData("cam1",
-                        new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
-                new PhotonCameraData("cam2",
-                        new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
-                new PhotonCameraData("cam3",
-                        new Transform3d(
-                                new Translation3d(0.0, 0.0, 0.0),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
-        };
-    }
-
-    public static final class PhotonCameraData {
-        public final String name;
-        public final Transform3d transform;
-
-        public PhotonCameraData(String name, Transform3d transform) {
-            this.name = name;
-            this.transform = transform;
-        }
     }
 }
