@@ -138,7 +138,117 @@ public final class Constants {
         }
     }
 
+    public static final class TelescopeConstants {
+        // FF Values
+        // TODO: Tune these values
+        public static final double kS = 0.01;
+        public static final double kV = 0.01;
+        public static final double kA = 0.009;
+
+        public static final double kUpperBound = 10;
+        public static final double kLowerBound = 0;
+
+        public static final double kMaxCurrent = 40.0;
+
+        public static final int kExtensionLeftID = 1;
+        public static final int kExtensionRightID = 2;
+
+        public static final double kRadPerSecToInchesPerSec =  19.25 / 192.0;
+    
     public static final class DickConstants {
         public static final int port = 8;
+    }
+}
+
+    public static final class BottomPivotConstants {
+        public static final double kS = 0.01;
+        public static final double kV = 0.1;
+        public static final double kA = 0.001;
+
+        public static final double kUpperBound = 90;
+        public static final double kLowerBound = 0;
+        
+        public static final double pivotLength = 0.5;
+        public static final double gravity = 9.8;
+        public static final double armMass = 10;
+
+        public static final double kMaxCurrent = 40.0;
+
+        public static final int kBottomMotorLeftId = 29;
+        public static final int kBottomMotorRightId = 30;
+
+        public static final int kEncoderPortA = 10;
+        public static final int kEncoderPortB = 11;
+        public static final int kEncoderPortAbs = 12;
+
+        public static final double kgb = 1 / 112.5;
+    }
+
+    public static final class TopPivotConstants {
+        // FF Values
+        // TODO: Tune these values
+        public static final double kS = 0.01;
+        public static final double kV = 0.01465;
+        public static final double kA = 0.001;
+        public static final double kG = 0.01;
+
+        public static final double kUpperBound = 10;
+        public static final double kLowerBound = 0;
+
+        public static final double kMaxCurrent = 40.0;
+// 5 to 5 to 16 to 72
+        public static final int kMotorID = 31;
+// top 9 to 9 to 20 to 54
+
+// extension 12 to 16 to 22
+        public static final int kEncoderPortA = 13;
+        public static final int kEncoderPortB = 14;
+        public static final int kEncoderPortAbs = 15;
+
+        public static final double kgt = 1 / 218.7;
+    }
+
+    public static final class PinkArmConstants {
+        public static final double BottomPivotVelocity = .1;
+        public static final double TopPivotVelocity = .1;
+        public static final double TelescopeVelocity = .1;
+    }
+
+    public static final class FeederConstants {
+        // TODO: Tune SS control values
+
+        public static final double kV = 0.01;
+        public static final double kA = 0.001;
+
+        public static final int kTopMotorID = 26;
+        public static final int kBottomMotorID = 27;
+        public static final int kClawMotorID = 28;
+    }
+
+    public static final class VisionConstants {
+        public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
+                new PhotonCameraData("cam1",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+                new PhotonCameraData("cam2",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+                new PhotonCameraData("cam3",
+                        new Transform3d(
+                                new Translation3d(0.0, 0.0, 0.0),
+                                new Rotation3d(VecBuilder.fill(0, 1, 0), 0))),
+        };
+    }
+
+    public static final class PhotonCameraData {
+        public final String name;
+        public final Transform3d transform;
+
+        public PhotonCameraData(String name, Transform3d transform) {
+            this.name = name;
+            this.transform = transform;
+        }
     }
 }
