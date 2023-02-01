@@ -2,8 +2,6 @@ package com.team2383.diffy.subsystems;
 
 import org.photonvision.EstimatedRobotPose;
 
-import org.photonvision.EstimatedRobotPose;
-
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
@@ -42,8 +40,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
-    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
-
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
     private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
@@ -53,7 +49,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.DriveConstants.frontRightConstants.translation,
             Constants.DriveConstants.rearConstants.translation);
 
-    private final SwerveDrivePoseEstimator m_poseEstimator;
     private final SwerveDrivePoseEstimator m_poseEstimator;
 
     private final Field2d m_field = new Field2d();
@@ -71,13 +66,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.kCANivoreBus, log);
 
         m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
-
-        m_poseEstimator = new SwerveDrivePoseEstimator(
-                m_kinematics,
-                getHeading(),
-                getModulePositions(),
-                new Pose2d());
-
 
         m_poseEstimator = new SwerveDrivePoseEstimator(
                 m_kinematics,
@@ -125,12 +113,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
         }
         m_poseEstimator.update(getHeading(), getModulePositions());
-
-        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
-
-        if (cam_pose != null) {
-            m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
-        }
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
@@ -261,11 +243,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public Pose2d getPose() {
         return m_poseEstimator.getEstimatedPosition();
-    }
-
-    private SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[] { m_frontLeftModule.getPosition(), m_frontRightModule.getPosition(),
-                m_rearModule.getPosition() };
     }
 
     private SwerveModulePosition[] getModulePositions() {

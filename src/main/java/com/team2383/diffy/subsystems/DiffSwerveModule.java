@@ -91,8 +91,6 @@ public class DiffSwerveModule implements Sendable {
     private double m_topVoltage;
     private double m_bottomVoltage;
 
-    private final double m_kS;
-
     // The offset for the module encoder in degrees
     private double m_offset;
 
@@ -167,8 +165,6 @@ public class DiffSwerveModule implements Sendable {
 
         m_expectedSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/" + m_name + "/expectedAngle");
-
-        m_kS = moduleConstants.kS;
 
         // Initialize state space controller
         LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
