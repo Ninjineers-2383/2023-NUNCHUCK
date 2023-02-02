@@ -149,11 +149,44 @@ public class BottomPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double angularVelocity, double extension) {
+    public void setAngle(double angle, double extension) {
 
-        m_desiredAngle += angularVelocity;
+        if (m_desiredAngle > BottomPivotConstants.kUpperBound) {
+            m_desiredAngle = BottomPivotConstants.kUpperBound;
+        } else if (m_desiredAngle < BottomPivotConstants.kLowerBound) {
+            m_desiredAngle = BottomPivotConstants.kLowerBound;
+        } else {
+            m_desiredAngle = angle;
+        }
+
+        m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
+
+        m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed, Math.toRadians(m_angle)));
+
+        m_systemLoop.predict(0.020);
+
+        m_leftVoltage = m_systemLoop.getU(0);
+
+        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
+        
+        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+
+        m_rightVoltage = m_systemLoop.getU(1);
+
+        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
+
+        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) - BottomPivotConstants.pivotLength) * 
+        //     BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
+
+        setVoltage();
+    }
+
+    public void setVelocity(double angularVelocity, double extension) {
+        m_desiredAngle += angularVelocity * 0.02;
+
         if (m_desiredAngle > BottomPivotConstants.kUpperBound || m_desiredAngle < BottomPivotConstants.kLowerBound)  {
-            m_desiredAngle -= angularVelocity;
+            m_desiredAngle -= angularVelocity * 0.02;
         }
         m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
 

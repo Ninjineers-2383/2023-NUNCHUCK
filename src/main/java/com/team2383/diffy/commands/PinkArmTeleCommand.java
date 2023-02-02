@@ -37,9 +37,9 @@ public class PinkArmTeleCommand extends CommandBase {
     @Override
     public void execute() {
         if (m_bottomAngleUp.getAsBoolean()) {
-            m_bottomAngleSpeed = 1;
+            m_bottomAngleSpeed = 90;
         } else if (m_bottomAngleDown.getAsBoolean()) {
-            m_bottomAngleSpeed = -1;
+            m_bottomAngleSpeed = -90;
         } else {
             m_bottomAngleSpeed = 0;
         }
@@ -53,14 +53,14 @@ public class PinkArmTeleCommand extends CommandBase {
         }
 
         if (m_topAngleUp.getAsBoolean()) {
-            m_topAngleSpeed = 1;
+            m_topAngleSpeed = 90;
         } else if (m_topAngleDown.getAsBoolean()) {
-            m_topAngleSpeed = -1;
+            m_topAngleSpeed = -90;
         } else {
             m_topAngleSpeed = 0;
         }
 
-        m_pinkArm.setDesiredState(m_bottomAngleSpeed,
+        m_pinkArm.setDesiredVelocities(m_bottomAngleSpeed,
                 m_extensionSpeed, m_topAngleSpeed);
     }
 }

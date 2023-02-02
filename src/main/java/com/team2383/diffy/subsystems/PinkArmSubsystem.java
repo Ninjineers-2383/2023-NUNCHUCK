@@ -49,6 +49,7 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_telescopeLigament.setAngle(m_bottomPivot.getAngle());
         m_telescopeLigament.setLength(m_telescope.getExtension());
         m_feederLigament.setAngle(m_topPivot.getAngle());
+        System.out.println(m_topPivot.getAngle());
 
         SmartDashboard.putData("Pink Arm", m_mechanism2d);
     }
@@ -60,10 +61,17 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_topPivot.simulate();
     }
 
-    public void setDesiredState(double desiredBottomSpeed,
+    public void setDesiredState(double desiredBottomAngle,
+            double desiredExtension, double desiredTopAngle) {
+        m_bottomPivot.setAngle(desiredBottomAngle, m_telescope.getExtension());
+        m_telescope.setExtension(desiredExtension);
+        m_topPivot.setAngle(desiredTopAngle);
+    }
+
+    public void setDesiredVelocities(double desiredBottomSpeed,
             double desiredExtensionSpeed, double desiredTopSpeed) {
-        m_bottomPivot.setAngle(desiredBottomSpeed, m_telescope.getExtension());
-        m_telescope.setExtension(desiredExtensionSpeed);
+        m_bottomPivot.setVelocity(desiredBottomSpeed, m_telescope.getExtension());
+        m_telescope.setVelocity(desiredExtensionSpeed);
         m_topPivot.setVelocity(desiredTopSpeed);
     }
 

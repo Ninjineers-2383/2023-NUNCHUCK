@@ -147,8 +147,8 @@ public final class Constants {
         public static final double kV = 0.01;
         public static final double kA = 0.009;
 
-        public static final double kUpperBound = 10;
-        public static final double kLowerBound = 0;
+        public static final double kUpperBound = 0.5;
+        public static final double kLowerBound = 0.0;
 
         public static final double kMaxCurrent = 40.0;
 
@@ -206,6 +206,7 @@ public final class Constants {
         public static final int kEncoderPortAbs = 15;
 
         public static final double kgt = 1 / 218.7;
+
     }
 
     public static final class PinkArmConstants {

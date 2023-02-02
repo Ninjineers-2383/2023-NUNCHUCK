@@ -139,7 +139,7 @@ public class TelescopeModule implements Sendable {
         SmartDashboard.putNumber("Simulated Extension", getExtension());
     }
 
-    public void setExtension(double desiredSpeed) {
+    public void setVelocity(double desiredSpeed) {
         m_desiredExtension += desiredSpeed * 0.02;
 
         if (m_desiredExtension > TelescopeConstants.kUpperBound
@@ -153,6 +153,31 @@ public class TelescopeModule implements Sendable {
         m_extension = getExtension();
 
         m_systemLoop.setNextR(VecBuilder.fill(desiredSpeed, desiredSpeed, m_desiredExtension));
+
+        m_systemLoop.correct(VecBuilder.fill(m_speed, m_speed, m_extension));
+
+        m_systemLoop.predict(0.020);
+
+        m_voltageLeft = m_systemLoop.getU(0);
+        m_voltageRight = m_systemLoop.getU(1);
+
+        setVoltage();
+    }
+
+    public void setExtension(double extension) {
+        if (m_desiredExtension > TelescopeConstants.kUpperBound) {
+            m_desiredExtension = TelescopeConstants.kUpperBound;
+        } else if (m_desiredExtension < TelescopeConstants.kLowerBound) {
+            m_desiredExtension = TelescopeConstants.kLowerBound;
+        } else {
+            m_desiredExtension = extension;
+        }
+
+        m_speed = m_rightMotor.get() / 2 + m_leftMotor.get() / 2;
+
+        m_extension = getExtension();
+
+        m_systemLoop.setNextR(VecBuilder.fill(0, 0, m_desiredExtension));
 
         m_systemLoop.correct(VecBuilder.fill(m_speed, m_speed, m_extension));
 
