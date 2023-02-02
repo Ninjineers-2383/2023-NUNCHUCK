@@ -87,8 +87,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation()) {
             m_poseEstimator.resetPosition(new Rotation2d(), getModulePositions(),
                     new Pose2d(new Translation2d(0, 0), new Rotation2d()));
-            m_poseEstimator.resetPosition(new Rotation2d(), getModulePositions(),
-                    new Pose2d(new Translation2d(0, 0), new Rotation2d()));
         }
 
         resetHeading();
@@ -112,7 +110,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (cam_pose != null) {
             m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
         }
-        m_poseEstimator.update(getHeading(), getModulePositions());
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
@@ -148,8 +145,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
         // all other angles
         m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
-
-        m_camera.simulate(getPose());
 
         m_camera.simulate(getPose());
     }
@@ -212,7 +207,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void forceHeading(Rotation2d currentHeading) {
         m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
         m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
-        m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
     }
 
     /**
@@ -225,8 +219,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void resetHeading() {
         // getYaw is CW positive not CCW positive
         m_gyro.setAngleAdjustment(getCompassOffset());
-        m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
-                new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
                 new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         resetEncoders();
@@ -253,12 +245,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void forceOdometry(Pose2d pose) {
         forceHeading(pose.getRotation());
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
-        m_poseEstimator.resetPosition(getHeading(), getModulePositions(), pose);
         resetEncoders();
     }
 
     public void setPosition(Translation2d position) {
-        m_poseEstimator.resetPosition(getHeading(), getModulePositions(), new Pose2d(position, getHeading()));
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(), new Pose2d(position, getHeading()));
         resetEncoders();
     }

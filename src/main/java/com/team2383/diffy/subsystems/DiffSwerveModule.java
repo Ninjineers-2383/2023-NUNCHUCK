@@ -91,6 +91,8 @@ public class DiffSwerveModule implements Sendable {
     private double m_topVoltage;
     private double m_bottomVoltage;
 
+    private final double m_kS;
+
     // The offset for the module encoder in degrees
     private double m_offset;
 
@@ -166,6 +168,8 @@ public class DiffSwerveModule implements Sendable {
         m_expectedSpeed = new DoubleLogEntry(m_log, "/" + m_name + "/expectedSpeed");
         m_expectedAngle = new DoubleLogEntry(m_log, "/" + m_name + "/expectedAngle");
 
+        m_kS = moduleConstants.kS;
+
         // Initialize state space controller
         LinearSystem<N3, N2, N3> m_diffySwervePlant = new LinearSystem<>(
                 Matrix.mat(Nat.N3(), Nat.N3()).fill(
@@ -240,8 +244,8 @@ public class DiffSwerveModule implements Sendable {
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
                 getDriveDistanceMeters(
-                        m_topMotor.getRotorVelocity().refresh().getValue(),
-                        m_bottomMotor.getRotorVelocity().refresh().getValue()),
+                        m_topMotor.getRotorPosition().refresh().getValue(),
+                        m_bottomMotor.getRotorPosition().refresh().getValue()),
                 Rotation2d.fromDegrees(m_moduleAngle));
     }
 
@@ -272,7 +276,7 @@ public class DiffSwerveModule implements Sendable {
      * @returns the speed of the module in m/s
      */
     public double getDriveSpeed(double topMotorSpeed, double bottomMotorSpeed) {
-        double speed = 
+        double speed = (topMotorSpeed - bottomMotorSpeed) / 2 /* Average motor speed (rps) */ *
                 Constants.GlobalModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
                 (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
                                                                                        * Circumference in meters
@@ -345,10 +349,10 @@ public class DiffSwerveModule implements Sendable {
         m_systemLoop.predict(0.020);
 
         m_topVoltage = m_systemLoop.getU(0);
-        // m_topVoltage += Math.signum(m_topVoltage) * m_kS;
+        m_topVoltage += Math.signum(m_topVoltage) * m_kS;
 
         m_bottomVoltage = m_systemLoop.getU(1);
-        // m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
+        m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
 
         setVoltage();
     }
@@ -431,13 +435,6 @@ public class DiffSwerveModule implements Sendable {
         builder.addDoubleProperty("Bottom Voltage", () -> {
             return m_bottomVoltage;
         }, null);
-
-        // builder.addDoubleProperty("Top Temperature", () -> {
-        //     return m_topMotor.getTemperature();
-        // }, null);
-        // builder.addDoubleProperty("Bottom Temperature", () -> {
-        //     return m_bottomMotor.getTemperature();
-        // }, null);
 
         builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
             return Math.toDegrees(m_systemLoop.getXHat(2));

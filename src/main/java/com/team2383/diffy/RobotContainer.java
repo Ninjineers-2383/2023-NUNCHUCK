@@ -11,8 +11,9 @@ import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 
@@ -36,17 +37,15 @@ import com.team2383.diffy.subsystems.PinkArmSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final Joystick m_driverMoveController = new Joystick(0);
-    private final Joystick m_driverTurnController = new Joystick(1);
+    private final GenericHID m_driverController = new GenericHID(0);
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveX = () -> m_driverMoveController.getX();
-    private final DoubleSupplier m_driveY = () -> m_driverMoveController.getY();
-    private final DoubleSupplier m_driveOmega = () -> m_driverTurnController.getX();
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getTrigger()
-            || m_driverTurnController.getTrigger());
-    private final IntSupplier m_povSupplier = () -> m_driverTurnController.getPOV();
+    private final DoubleSupplier m_driveY = () -> m_driverController.getRawAxis(0) / 0.6;
+    private final DoubleSupplier m_driveX = () -> m_driverController.getRawAxis(1) / 0.6;
+    private final DoubleSupplier m_driveOmega = () -> m_driverController.getRawAxis(2) / 0.6;
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
+    private final IntSupplier m_povSupplier = () -> -1;
 
     private final BooleanSupplier m_bottomArmUp = () -> m_operatorController.getAButton();
     private final BooleanSupplier m_bottomArmDown = () -> m_operatorController.getYButton();
@@ -104,6 +103,7 @@ public class RobotContainer {
         DataLogManager.logNetworkTables(true);
         DriverStation.startDataLog(DataLogManager.getLog(), true);
 
+        LiveWindow.enableAllTelemetry();
     }
 
     private void configureButtonBindings() {

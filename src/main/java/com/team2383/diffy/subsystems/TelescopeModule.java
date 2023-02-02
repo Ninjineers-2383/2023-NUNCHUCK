@@ -19,7 +19,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeModule implements Sendable {
-    //TODO: Comment
+    // TODO: Comment
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
@@ -60,34 +60,35 @@ public class TelescopeModule implements Sendable {
         m_leftMotor.setPositionConversionFactor(2.0 * Math.PI);
 
         m_telescopePlant = new LinearSystem<N3, N2, N3>(
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                -TelescopeConstants.kV / TelescopeConstants.kA, 0, 0,
-                0, -TelescopeConstants.kV / TelescopeConstants.kA, 0,
-                TelescopeConstants.kRadPerSecToInchesPerSec / 2.0, TelescopeConstants.kRadPerSecToInchesPerSec / 2.0, 0), 
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                1 / TelescopeConstants.kA, 0,
-                0, 1 / TelescopeConstants.kA,
-                0, 0),
-            Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1), 
-            Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                0, 0,
-                0, 0,
-                0, 0)
-        );
-        
-        m_controller = new LinearQuadraticRegulator<>(m_telescopePlant, 
-            VecBuilder.fill(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 1), VecBuilder.fill(12, 12), 0.02);
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        -TelescopeConstants.kV / TelescopeConstants.kA, 0, 0,
+                        0, -TelescopeConstants.kV / TelescopeConstants.kA, 0,
+                        TelescopeConstants.kRadPerSecToInchesPerSec / 2.0,
+                        TelescopeConstants.kRadPerSecToInchesPerSec / 2.0, 0),
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        1 / TelescopeConstants.kA, 0,
+                        0, 1 / TelescopeConstants.kA,
+                        0, 0),
+                Matrix.mat(Nat.N3(), Nat.N3()).fill(
+                        1, 0, 0,
+                        0, 1, 0,
+                        0, 0, 1),
+                Matrix.mat(Nat.N3(), Nat.N2()).fill(
+                        0, 0,
+                        0, 0,
+                        0, 0));
 
-        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_telescopePlant, 
-            VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.1, 0.1, 0.1), 0.02);
+        m_controller = new LinearQuadraticRegulator<>(m_telescopePlant,
+                VecBuilder.fill(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 1), VecBuilder.fill(12, 12), 0.02);
 
-        m_systemLoop = new LinearSystemLoop<>(m_telescopePlant, m_controller, 
-            m_observer, 12.0, 0.02);
+        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_telescopePlant,
+                VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.1, 0.1, 0.1), 0.02);
+
+        m_systemLoop = new LinearSystemLoop<>(m_telescopePlant, m_controller,
+                m_observer, 12.0, 0.02);
 
         m_rightMotor.setSmartCurrentLimit(40);
+        m_leftMotor.setSmartCurrentLimit(40);
 
         m_log = log;
 
@@ -115,7 +116,7 @@ public class TelescopeModule implements Sendable {
         m_moduleExtensionLog.append(m_extension);
 
         m_expectedSpeed.append(m_desiredSpeed);
-        
+
         m_expectedExtension.append(m_desiredExtension);
     }
 
@@ -129,11 +130,11 @@ public class TelescopeModule implements Sendable {
         m_rightMotor.setPosition(m_position);
         m_leftMotor.setPosition(m_position);
 
-        SmartDashboard.putNumber("Simulated Telescope Motor Velocity", 
-            m_rightMotor.get() / 2 + m_leftMotor.get() / 2);
+        SmartDashboard.putNumber("Simulated Telescope Motor Velocity",
+                m_rightMotor.get() / 2 + m_leftMotor.get() / 2);
 
-        SmartDashboard.putNumber("Simulated Telescope Motor Position", 
-            m_rightMotor.getPosition() / 2 + m_leftMotor.getPosition() / 2);
+        SmartDashboard.putNumber("Simulated Telescope Motor Position",
+                m_rightMotor.getPosition() / 2 + m_leftMotor.getPosition() / 2);
 
         SmartDashboard.putNumber("Simulated Extension", getExtension());
     }
@@ -141,7 +142,8 @@ public class TelescopeModule implements Sendable {
     public void setExtension(double desiredSpeed) {
         m_desiredExtension += desiredSpeed * 0.02;
 
-        if (m_desiredExtension > TelescopeConstants.kUpperBound || m_desiredExtension < TelescopeConstants.kLowerBound)  {
+        if (m_desiredExtension > TelescopeConstants.kUpperBound
+                || m_desiredExtension < TelescopeConstants.kLowerBound) {
             m_desiredExtension -= desiredSpeed * 0.02;
             desiredSpeed = 0;
         }
@@ -203,5 +205,5 @@ public class TelescopeModule implements Sendable {
             return m_systemLoop.getXHat(2);
         }, null);
     }
-    
+
 }

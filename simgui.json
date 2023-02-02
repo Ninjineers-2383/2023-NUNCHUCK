@@ -6,6 +6,16 @@
           "open": true
         }
       },
+      "Talon FX (Pro)[20]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (Pro)[20]/Rotor Sensor": {
+        "header": {
+          "open": true
+        }
+      },
       "window": {
         "visible": false
       }
@@ -33,6 +43,12 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [20]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [21]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [22]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [23]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [24]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [25]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [10]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [11]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [1]": "Motor Controller",
@@ -51,12 +67,19 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
+      "/SmartDashboard/Pink Arm": "Mechanism2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pink Arm": {
         "window": {
           "visible": true
         }
@@ -114,6 +137,35 @@
         "open": true
       },
       "open": true
+    },
+    "transitory": {
+      "LiveWindow": {
+        "DrivetrainSubsystem": {
+          "frontLeft": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "Simulated": {
+          "frontLeft": {
+            "Bottom Motor Simulator": {
+              "open": true
+            },
+            "Encoder": {
+              "open": true
+            },
+            "Top Motor Simulator": {
+              "open": true
+            },
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
     }
   },
   "Plot": {
@@ -254,7 +306,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 301,
+          "height": 186,
           "series": [
             {
               "color": [
@@ -277,7 +329,7 @@
           ]
         },
         {
-          "height": 301,
+          "height": 186,
           "series": [
             {
               "color": [
@@ -437,7 +489,7 @@
     "Plot <5>": {
       "plots": [
         {
-          "height": 276,
+          "height": 311,
           "series": [
             {
               "color": [
@@ -469,7 +521,7 @@
           ]
         },
         {
-          "height": 276,
+          "height": 311,
           "series": [
             {
               "color": [

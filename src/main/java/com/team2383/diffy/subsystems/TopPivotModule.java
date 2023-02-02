@@ -20,8 +20,8 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class TopPivotModule implements Sendable{
-    //TODO: Comment
+public class TopPivotModule implements Sendable {
+    // TODO: Comment
     private final Ninja_CANSparkMax m_pivotMotor;
 
     private final DoubleEncoder m_topAngleEncoder;
@@ -54,32 +54,32 @@ public class TopPivotModule implements Sendable{
         m_pivotMotor = new Ninja_CANSparkMax(TopPivotConstants.kMotorID, MotorType.kBrushless);
 
         m_pivotMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
-        
-        m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA, 
-            TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
+
+        m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA,
+                TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
 
         m_topPivotPlant = new LinearSystem<N2, N1, N2>(
-            Matrix.mat(Nat.N2(), Nat.N2()).fill(
-                -TopPivotConstants.kV / TopPivotConstants.kA, 0,
-                TopPivotConstants.kgt, 0), 
-            Matrix.mat(Nat.N2(), Nat.N1()).fill(
-                1 / TopPivotConstants.kA,
-                0), 
-            Matrix.mat(Nat.N2(), Nat.N2()).fill(
-                1, 0,
-                0, 1), 
-            Matrix.mat(Nat.N2(), Nat.N1()).fill(
-                0,
-                0));
+                Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                        -TopPivotConstants.kV / TopPivotConstants.kA, 0,
+                        TopPivotConstants.kgt, 0),
+                Matrix.mat(Nat.N2(), Nat.N1()).fill(
+                        1 / TopPivotConstants.kA,
+                        0),
+                Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                        1, 0,
+                        0, 1),
+                Matrix.mat(Nat.N2(), Nat.N1()).fill(
+                        0,
+                        0));
 
-        m_controller = new LinearQuadraticRegulator<>(m_topPivotPlant, 
-            VecBuilder.fill(Double.POSITIVE_INFINITY, 0.1), VecBuilder.fill(12), 0.02);
-    
-        m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_topPivotPlant, 
-            VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
-    
-        m_systemLoop = new LinearSystemLoop<>(m_topPivotPlant, m_controller, 
-            m_observer, 12.0, 0.02);
+        m_controller = new LinearQuadraticRegulator<>(m_topPivotPlant,
+                VecBuilder.fill(Double.POSITIVE_INFINITY, 0.1), VecBuilder.fill(12), 0.02);
+
+        m_observer = new KalmanFilter<>(Nat.N2(), Nat.N2(), m_topPivotPlant,
+                VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1, 0.1), 0.02);
+
+        m_systemLoop = new LinearSystemLoop<>(m_topPivotPlant, m_controller,
+                m_observer, 12.0, 0.02);
 
         m_log = log;
 
@@ -111,23 +111,39 @@ public class TopPivotModule implements Sendable{
         m_pivotMotor.set(m_systemLoop.getXHat(0));
 
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
-        m_pivotMotor.get());
+                m_pivotMotor.get());
 
         m_topAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(1)).getDegrees());
 
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
-    public void setAngle(double desiredSpeed) {
-        m_desiredAngle += desiredSpeed;
+    public void setAngle(double desiredAngle) {
+        m_desiredAngle = desiredAngle;
 
-        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound)  {
-            m_desiredAngle -= desiredSpeed;
-            desiredSpeed = 0;
+        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound) {
+            m_desiredAngle = m_desiredAngle > TopPivotConstants.kUpperBound ? TopPivotConstants.kUpperBound
+                    : TopPivotConstants.kLowerBound;
         }
 
-        m_speed = m_pivotMotor.get();
-        m_angle = getAngle();
+        m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, Math.toRadians(m_desiredAngle)));
+
+        m_systemLoop.correct(VecBuilder.fill(m_speed, Math.toRadians(m_angle)));
+
+        m_systemLoop.predict(0.02);
+
+        m_voltage = m_systemLoop.getU(0);
+
+        setVoltage();
+    }
+
+    public void setVelocity(double desiredSpeed) {
+        m_desiredAngle += desiredSpeed * 0.02;
+
+        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound) {
+            m_desiredAngle -= desiredSpeed * 0.02;
+            desiredSpeed = 0;
+        }
 
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, Math.toRadians(m_desiredAngle)));
 

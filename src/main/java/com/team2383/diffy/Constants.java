@@ -153,8 +153,8 @@ public final class Constants {
         public static final int kExtensionLeftID = 1;
         public static final int kExtensionRightID = 2;
 
-        public static final double kRadPerSecToInchesPerSec =  19.25 / 192.0;
-    
+        public static final double kRadPerSecToInchesPerSec = 19.25 / 192.0;
+
     }
 
     public static final class DickConstants {
@@ -168,7 +168,7 @@ public final class Constants {
 
         public static final double kUpperBound = 90;
         public static final double kLowerBound = 0;
-        
+
         public static final double pivotLength = 0.5;
         public static final double gravity = 9.8;
         public static final double armMass = 10;
@@ -193,8 +193,8 @@ public final class Constants {
         public static final double kA = 0.001;
         public static final double kG = 0.01;
 
-        public static final double kUpperBound = 10;
-        public static final double kLowerBound = 0;
+        public static final double kUpperBound = 180;
+        public static final double kLowerBound = -180;
 
         public static final double kMaxCurrent = 40.0;
         public static final int kMotorID = 31;
