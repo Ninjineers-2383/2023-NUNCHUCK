@@ -14,6 +14,8 @@ public class DickCommand extends CommandBase {
     public DickCommand(DickSubsystem dick, DoubleSupplier viagra) {
         m_dick = dick;
         m_erect = viagra;
+
+        addRequirements(dick);
     }
 
     @Override

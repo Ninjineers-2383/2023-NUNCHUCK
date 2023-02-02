@@ -49,19 +49,18 @@ public class RobotContainer {
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getRawButton(1));
     private final IntSupplier m_povSupplier = () -> -1;
 
-    private final BooleanSupplier m_erect = () -> m_operatorController.getYButton();
-    private final BooleanSupplier m_flaccid = () -> m_operatorController.getAButton();
+    private final DoubleSupplier m_erect = () -> m_operatorController.getRightTriggerAxis();
+    private final DoubleSupplier m_flaccid = () -> m_operatorController.getLeftTriggerAxis();
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final DickSubsystem m_dickSubsystem = new DickSubsystem();
 
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+    private final JoystickDriveCommand m_defaultDriveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
-    private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem, () -> 
-            m_erect.getAsBoolean() ? 0.5 : 
-            m_flaccid.getAsBoolean() ? -0.5 : 0);
+    private final DickCommand m_defaultDickCommand = new DickCommand(m_dickSubsystem, () -> 
+    (m_erect.getAsDouble() - m_flaccid.getAsDouble()) * 0.3);
 
     // This is just an example event map. It would be better to have a constant,
     // global event map
@@ -103,8 +102,8 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
-        m_dickSubsystem.setDefaultCommand(m_dickCommand);
+        m_drivetrainSubsystem.setDefaultCommand(m_defaultDriveCommand);
+        m_dickSubsystem.setDefaultCommand(m_defaultDickCommand);
     }
 
     /**

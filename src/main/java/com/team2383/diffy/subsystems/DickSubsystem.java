@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.team2383.diffy.Constants.DickConstants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DickSubsystem extends SubsystemBase{
@@ -22,7 +23,9 @@ public class DickSubsystem extends SubsystemBase{
 
     // Idk what to put in here lol
     @Override
-    public void periodic() {}
+    public void periodic() {
+        SmartDashboard.putNumber("Dick Moving: ", m_dick.get());
+    }
     
     public void erect(double speed) {
         m_dick.set(speed);
