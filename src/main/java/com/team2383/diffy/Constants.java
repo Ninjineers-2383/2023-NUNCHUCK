@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 /**
  * Note: Translations calculated with the formula graphed here
@@ -28,7 +29,8 @@ public final class Constants {
         public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
                 new PhotonCameraData("Microsoft_LifeCam_HD-3000",
                         new Transform3d(
-                                new Translation3d(-4, -5.5, 1.0),
+                                new Translation3d(Units.inchesToMeters(-4), Units.inchesToMeters(-5.5),
+                                        Units.inchesToMeters(1.0)),
                                 new Rotation3d(VecBuilder.fill(0, 1, 0), Math.PI))),
         };
     }

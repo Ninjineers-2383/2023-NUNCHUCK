@@ -68,6 +68,7 @@
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/Pink Arm": "Mechanism2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
@@ -75,6 +76,28 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "COR": {
+          "arrowSize": 0,
+          "arrows": false,
+          "selectable": false
+        },
+        "image": "sim\\2023-field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": {
+        "image": "sim\\2023-field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/PPSwerveControllerCommand_field": {
+        "image": "sim\\2023-field.png",
+        "traj": {
+          "arrows": false,
+          "style": "Line"
+        },
         "window": {
           "visible": true
         }
@@ -143,12 +166,14 @@
         "DrivetrainSubsystem": {
           "frontLeft": {
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true
       },
       "SmartDashboard": {
+        "PPSwerveControllerCommand_field": {
+          "open": true
+        },
         "Simulated": {
           "frontLeft": {
             "Bottom Motor Simulator": {
@@ -163,8 +188,7 @@
             "open": true
           },
           "open": true
-        },
-        "open": true
+        }
       }
     }
   },
@@ -360,7 +384,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
@@ -552,7 +579,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }
