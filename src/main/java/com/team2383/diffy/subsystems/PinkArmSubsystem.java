@@ -1,5 +1,8 @@
 package com.team2383.diffy.subsystems;
 
+import com.team2383.diffy.helpers.PinkArmState;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -59,6 +62,10 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_bottomPivot.simulate();
         m_telescope.simulate();
         m_topPivot.simulate();
+    }
+
+    public PinkArmState getState() {
+        return new PinkArmState(m_telescope.getExtension(), new Rotation2d(Math.toRadians(m_bottomPivot.getAngle())), new Rotation2d(Math.toRadians(m_topPivot.getAngle())));
     }
 
     public void setDesiredState(double desiredBottomAngle,
