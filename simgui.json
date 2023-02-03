@@ -167,8 +167,7 @@
           "frontLeft": {
             "open": true
           }
-        },
-        "open": true
+        }
       },
       "SmartDashboard": {
         "PPSwerveControllerCommand_field": {

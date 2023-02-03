@@ -28,16 +28,24 @@ public class PinkArmKinematics {
         
     }
 
-    public PinkArmState toPinkArmState(Rotation2d bottomAngle, double extension, Rotation2d topAngle) {
-        double[][] stateXMatrixInternals = {{Math.cos(bottomAngle.getRadians()) * extension}, {Math.cos(topAngle.getRadians()) * m_topPivotLength / 2.0}};
+    public PinkArmState toPinkArmState(double x, double y) {
+        double[][] stateXMatrixInternals = {{x}};
         SimpleMatrix stateXMatrix = new SimpleMatrix(stateXMatrixInternals);
 
-        m_xValues = stateXMatrix.mult(inverseKinematics);
+        m_xValues = inverseKinematics.mult(stateXMatrix);
 
-        double[][] stateYMatrixInternals = {{Math.sin(bottomAngle.getRadians()) * extension}, {Math.sin(topAngle.getRadians()) * m_topPivotLength / 2.0}};
+        double[][] stateYMatrixInternals = {{y}};
         SimpleMatrix stateYMatrix = new SimpleMatrix(stateYMatrixInternals);
 
-        m_yValues = stateYMatrix.mult(inverseKinematics);
+        m_yValues = inverseKinematics.mult(stateYMatrix);
+
+        double extension = Math.sqrt(x + y);
+
+        double topAngle = Math.acos(m_xValues.get(1, 0));
+
+        double bottomAngle = Math.acos(m_xValues.get(0, 0) / extension);
+
+        return new PinkArmState(extension, new Rotation2d(bottomAngle), new Rotation2d(topAngle));
     }
 
 

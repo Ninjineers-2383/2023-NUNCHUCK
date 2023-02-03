@@ -14,4 +14,16 @@ public class PinkArmState {
         m_topAngle = topAngle;
 
     }
+
+    public double getExtension() {
+        return m_extensionLength;
+    }
+
+    public Rotation2d getBottomAngle() {
+        return m_bottomAngle;
+    }
+
+    public Rotation2d getTopAngle() {
+        return m_topAngle;
+    }
 }

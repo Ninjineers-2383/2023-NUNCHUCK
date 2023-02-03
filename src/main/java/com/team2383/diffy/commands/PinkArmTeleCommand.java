@@ -60,7 +60,6 @@ public class PinkArmTeleCommand extends CommandBase {
             m_topAngleSpeed = 0;
         }
 
-        m_pinkArm.setDesiredVelocities(m_bottomAngleSpeed,
-                m_extensionSpeed, m_topAngleSpeed);
+        m_pinkArm.setPosition(m_extensionSpeed, m_extensionSpeed);
     }
 }
