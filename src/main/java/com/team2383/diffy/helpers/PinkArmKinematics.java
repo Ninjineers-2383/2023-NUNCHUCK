@@ -2,6 +2,8 @@ package com.team2383.diffy.helpers;
 
 import org.ejml.simple.SimpleMatrix;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class PinkArmKinematics {
     private SimpleMatrix forwardKinematics;
     private SimpleMatrix inverseKinematics;
@@ -18,6 +20,11 @@ public class PinkArmKinematics {
 
         inverseKinematics = forwardKinematics.pseudoInverse();
         
+    }
+
+    public PinkArmState toPinkArmState(Rotation2d bottomAngle, double extension, Rotation2d topAngle) {
+        double[][] stateMatrixInternals = {{bottomAngle.getRadians() * extension}, {}};
+        SimpleMatrix stateMatrix = new SimpleMatrix();
     }
 
 
