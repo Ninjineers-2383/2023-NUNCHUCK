@@ -66,7 +66,6 @@ public class PinkArmTeleCommand extends CommandBase {
             m_topAngle = -0.1;
         }
 
-        System.out.println("x: " + m_x + " y: " + m_y + " Top Theta: " + m_topAngle);
         m_pinkArm.setPosition(m_x, m_y, m_topAngle);    
     }
 }
