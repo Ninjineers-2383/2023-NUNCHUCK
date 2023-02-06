@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -79,6 +80,8 @@ public class RobotContainer {
 
     private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem, m_dickControl);
 
+    SendableChooser<Command> autoChooser = new SendableChooser<>();
+
     // This is just an example event map. It would be better to have a constant,
     // global event map
     // in your code that will be used by all path following commands.
@@ -113,6 +116,8 @@ public class RobotContainer {
         DriverStation.startDataLog(DataLogManager.getLog(), true);
 
         LiveWindow.enableAllTelemetry();
+
+        setAutoCommands();
     }
 
     private void configureButtonBindings() {
@@ -132,6 +137,18 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        return autoChooser.getSelected();
+    }
+
+    private void setAutoCommands() {
+        Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
+        Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+
+        Command nullAuto = null;
+
+        autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        autoChooser.addOption("Forward Test Auto", forwardTest);
+        autoChooser.addOption("No Auto :(", nullAuto);
     }
 }
