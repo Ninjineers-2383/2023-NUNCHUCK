@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.TwoConeAuto;
+import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.PinkArmTeleCommand;
@@ -132,6 +132,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        return new TwoConeAuto(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
     }
 }
