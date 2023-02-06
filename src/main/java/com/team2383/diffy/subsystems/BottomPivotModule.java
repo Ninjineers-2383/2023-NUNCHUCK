@@ -150,7 +150,7 @@ public class BottomPivotModule implements Sendable {
     }
 
     public void setAngle(double angle, double extension) {
-
+        //System.out.println("Bottom Angle: " + angle);
         if (m_desiredAngle > BottomPivotConstants.kUpperBound) {
             m_desiredAngle = BottomPivotConstants.kUpperBound;
         } else if (m_desiredAngle < BottomPivotConstants.kLowerBound) {

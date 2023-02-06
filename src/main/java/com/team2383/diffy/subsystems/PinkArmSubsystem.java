@@ -43,7 +43,7 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_feederLigament = m_telescopeLigament
                 .append(new MechanismLigament2d("Top Pivot", 0.2, 0, 6, new Color8Bit(Color.kYellow)));
 
-        m_kinematics = new PinkArmKinematics(0, 5);
+        m_kinematics = new PinkArmKinematics(0, 0.2);
 
         addChild("Bottom Pivot", m_bottomPivot);
         addChild("Telescope", m_telescope);
@@ -75,14 +75,16 @@ public class PinkArmSubsystem extends SubsystemBase {
     }
 
     public void setDesiredState(PinkArmState state) {
-        System.out.println(state.getBottomAngle().getDegrees());
         m_bottomPivot.setAngle(state.getBottomAngle().getDegrees(), m_telescope.getExtension());
         m_telescope.setExtension(state.getExtension());
         m_topPivot.setAngle(state.getTopAngle().getDegrees());
     }
 
-    public void setPosition(double x, double y) {
-        m_state = m_kinematics.toPinkArmState(x, y);
+    public void setPosition(double x, double y, double topAngle) {
+        m_state = m_kinematics.toPinkArmState(x, y, topAngle);
+        // System.out.println("Bottom Angle: " + m_state.getBottomAngle());
+        // System.out.println("Top Angle: " + m_state.getTopAngle());
+        // System.out.println("Extension: " + m_state.getExtension());
 
         setDesiredState(m_state);
     }

@@ -147,7 +147,7 @@ public final class Constants {
         public static final double kV = 0.01;
         public static final double kA = 0.009;
 
-        public static final double kUpperBound = 0.5;
+        public static final double kUpperBound = 5;
         public static final double kLowerBound = 0.0;
 
         public static final double kMaxCurrent = 40.0;
@@ -168,7 +168,7 @@ public final class Constants {
         public static final double kV = 0.1;
         public static final double kA = 0.001;
 
-        public static final double kUpperBound = 90;
+        public static final double kUpperBound = 180;
         public static final double kLowerBound = 0;
 
         public static final double pivotLength = 0.5;

@@ -119,12 +119,13 @@ public class TopPivotModule implements Sendable {
     }
 
     public void setAngle(double desiredAngle) {
+        //System.out.println("Top Angle: " + desiredAngle);
         m_desiredAngle = desiredAngle;
 
-        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound) {
-            m_desiredAngle = m_desiredAngle > TopPivotConstants.kUpperBound ? TopPivotConstants.kUpperBound
-                    : TopPivotConstants.kLowerBound;
-        }
+        // if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound) {
+        //     m_desiredAngle = m_desiredAngle > TopPivotConstants.kUpperBound ? TopPivotConstants.kUpperBound
+        //             : TopPivotConstants.kLowerBound;
+        // }
 
         m_systemLoop.setNextR(VecBuilder.fill(m_desiredSpeed, Math.toRadians(m_desiredAngle)));
 

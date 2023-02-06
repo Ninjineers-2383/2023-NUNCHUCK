@@ -9,57 +9,64 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class PinkArmTeleCommand extends CommandBase {
     private PinkArmSubsystem m_pinkArm;
 
-    private BooleanSupplier m_bottomAngleUp;
-    private BooleanSupplier m_bottomAngleDown;
-    private BooleanSupplier m_extensionUp;
-    private BooleanSupplier m_extensionDown;
-    private BooleanSupplier m_topAngleUp;
-    private BooleanSupplier m_topAngleDown;
+    private BooleanSupplier m_topUp;
+    private BooleanSupplier m_topDown;
+    private BooleanSupplier m_xUp;
+    private BooleanSupplier m_xDown;
+    private BooleanSupplier m_yUp;
+    private BooleanSupplier m_yDown;
 
-    double m_bottomAngleSpeed = 0;
-    double m_topAngleSpeed = 0;
-    double m_extensionSpeed = 0;
+    double m_x = 0.1;
+    double m_y = 0.1;
+    double m_topAngle = 0.1;
 
     public PinkArmTeleCommand(PinkArmSubsystem pinkArm,
-            BooleanSupplier bottomAngleUp, BooleanSupplier bottomAngleDown, BooleanSupplier extensionUp, 
-            BooleanSupplier extensionDown, BooleanSupplier topAngleUp, BooleanSupplier topAngleDown) {
+            BooleanSupplier topUp, BooleanSupplier topDown, BooleanSupplier xUp, 
+            BooleanSupplier xDown, BooleanSupplier yUp, BooleanSupplier yDown) {
         m_pinkArm = pinkArm;
-        m_bottomAngleDown = bottomAngleDown;
-        m_bottomAngleUp = bottomAngleUp;
-        m_extensionDown = extensionDown;
-        m_extensionUp = extensionUp;
-        m_topAngleDown = topAngleDown;
-        m_topAngleUp = topAngleUp;
+        m_topUp = topUp;
+        m_topDown = topDown;
+        m_xUp = xUp;
+        m_xDown = xDown;
+        m_yUp = yUp;
+        m_yDown = yDown;
         
         addRequirements(m_pinkArm);
     }
 
     @Override
     public void execute() {
-        if (m_bottomAngleUp.getAsBoolean()) {
-            m_bottomAngleSpeed = 90;
-        } else if (m_bottomAngleDown.getAsBoolean()) {
-            m_bottomAngleSpeed = -90;
-        } else {
-            m_bottomAngleSpeed = 0;
+        if (m_xUp.getAsBoolean() && m_x < 1.9) {
+            m_x += 0.01;
+        } else if (m_xDown.getAsBoolean() && m_x > -1.9) {
+            m_x -= 0.01;
+        } else if (m_x > 1.9) {
+            m_x = 0.1;
+        } else if (m_x < -1.9) {
+            m_x = -0.1;
         }
 
-        if (m_extensionUp.getAsBoolean()) {
-            m_extensionSpeed = 1;
-        } else if (m_extensionDown.getAsBoolean()) {
-            m_extensionSpeed = -1;
-        } else {
-            m_extensionSpeed = 0;
+        if (m_yUp.getAsBoolean() && m_y < 1.9) {
+            m_y += 0.01;
+        } else if (m_yDown.getAsBoolean() && m_y > -1.9) {
+            m_y -= 0.01;
+        } else if (m_y > 1.9) {
+            m_y = 0.1;
+        } else if (m_y < -1.9) {
+            m_y = -0.1;
         }
 
-        if (m_topAngleUp.getAsBoolean()) {
-            m_topAngleSpeed = 90;
-        } else if (m_topAngleDown.getAsBoolean()) {
-            m_topAngleSpeed = -90;
-        } else {
-            m_topAngleSpeed = 0;
+        if (m_topUp.getAsBoolean() && m_topAngle < 1.9) {
+            m_topAngle += 0.01;
+        } else if (m_topDown.getAsBoolean() && m_topAngle > -1.9) {
+            m_topAngle -= 0.01;
+        } else if (m_topAngle > 1.9) {
+            m_topAngle = 0.1;
+        } else if (m_topAngle < -1.9) {
+            m_topAngle = -0.1;
         }
 
-        m_pinkArm.setPosition(m_extensionSpeed, m_extensionSpeed);
+        System.out.println("x: " + m_x + " y: " + m_y + " Top Theta: " + m_topAngle);
+        m_pinkArm.setPosition(m_x, m_y, m_topAngle);    
     }
 }
