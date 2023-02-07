@@ -2,7 +2,6 @@ package com.team2383.diffy.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants.TopPivotConstants;
-import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.Matrix;
@@ -18,13 +17,16 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TopPivotModule implements Sendable {
     // TODO: Comment
     private final Ninja_CANSparkMax m_pivotMotor;
 
-    private final DoubleEncoder m_topAngleEncoder;
+    private final DutyCycleEncoder m_topAngleEncoder;
+    private final DutyCycleEncoderSim m_topAngleEncoderSim;
 
     private final LinearSystem<N2, N1, N2> m_topPivotPlant;
     private final LinearQuadraticRegulator<N2, N1, N2> m_controller;
@@ -55,8 +57,9 @@ public class TopPivotModule implements Sendable {
 
         m_pivotMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
-        m_topAngleEncoder = new DoubleEncoder(TopPivotConstants.kEncoderPortA,
-                TopPivotConstants.kEncoderPortB, TopPivotConstants.kEncoderPortAbs);
+        m_topAngleEncoder = new DutyCycleEncoder(TopPivotConstants.kEncoderPortAbs);
+
+        m_topAngleEncoderSim = new DutyCycleEncoderSim(m_topAngleEncoder);
 
         m_topPivotPlant = new LinearSystem<N2, N1, N2>(
                 Matrix.mat(Nat.N2(), Nat.N2()).fill(
@@ -113,7 +116,7 @@ public class TopPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
                 m_pivotMotor.get());
 
-        m_topAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(1)).getDegrees());
+        m_topAngleEncoderSim.set(new Rotation2d(m_systemLoop.getXHat(1)).getDegrees());
 
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }

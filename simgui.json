@@ -27,10 +27,12 @@
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
       "/LiveWindow/FeederSubsystem/Feeder": "Subsystem",
       "/LiveWindow/PinkArmSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[10]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[15]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[6]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
@@ -290,7 +292,7 @@
               "autoFit": true
             }
           ],
-          "height": 668,
+          "height": 352,
           "series": [
             {
               "color": [
@@ -329,7 +331,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 186,
+          "height": 286,
           "series": [
             {
               "color": [
@@ -352,7 +354,7 @@
           ]
         },
         {
-          "height": 186,
+          "height": 286,
           "series": [
             {
               "color": [
@@ -383,15 +385,12 @@
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <3>": {
       "plots": [
         {
-          "height": 2,
+          "height": 188,
           "series": [
             {
               "color": [
@@ -423,7 +422,7 @@
           ]
         },
         {
-          "height": 2,
+          "height": 188,
           "series": [
             {
               "color": [

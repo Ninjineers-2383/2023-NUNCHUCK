@@ -2,7 +2,6 @@ package com.team2383.diffy.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants.BottomPivotConstants;
-import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.Matrix;
@@ -18,6 +17,8 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BottomPivotModule implements Sendable {
@@ -26,7 +27,8 @@ public class BottomPivotModule implements Sendable {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private final DoubleEncoder m_bottomAngleEncoder;
+    private final DutyCycleEncoder m_bottomAngleEncoder;
+    private final DutyCycleEncoderSim m_bottomAngleEncoderSim;
 
     private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
 
@@ -60,8 +62,8 @@ public class BottomPivotModule implements Sendable {
         m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
         m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
-        m_bottomAngleEncoder = new DoubleEncoder(BottomPivotConstants.kEncoderPortA,
-                BottomPivotConstants.kEncoderPortB, BottomPivotConstants.kEncoderPortAbs);
+        m_bottomAngleEncoder = new DutyCycleEncoder(BottomPivotConstants.kEncoderPortAbs);
+        m_bottomAngleEncoderSim = new DutyCycleEncoderSim(m_bottomAngleEncoder);
 
         m_log = log;
 
@@ -144,7 +146,7 @@ public class BottomPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Right Motor Output Velocity",
                 m_rightMotor.get());
 
-        m_bottomAngleEncoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
+        m_bottomAngleEncoderSim.set(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
 
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }

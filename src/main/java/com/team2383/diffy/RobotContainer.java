@@ -23,7 +23,6 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
-import com.team2383.diffy.commands.PinkArmTeleCommand;
 import com.team2383.diffy.commands.PinkArmTestCommand;
 import com.team2383.diffy.commands.DickCommand;
 
@@ -66,13 +65,13 @@ public class RobotContainer {
                                                                 - m_operatorController.getRightTriggerAxis());
 
     // The robot's subsystems and commands are defined here...
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final PinkArmSubsystem m_pinkArmSubsystem = new PinkArmSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     private final DickSubsystem m_dickSubsystem = new DickSubsystem();
 
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+    //private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+     //       m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
     private final PinkArmTestCommand m_pinkArmCommand = new PinkArmTestCommand(m_pinkArmSubsystem, m_bottomArmDown,
             m_bottomArmUp, m_topArmDown, m_topArmUp, m_extensionDown, m_extensionUp);
@@ -93,16 +92,16 @@ public class RobotContainer {
         }
     };
 
-    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
-            m_drivetrainSubsystem::getPose,
-            m_drivetrainSubsystem::forceOdometry,
-            m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(5, 0, 0),
-            new PIDConstants(0.5, 0, 0),
-            m_drivetrainSubsystem::setModuleStates,
-            eventMap,
-            true,
-            m_drivetrainSubsystem);
+    // SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
+    //         m_drivetrainSubsystem::getPose,
+    //         m_drivetrainSubsystem::forceOdometry,
+    //         m_drivetrainSubsystem.m_kinematics,
+    //         new PIDConstants(5, 0, 0),
+    //         new PIDConstants(0.5, 0, 0),
+    //         m_drivetrainSubsystem::setModuleStates,
+    //         eventMap,
+    //         true,
+    //         m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -125,7 +124,7 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
+        //m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_pinkArmSubsystem.setDefaultCommand(m_pinkArmCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_dickSubsystem.setDefaultCommand(m_dickCommand);
@@ -143,13 +142,13 @@ public class RobotContainer {
     }
 
     private void setAutoCommands() {
-        Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
+        // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
 
         Command nullAuto = null;
 
-        autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
-        autoChooser.addOption("Forward Test Auto", forwardTest);
+        // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.addOption("No Auto :(", nullAuto);
     }
 }

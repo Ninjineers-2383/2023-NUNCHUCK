@@ -180,9 +180,8 @@ public final class Constants {
         public static final int kBottomMotorLeftId = 29;
         public static final int kBottomMotorRightId = 30;
 
-        public static final int kEncoderPortA = 10;
-        public static final int kEncoderPortB = 11;
-        public static final int kEncoderPortAbs = 12;
+    
+        public static final int kEncoderPortAbs = 10;
 
         public static final double kgb = 1 / 112.5;
     }
@@ -203,7 +202,7 @@ public final class Constants {
 
         public static final int kEncoderPortA = 13;
         public static final int kEncoderPortB = 14;
-        public static final int kEncoderPortAbs = 15;
+        public static final int kEncoderPortAbs = 6;
 
         public static final double kgt = 1 / 218.7;
 
@@ -213,6 +212,8 @@ public final class Constants {
         public static final double BottomPivotVelocity = .1;
         public static final double TopPivotVelocity = .1;
         public static final double TelescopeVelocity = .1;
+        public static final int armMotorPort1 = 4;
+        public static final int armMotorPort2 = 5;
     }
 
     public static final class FeederConstants {
@@ -221,8 +222,7 @@ public final class Constants {
         public static final double kV = 0.01;
         public static final double kA = 0.001;
 
-        public static final int kTopMotorID = 26;
-        public static final int kBottomMotorID = 27;
-        public static final int kClawMotorID = 28;
+        public static final int kTopMotorID = 6;
+        public static final int kBottomMotorID = 7;
     }
 }
