@@ -116,6 +116,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        return new TwoConeAuto(m_drivetrainSubsystem, "Tuning", m_autoBuilder);
+        return new FullAutoCommand(m_drivetrainSubsystem, "Tuning", m_autoBuilder);
     }
 }

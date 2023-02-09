@@ -253,6 +253,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         resetEncoders();
     }
 
+    public void stopRobot() {
+        drive(0, 0, 0, false, new Translation2d());
+    }
+
     public void motorsOff() {
         for (DiffSwerveModule module : m_modules) {
             module.motorsOff();
