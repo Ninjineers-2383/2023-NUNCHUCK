@@ -6,6 +6,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import com.ctre.phoenixpro.hardware.Pigeon2;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,8 +41,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
-    private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-    private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+    // private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    // private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
+
+    private final Pigeon2 m_gyro = new Pigeon2(Constants.kPigeonID);
+    private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("PigeonIMU[0]");
     private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -144,7 +149,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // not offset
         // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
         // all other angles
-        m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+        // m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+        m_gyroSimAngle.set(m_gyro.getYaw().getValue() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
 
         m_camera.simulate(getPose());
     }
@@ -205,7 +211,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *                       facing directly towards the opposing alliance wall
      */
     public void forceHeading(Rotation2d currentHeading) {
-        m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
+        // m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
         m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
     }
 
@@ -218,7 +224,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetHeading() {
         // getYaw is CW positive not CCW positive
-        m_gyro.setAngleAdjustment(getCompassOffset());
+        m_gyro.setYaw(getCompassOffset());
+        
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
                 new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         resetEncoders();
@@ -278,16 +285,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public double getCompassOffset() {
         // Compass is CW positive not CCW positive
         double fieldCompassHeading = Preferences.getDouble("Compass", 0);
-        double currentCompassHeading = m_gyro.getCompassHeading();
+        
+        double currentCompassHeading =  m_gyro.getRawMagneticFieldX().getValue();
         // Use getYaw because this is being used to offset the gyro
-        double gyroHeading = -m_gyro.getYaw();
+        double gyroHeading = -m_gyro.getYaw().getValue();
 
         return gyroHeading + (currentCompassHeading - fieldCompassHeading);
     }
 
     public void setCompassOffset() {
         // Compass is CW positive not CCW positive
-        double fieldCompassHeading = m_gyro.getCompassHeading();
+        double fieldCompassHeading = m_gyro.getRawMagneticFieldX().getValue();
         Preferences.setDouble("Compass", fieldCompassHeading);
 
         DataLogManager.log("INFO: Compass offset set to " + fieldCompassHeading + "\n");
@@ -297,6 +305,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
 
-        builder.addDoubleProperty("Compass Heading", m_gyro::getCompassHeading, null);
+        builder.addDoubleProperty("Compass Heading", m_gyro.getRawMagneticFieldX()::getValue, null);
     }
 }

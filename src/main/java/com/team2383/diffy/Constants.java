@@ -24,6 +24,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
     public static final String kRIOBus = "rio";
     public static final String kCANivoreBus = "Drive";
+    public static final int kPigeonID = 10;
 
     public static final class VisionConstants {
         public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
