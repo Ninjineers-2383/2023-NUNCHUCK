@@ -2,12 +2,12 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.1,
+        "x": 2.0,
         "y": 4.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0593383207902938,
+        "x": 2.9593383207902937,
         "y": 4.8
       },
       "holonomicAngle": 0,
@@ -24,15 +24,40 @@
     },
     {
       "anchorPoint": {
-        "x": 5.5,
+        "x": 6.0,
         "y": 4.8
       },
       "prevControl": {
-        "x": 4.930010422586499,
-        "y": 4.8
+        "x": 6.569938376087452,
+        "y": 4.807639752798302
+      },
+      "nextControl": {
+        "x": 5.430061623912548,
+        "y": 4.792360247201698
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.9918605250744346,
+        "y": 4.801717272607479
+      },
+      "prevControl": {
+        "x": 1.7141914644129184,
+        "y": 4.771925175842833
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -45,12 +70,5 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 0.0,
-      "names": [
-        "Pickup Cone 2"
-      ]
-    }
-  ]
+  "markers": []
 }

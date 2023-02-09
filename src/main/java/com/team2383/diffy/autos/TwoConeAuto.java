@@ -14,7 +14,7 @@ import com.team2383.diffy.subsystems.DrivetrainSubsystem;
 public class TwoConeAuto extends SequentialCommandGroup {
     public TwoConeAuto(DrivetrainSubsystem drivetrain, String pathName, SwerveAutoBuilder autoBuilder) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName,
-                new PathConstraints(1, 0.5));
+                new PathConstraints(2, 1));
 
         addCommands(autoBuilder.fullAuto(pathGroup));
     }

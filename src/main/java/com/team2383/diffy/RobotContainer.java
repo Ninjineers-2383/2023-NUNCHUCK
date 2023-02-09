@@ -36,6 +36,7 @@ import com.team2383.diffy.commands.DickCommand;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
     // The controls are defined here
     private final GenericHID m_driverMoveController = new GenericHID(0);
     private final XboxController m_operatorController = new XboxController(1);
@@ -45,7 +46,7 @@ public class RobotContainer {
     // Power and suppliers are defined here
     private final DoubleSupplier m_driveX = () -> m_driverMoveController.getRawAxis(1)/0.6;
     private final DoubleSupplier m_driveY = () -> m_driverMoveController.getRawAxis(0)/0.6;
-    private final DoubleSupplier m_driveOmega = () -> m_driverMoveController.getRawAxis(3)/0.6;
+    private final DoubleSupplier m_driveOmega = () -> m_driverMoveController.getRawAxis(2)/0.6;
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getRawButton(1));
     private final IntSupplier m_povSupplier = () -> -1;
 
@@ -76,8 +77,8 @@ public class RobotContainer {
             m_drivetrainSubsystem::getPose,
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(5, 0, 0),
-            new PIDConstants(0.5, 0, 0),
+            new PIDConstants(0, 0, 0),
+            new PIDConstants(0, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             eventMap,
             true,
@@ -94,6 +95,8 @@ public class RobotContainer {
         DataLogManager.start();
         DataLogManager.logNetworkTables(true);
         DriverStation.startDataLog(DataLogManager.getLog(), true);
+
+        
 
         LiveWindow.enableAllTelemetry();
     }
@@ -113,6 +116,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        return new TwoConeAuto(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        return new TwoConeAuto(m_drivetrainSubsystem, "Tuning", m_autoBuilder);
     }
 }

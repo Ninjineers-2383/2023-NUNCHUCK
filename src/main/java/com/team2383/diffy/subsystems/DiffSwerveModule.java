@@ -36,6 +36,7 @@ import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
 public class DiffSwerveModule implements Sendable {
+
     private final TalonFX m_topMotor;
     private final TalonFX m_bottomMotor;
 
@@ -224,8 +225,8 @@ public class DiffSwerveModule implements Sendable {
         m_wheelSpeed.append(m_driveSpeed);
         m_moduleAngleLog.append(m_moduleAngle);
 
-        if (reset_counter < 200) {
-            if (reset_counter == 199) {
+        if (reset_counter < 400) {
+            if (reset_counter == 399) {
                 m_encoder.reset();
                 m_systemLoop.setXHat(VecBuilder.fill(0, 0, Math.toRadians(getModuleAngle())));
             }
@@ -244,8 +245,8 @@ public class DiffSwerveModule implements Sendable {
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
                 getDriveDistanceMeters(
-                        m_topMotor.getRotorVelocity().refresh().getValue(),
-                        m_bottomMotor.getRotorVelocity().refresh().getValue()),
+                        m_topMotor.getRotorPosition().refresh().getValue(),
+                        m_bottomMotor.getRotorPosition().refresh().getValue()),
                 Rotation2d.fromDegrees(m_moduleAngle));
     }
 
@@ -276,7 +277,8 @@ public class DiffSwerveModule implements Sendable {
      * @returns the speed of the module in m/s
      */
     public double getDriveSpeed(double topMotorSpeed, double bottomMotorSpeed) {
-        double speed = 
+        double speed =
+                (topMotorSpeed - bottomMotorSpeed) / 2 *
                 Constants.GlobalModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
                 (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
                                                                                        * Circumference in meters

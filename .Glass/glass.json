@@ -1,0 +1,67 @@
+{
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DickSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [20]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [21]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [22]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [23]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [24]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [25]": "Motor Controller",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "image": "C:\\Users\\ninji\\Downloads\\2023-field.png",
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT3)",
+    "port4": 1250,
+    "serverTeam": "2383"
+  },
+  "Plots": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "height": 326
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 326
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    }
+  }
+}
