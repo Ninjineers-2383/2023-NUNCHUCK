@@ -21,7 +21,7 @@ public class PinkArmTestCommand extends CommandBase {
     double m_topAngle = 0.1;
 
     public PinkArmTestCommand(PinkArmSubsystem pinkArm,
-            BooleanSupplier topUp, BooleanSupplier topDown, BooleanSupplier xUp, 
+            BooleanSupplier topUp, BooleanSupplier topDown, BooleanSupplier xUp,
             BooleanSupplier xDown, BooleanSupplier yUp, BooleanSupplier yDown) {
         m_pinkArm = pinkArm;
         m_topUp = topUp;
@@ -30,16 +30,16 @@ public class PinkArmTestCommand extends CommandBase {
         m_xDown = xDown;
         m_yUp = yUp;
         m_yDown = yDown;
-        
+
         addRequirements(m_pinkArm);
     }
 
     @Override
     public void execute() {
         if (m_xUp.getAsBoolean()) {
-            m_x = 45;
+            m_x = 0.5;
         } else if (m_xDown.getAsBoolean()) {
-            m_x = -45;
+            m_x = -0.5;
         } else {
             m_x = 0;
         }
@@ -53,13 +53,13 @@ public class PinkArmTestCommand extends CommandBase {
         }
 
         if (m_topUp.getAsBoolean()) {
-            m_topAngle = 45;
+            m_topAngle = 5;
         } else if (m_topDown.getAsBoolean()) {
-            m_topAngle = -45;
+            m_topAngle = -5;
         } else {
             m_topAngle = 0;
         }
 
-        m_pinkArm.setDesiredVelocities(m_x, m_y, m_topAngle);    
+        m_pinkArm.setDesiredVelocities(m_x, m_y, m_topAngle);
     }
 }

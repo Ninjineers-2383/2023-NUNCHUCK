@@ -160,13 +160,14 @@ public final class Constants {
     }
 
     public static final class DickConstants {
-        public static final int port = 8;
+        public static final int port = 32;
     }
 
     public static final class BottomPivotConstants {
-        public static final double kS = 0.01;
-        public static final double kV = 0.1;
-        public static final double kA = 0.001;
+        public static final double kS = 0.38118;
+        public static final double kV = 1.7577;
+        public static final double kA = 0.232;
+        public static final double kP = 0.067082;
 
         public static final double kUpperBound = 180;
         public static final double kLowerBound = 0;
@@ -177,12 +178,10 @@ public final class Constants {
 
         public static final double kMaxCurrent = 40.0;
 
-        public static final int kBottomMotorLeftId = 29;
-        public static final int kBottomMotorRightId = 30;
+        public static final int kBottomMotorLeftId = 2;
+        public static final int kBottomMotorRightId = 3;
 
-        public static final int kEncoderPortA = 10;
-        public static final int kEncoderPortB = 11;
-        public static final int kEncoderPortAbs = 12;
+        public static final int kEncoderPortAbs = 10;
 
         public static final double kgb = 1 / 112.5;
     }
@@ -190,20 +189,18 @@ public final class Constants {
     public static final class TopPivotConstants {
         // FF Values
         // TODO: Tune these values
-        public static final double kS = 0.01;
-        public static final double kV = 0.01465;
-        public static final double kA = 0.001;
-        public static final double kG = 0.01;
+        public static final double kS = 0.21143;
+        public static final double kV = 2.091;
+        public static final double kA = 0.10864;
+        public static final double kP = 2.4587E-05;
 
         public static final double kUpperBound = 180;
         public static final double kLowerBound = -180;
 
         public static final double kMaxCurrent = 40.0;
-        public static final int kMotorID = 31;
+        public static final int kMotorID = 8;
 
-        public static final int kEncoderPortA = 13;
-        public static final int kEncoderPortB = 14;
-        public static final int kEncoderPortAbs = 15;
+        public static final int kEncoderPortAbs = 6;
 
         public static final double kgt = 1 / 218.7;
 
