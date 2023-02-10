@@ -59,6 +59,8 @@ public class TopPivotModule implements Sendable {
     private double m_prevAngle = 0;
     private double m_currentVelocity = 0;
 
+    private double m_velocitySetpoint = 0;
+
     public TopPivotModule(DataLog log) {
         m_pivotMotor = new Ninja_CANSparkMax(TopPivotConstants.kMotorID, MotorType.kBrushless);
 
@@ -96,6 +98,13 @@ public class TopPivotModule implements Sendable {
         double m_currentAngle = Units.degreesToRadians(m_topAngleEncoder.get() * 360);
         m_currentVelocity = (m_currentAngle - m_prevAngle) / 0.02;
         m_prevAngle = m_currentAngle;
+
+        m_voltage = m_ff.calculate(m_velocitySetpoint) + m_fb.calculate(m_currentVelocity, m_velocitySetpoint);
+
+        m_voltage += Math.sin(m_currentAngle) * Constants.TopPivotConstants.kG;
+
+        setVoltage();
+
     }
 
     public void simulate() {
@@ -116,7 +125,6 @@ public class TopPivotModule implements Sendable {
         // : TopPivotConstants.kLowerBound;
         // }
 
-        setVoltage();
     }
 
     public void setVelocity(double desiredSpeed) {
@@ -127,9 +135,8 @@ public class TopPivotModule implements Sendable {
             desiredSpeed = 0;
         }
 
-        m_voltage = m_ff.calculate(desiredSpeed) + m_fb.calculate(m_currentVelocity, desiredSpeed);
+        m_velocitySetpoint = desiredSpeed;
 
-        setVoltage();
     }
 
     public double getAngle() {

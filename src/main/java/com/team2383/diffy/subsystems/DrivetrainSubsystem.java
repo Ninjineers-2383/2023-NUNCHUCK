@@ -2,10 +2,9 @@ package com.team2383.diffy.subsystems;
 
 import org.photonvision.EstimatedRobotPose;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.ctre.phoenixpro.hardware.Pigeon2;
+import com.ctre.phoenixpro.sim.Pigeon2SimState;
 
-import edu.wpi.first.hal.SimDouble;
-import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,10 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,9 +37,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
-    private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-    private final int m_gyroSimHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
-    private final SimDouble m_gyroSimAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(m_gyroSimHandle, "Yaw"));
+    private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
+    private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             Constants.DriveConstants.frontLeftConstants.translation,
@@ -90,6 +86,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
 
         resetHeading();
+
     }
 
     @Override
@@ -144,7 +141,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // not offset
         // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
         // all other angles
-        m_gyroSimAngle.set(m_gyro.getYaw() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+        m_gyroSim.setRawYaw(
+                m_gyro.getYaw().getValue() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
 
         m_camera.simulate(getPose());
     }
@@ -205,7 +203,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *                       facing directly towards the opposing alliance wall
      */
     public void forceHeading(Rotation2d currentHeading) {
-        m_gyro.setAngleAdjustment(m_gyro.getYaw() - currentHeading.getDegrees());
+        m_gyro.setYaw(currentHeading.getDegrees());
         m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
     }
 
@@ -218,7 +216,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetHeading() {
         // getYaw is CW positive not CCW positive
-        m_gyro.setAngleAdjustment(getCompassOffset());
+        m_gyro.setYaw(getCompassHeading());
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
                 new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         resetEncoders();
@@ -275,28 +273,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
         DataLogManager.log("INFO: LoadWheelOffsets Complete\n");
     }
 
-    public double getCompassOffset() {
+    public double getCompassHeading() {
         // Compass is CW positive not CCW positive
-        double fieldCompassHeading = Preferences.getDouble("Compass", 0);
-        double currentCompassHeading = m_gyro.getCompassHeading();
-        // Use getYaw because this is being used to offset the gyro
-        double gyroHeading = -m_gyro.getYaw();
+        // double fieldCompassHeading = Preferences.getDouble("Compass", 0);
+        // double currentCompassHeading = m_gyro.getComas().getValue();
 
-        return gyroHeading + (currentCompassHeading - fieldCompassHeading);
+        // return currentCompassHeading - fieldCompassHeading;
+        return 0;
     }
 
     public void setCompassOffset() {
         // Compass is CW positive not CCW positive
-        double fieldCompassHeading = m_gyro.getCompassHeading();
-        Preferences.setDouble("Compass", fieldCompassHeading);
+        // double fieldCompassHeading = m_gyro.getCompassHeading();
+        // Preferences.setDouble("Compass", fieldCompassHeading);
 
-        DataLogManager.log("INFO: Compass offset set to " + fieldCompassHeading + "\n");
+        // DataLogManager.log("INFO: Compass offset set to " + fieldCompassHeading +
+        // "\n");
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
 
-        builder.addDoubleProperty("Compass Heading", m_gyro::getCompassHeading, null);
+        // builder.addDoubleProperty("Compass Heading", m_gyro::getCompassHeading,
+        // null);
     }
 }
