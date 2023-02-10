@@ -59,8 +59,8 @@ public class RobotContainer {
     private final BooleanSupplier m_extensionUp = () -> m_operatorController.getLeftBumper();
     private final BooleanSupplier m_extensionDown = () -> m_operatorController.getRightBumper();
 
-    private final BooleanSupplier m_intake = () -> m_operatorController.getLeftBumper();
-    private final BooleanSupplier m_outtake = () -> m_operatorController.getRightBumper();
+    private final BooleanSupplier m_intake = () -> m_operatorController.getPOV() == 0;
+    private final BooleanSupplier m_outtake = () -> m_operatorController.getPOV() == 180;
 
     private final DoubleSupplier m_dickControl = () -> 0.3 * (m_operatorController.getLeftTriggerAxis()
             - m_operatorController.getRightTriggerAxis());

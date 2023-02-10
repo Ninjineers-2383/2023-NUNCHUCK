@@ -20,20 +20,19 @@ public class FeederCommand extends CommandBase {
         m_feederSubsystem = feeder;
         m_intake = intake;
         m_outtake = outtake;
-        
+
         addRequirements(m_feederSubsystem);
     }
 
     @Override
     public void execute() {
         if (m_intake.getAsBoolean()) {
-            m_feederSubsystem.setPower(-1000, 1000);
+            m_feederSubsystem.setPower(-12, -12);
         } else if (m_outtake.getAsBoolean()) {
-            m_feederSubsystem.setPower(1000, -1000);
+            m_feederSubsystem.setPower(12, 12);
         } else {
             m_feederSubsystem.setPower(0, 0);
         }
 
     }
 }
-

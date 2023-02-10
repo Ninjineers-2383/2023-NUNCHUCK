@@ -1,6 +1,7 @@
 package com.team2383.diffy.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.TelescopeConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
@@ -8,6 +9,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
@@ -23,10 +26,9 @@ public class TelescopeModule implements Sendable {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private final LinearSystem<N3, N2, N3> m_telescopePlant;
-    private final LinearQuadraticRegulator<N3, N2, N3> m_controller;
-    private final KalmanFilter<N3, N2, N3> m_observer;
-    private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
+    private final PIDController m_fb = new PIDController(Constants.TelescopeConstants.kP, 0, 0);
+    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.TelescopeConstants.kS,
+            Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
 
     private double m_voltageLeft;
     private double m_voltageRight;
@@ -53,42 +55,17 @@ public class TelescopeModule implements Sendable {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
         m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionLeftID, MotorType.kBrushless);
 
-        m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
-        m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
+        // m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
+        // m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
         m_rightMotor.setPositionConversionFactor(2.0 * Math.PI);
         m_leftMotor.setPositionConversionFactor(2.0 * Math.PI);
 
-        m_telescopePlant = new LinearSystem<N3, N2, N3>(
-                Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                        -TelescopeConstants.kV / TelescopeConstants.kA, 0, 0,
-                        0, -TelescopeConstants.kV / TelescopeConstants.kA, 0,
-                        TelescopeConstants.kRadPerSecToInchesPerSec / 2.0,
-                        TelescopeConstants.kRadPerSecToInchesPerSec / 2.0, 0),
-                Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                        1 / TelescopeConstants.kA, 0,
-                        0, 1 / TelescopeConstants.kA,
-                        0, 0),
-                Matrix.mat(Nat.N3(), Nat.N3()).fill(
-                        1, 0, 0,
-                        0, 1, 0,
-                        0, 0, 1),
-                Matrix.mat(Nat.N3(), Nat.N2()).fill(
-                        0, 0,
-                        0, 0,
-                        0, 0));
+        m_rightMotor.setSmartCurrentLimit(30);
+        m_leftMotor.setSmartCurrentLimit(30);
 
-        m_controller = new LinearQuadraticRegulator<>(m_telescopePlant,
-                VecBuilder.fill(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 1), VecBuilder.fill(12, 12), 0.02);
-
-        m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_telescopePlant,
-                VecBuilder.fill(0.01, 0.01, 0.01), VecBuilder.fill(0.1, 0.1, 0.1), 0.02);
-
-        m_systemLoop = new LinearSystemLoop<>(m_telescopePlant, m_controller,
-                m_observer, 12.0, 0.02);
-
-        m_rightMotor.setSmartCurrentLimit(40);
-        m_leftMotor.setSmartCurrentLimit(40);
+        m_rightMotor.getEncoder().setVelocityConversionFactor(1.0 / 16.5);
+        m_leftMotor.getEncoder().setVelocityConversionFactor(1.0 / 16.5);
 
         m_log = log;
 
@@ -121,11 +98,9 @@ public class TelescopeModule implements Sendable {
     }
 
     public void simulate() {
-        double velocity = m_systemLoop.getXHat(0);
-        m_position = (m_systemLoop.getXHat(2));
 
-        m_rightMotor.set(velocity);
-        m_leftMotor.set(velocity);
+        // m_rightMotor.set(velocity);
+        // m_leftMotor.set(velocity);
 
         m_rightMotor.setPosition(m_position);
         m_leftMotor.setPosition(m_position);
@@ -148,18 +123,12 @@ public class TelescopeModule implements Sendable {
             desiredSpeed = 0;
         }
 
-        m_speed = m_rightMotor.get() / 2 + m_leftMotor.get() / 2;
+        m_speed = m_rightMotor.getEncoder().getVelocity() / 2 + m_leftMotor.getEncoder().getVelocity() / 2;
 
         m_extension = getExtension();
 
-        m_systemLoop.setNextR(VecBuilder.fill(desiredSpeed, desiredSpeed, m_desiredExtension));
-
-        m_systemLoop.correct(VecBuilder.fill(m_speed, m_speed, m_extension));
-
-        m_systemLoop.predict(0.020);
-
-        m_voltageLeft = m_systemLoop.getU(0);
-        m_voltageRight = m_systemLoop.getU(1);
+        m_voltageLeft = m_ff.calculate(desiredSpeed) + m_fb.calculate(m_speed, m_desiredSpeed);
+        m_voltageRight = m_voltageLeft;
 
         setVoltage();
     }
@@ -176,15 +145,6 @@ public class TelescopeModule implements Sendable {
         m_speed = m_rightMotor.get() / 2 + m_leftMotor.get() / 2;
 
         m_extension = getExtension();
-
-        m_systemLoop.setNextR(VecBuilder.fill(0, 0, m_desiredExtension));
-
-        m_systemLoop.correct(VecBuilder.fill(m_speed, m_speed, m_extension));
-
-        m_systemLoop.predict(0.020);
-
-        m_voltageLeft = m_systemLoop.getU(0);
-        m_voltageRight = m_systemLoop.getU(1);
 
         setVoltage();
     }
@@ -222,13 +182,6 @@ public class TelescopeModule implements Sendable {
             return m_voltageLeft;
         }, null);
 
-        builder.addDoubleProperty("Estimated Velocity (x hat)", () -> {
-            return m_systemLoop.getXHat(0) / 2 + m_systemLoop.getXHat(1) / 2;
-        }, null);
-
-        builder.addDoubleProperty("Estimated Extension (x hat)", () -> {
-            return m_systemLoop.getXHat(2);
-        }, null);
     }
 
 }

@@ -67,6 +67,8 @@ public class BottomPivotModule implements Sendable {
 
     private double setVelocity = 0;
 
+    private double kG = Constants.BottomPivotConstants.kG;
+
     public BottomPivotModule(DataLog log) {
         m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
@@ -120,11 +122,21 @@ public class BottomPivotModule implements Sendable {
             reset_counter++;
         }
 
-        double m_currentAngle = Units.degreesToRadians(m_bottomAngleEncoder.getDistance() * 360);
+        double m_currentAngle = Units.degreesToRadians(-m_bottomAngleEncoder.getDistance() * 360);
 
         m_currentVelocity = (m_currentAngle - m_prevAngle) / 0.02;
 
         m_prevAngle = m_currentAngle;
+
+        m_leftVoltage = m_ff.calculate(setVelocity) +
+                m_fb.calculate(m_currentVelocity, setVelocity);
+        // m_leftVoltage = 0;
+
+        // m_rightVoltage = m_leftVoltage;
+
+        m_leftVoltage += Math.sin(m_currentAngle) * 1 * kG;
+
+        setVoltage();
     }
 
     public void simulate() {
@@ -173,7 +185,6 @@ public class BottomPivotModule implements Sendable {
         // BottomPivotConstants.pivotLength) *
         // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
-        setVoltage();
     }
 
     public void setVelocity(double angularVelocity, double extension) {
@@ -184,15 +195,11 @@ public class BottomPivotModule implements Sendable {
         // m_desiredAngle -= angularVelocity * 0.02;
         // }
 
-        m_leftVoltage = m_ff.calculate(angularVelocity) + m_fb.calculate(m_currentVelocity, setVelocity);
-
         // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
 
         // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) -
         // BottomPivotConstants.pivotLength) *
         // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
-
-        m_rightVoltage = m_leftVoltage;
 
         setVelocity = angularVelocity;
 
@@ -202,7 +209,6 @@ public class BottomPivotModule implements Sendable {
         // BottomPivotConstants.pivotLength) *
         // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
 
-        setVoltage();
     }
 
     public double getAngle() {
@@ -252,6 +258,11 @@ public class BottomPivotModule implements Sendable {
         builder.addDoubleProperty("PID", () -> {
             return m_fb.calculate(m_currentVelocity, setVelocity);
         }, null);
+        builder.addDoubleProperty("kG", () -> {
+            return kG;
+        }, (double val) -> {
+            kG = val;
+        });
         // builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
         // return Math.toDegrees(m_systemLoop.getXHat(2));
         // }, null);

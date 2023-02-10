@@ -143,17 +143,19 @@ public final class Constants {
     public static final class TelescopeConstants {
         // FF Values
         // TODO: Tune these values
-        public static final double kS = 0.01;
-        public static final double kV = 0.01;
-        public static final double kA = 0.009;
+        public static final double kS = 0.55714;
+        public static final double kV = 3;
+        public static final double kA = 0.013931;
+
+        public static final double kP = 0;
 
         public static final double kUpperBound = 5;
         public static final double kLowerBound = 0.0;
 
         public static final double kMaxCurrent = 40.0;
 
-        public static final int kExtensionLeftID = 1;
-        public static final int kExtensionRightID = 2;
+        public static final int kExtensionLeftID = 4;
+        public static final int kExtensionRightID = 5;
 
         public static final double kRadPerSecToInchesPerSec = 19.25 / 192.0;
 
@@ -167,7 +169,8 @@ public final class Constants {
         public static final double kS = 0.38118;
         public static final double kV = 1.7577;
         public static final double kA = 0.232;
-        public static final double kP = 0.067082;
+        public static final double kP = 1.4;
+        public static final double kG = 0.5;
 
         public static final double kUpperBound = 180;
         public static final double kLowerBound = 0;
@@ -218,8 +221,7 @@ public final class Constants {
         public static final double kV = 0.01;
         public static final double kA = 0.001;
 
-        public static final int kTopMotorID = 26;
-        public static final int kBottomMotorID = 27;
-        public static final int kClawMotorID = 28;
+        public static final int kTopMotorID = 6;
+        public static final int kBottomMotorID = 7;
     }
 }

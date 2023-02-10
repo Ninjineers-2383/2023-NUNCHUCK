@@ -53,9 +53,9 @@ public class PinkArmTestCommand extends CommandBase {
         }
 
         if (m_topUp.getAsBoolean()) {
-            m_topAngle = 5;
+            m_topAngle = 2;
         } else if (m_topDown.getAsBoolean()) {
-            m_topAngle = -5;
+            m_topAngle = -2;
         } else {
             m_topAngle = 0;
         }
