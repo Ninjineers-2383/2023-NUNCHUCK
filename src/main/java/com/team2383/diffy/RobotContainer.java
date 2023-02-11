@@ -44,9 +44,9 @@ public class RobotContainer {
     // private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveX = () -> m_driverMoveController.getRawAxis(1)/0.6;
-    private final DoubleSupplier m_driveY = () -> m_driverMoveController.getRawAxis(0)/0.6;
-    private final DoubleSupplier m_driveOmega = () -> m_driverMoveController.getRawAxis(2)/0.6;
+    private final DoubleSupplier m_driveX = () -> m_driverMoveController.getRawAxis(4)/0.6;
+    private final DoubleSupplier m_driveY = () -> m_driverMoveController.getRawAxis(5)/0.6;
+    private final DoubleSupplier m_driveOmega = () -> m_driverMoveController.getRawAxis(0)/0.6;
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverMoveController.getRawButton(1));
     private final IntSupplier m_povSupplier = () -> -1;
 
@@ -77,8 +77,8 @@ public class RobotContainer {
             m_drivetrainSubsystem::getPose,
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(0, 0, 0),
-            new PIDConstants(0, 0, 0),
+            new PIDConstants(0.01, 0, 0),
+            new PIDConstants(0.1, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             eventMap,
             true,
