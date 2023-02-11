@@ -2,33 +2,29 @@ package com.team2383.diffy.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
+import com.team2383.diffy.Robot;
 import com.team2383.diffy.Constants.BottomPivotConstants;
-import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.estimator.KalmanFilter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BottomPivotModule implements Sendable {
-    // TODO: Comment
+    private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId.identifyVelocitySystem(
+            Constants.BottomPivotConstants.kV,
+            Constants.BottomPivotConstants.kA);
 
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
@@ -130,30 +126,35 @@ public class BottomPivotModule implements Sendable {
 
         m_leftVoltage = m_ff.calculate(setVelocity) +
                 m_fb.calculate(m_currentVelocity, setVelocity);
-        // m_leftVoltage = 0;
 
-        // m_rightVoltage = m_leftVoltage;
+        m_rightVoltage = m_leftVoltage;
 
-        m_leftVoltage += Math.sin(m_currentAngle) * 1 * kG;
+        if (Robot.isReal()) { // Am I on a planet with gravity
+            m_leftVoltage += Math.sin(m_currentAngle) * 1 * kG;
+        }
 
         setVoltage();
     }
 
     public void simulate() {
+        var newX = m_motorSim.calculateX(VecBuilder.fill(m_currentVelocity), VecBuilder.fill(m_leftVoltage), 0.02);
+
+        m_leftMotor.set(newX.get(0, 0));
+        m_rightMotor.set(newX.get(0, 0));
+
+        m_bottomAngleEncoderSim
+                .setDistance(m_bottomAngleEncoder.getDistance() - (newX.get(0, 0) / (2 * Math.PI)) * 0.02);
+
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.get());
 
         SmartDashboard.putNumber("Simulated Right Motor Output Velocity",
                 m_rightMotor.get());
 
-        // m_bottomAngleEncoder.simulate(new
-        // Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
-
         SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
     }
 
     public void setAngle(double angle, double extension) {
-        // System.out.println("Bottom Angle: " + angle);
         if (m_desiredAngle > BottomPivotConstants.kUpperBound) {
             m_desiredAngle = BottomPivotConstants.kUpperBound;
         } else if (m_desiredAngle < BottomPivotConstants.kLowerBound) {
@@ -162,53 +163,10 @@ public class BottomPivotModule implements Sendable {
             m_desiredAngle = angle;
         }
 
-        // m_systemLoop.setNextR(VecBuilder.fill(0, 0, Math.toRadians(m_desiredAngle)));
-
-        // m_systemLoop.correct(VecBuilder.fill(m_leftSpeed, m_rightSpeed,
-        // Math.toRadians(m_angle)));
-
-        // m_systemLoop.predict(0.020);
-
-        // m_leftVoltage = m_systemLoop.getU(0);
-
-        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
-
-        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) -
-        // BottomPivotConstants.pivotLength) *
-        // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
-
-        // m_rightVoltage = m_systemLoop.getU(1);
-
-        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
-
-        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) -
-        // BottomPivotConstants.pivotLength) *
-        // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
-
     }
 
     public void setVelocity(double angularVelocity, double extension) {
-        // m_desiredAngle += angularVelocity * 0.02;
-
-        // if (m_desiredAngle > BottomPivotConstants.kUpperBound || m_desiredAngle <
-        // BottomPivotConstants.kLowerBound) {
-        // m_desiredAngle -= angularVelocity * 0.02;
-        // }
-
-        // m_leftVoltage += Math.signum(m_leftVoltage) * BottomPivotConstants.kS;
-
-        // m_leftVoltage += Math.signum(m_leftVoltage) * ((extension / 2) -
-        // BottomPivotConstants.pivotLength) *
-        // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
-
         setVelocity = angularVelocity;
-
-        // m_rightVoltage += Math.signum(m_rightVoltage) * BottomPivotConstants.kS;
-
-        // m_rightVoltage += Math.signum(m_rightVoltage) * ((extension / 2) -
-        // BottomPivotConstants.pivotLength) *
-        // BottomPivotConstants.armMass * 9.8 * Math.cos(Math.toRadians(getAngle()));
-
     }
 
     public double getAngle() {

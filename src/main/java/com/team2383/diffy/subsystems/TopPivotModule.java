@@ -30,6 +30,9 @@ public class TopPivotModule implements Sendable {
     // TODO: Comment
     private final Ninja_CANSparkMax m_pivotMotor;
 
+    private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
+            .identifyVelocitySystem(Constants.TopPivotConstants.kV, Constants.TopPivotConstants.kA);
+
     private final DutyCycleEncoder m_topAngleEncoder;
     private final DutyCycleEncoderSim m_topAngleEncoderSim;
 
@@ -101,13 +104,19 @@ public class TopPivotModule implements Sendable {
 
         m_voltage = m_ff.calculate(m_velocitySetpoint) + m_fb.calculate(m_currentVelocity, m_velocitySetpoint);
 
-        m_voltage += Math.sin(m_currentAngle) * Constants.TopPivotConstants.kG;
+        if (Robot.isReal()) {
+            m_voltage += Math.sin(m_currentAngle) * Constants.TopPivotConstants.kG;
+        }
 
         setVoltage();
 
     }
 
     public void simulate() {
+        var newX = m_motorSim.calculateX(VecBuilder.fill(m_currentVelocity), VecBuilder.fill(m_voltage), 0.02);
+
+        m_topAngleEncoderSim.setDistance(m_angle + (newX.get(0, 0) / (2 * Math.PI) * 0.02));
+
         SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity",
                 m_pivotMotor.get());
 

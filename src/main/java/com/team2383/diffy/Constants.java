@@ -52,7 +52,7 @@ public final class Constants {
         public final static double kTrackWidthMeters = 0.6173724;
 
         public final static ModuleConstants frontLeftConstants = new ModuleConstants(
-                0.59054, 0.017289, 0.00041192,
+                0.19054, 0.017289, 0.00041192,
                 20, 21,
                 0, 1, 2,
                 "frontLeft",
@@ -63,7 +63,7 @@ public final class Constants {
                 Rotation2d.fromDegrees(60));
 
         public final static ModuleConstants frontRightConstants = new ModuleConstants(
-                0.59054, 0.017289, 0.00041192,
+                0.19054, 0.017289, 0.00041192,
                 22, 23,
                 3, 4, 5,
                 "frontRight",
@@ -74,7 +74,7 @@ public final class Constants {
                 Rotation2d.fromDegrees(-60));
 
         public final static ModuleConstants rearConstants = new ModuleConstants(
-                0.59054, 0.017289, 0.00041192,
+                0.19054, 0.017289, 0.00041192,
                 24, 25,
                 7, 8, 9,
                 "rear",
@@ -197,7 +197,7 @@ public final class Constants {
         public static final double kA = 0.10864;
         public static final double kP = 2.4587E-05;
 
-        public static final double kG = 1;
+        public static final double kG = 2;
 
         public static final double kUpperBound = 180;
         public static final double kLowerBound = -180;

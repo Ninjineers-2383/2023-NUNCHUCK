@@ -27,10 +27,12 @@
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
       "/LiveWindow/FeederSubsystem/Feeder": "Subsystem",
       "/LiveWindow/PinkArmSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[10]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[15]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[6]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
@@ -167,7 +169,20 @@
           "frontLeft": {
             "open": true
           }
-        }
+        },
+        "PinkArmSubsystem": {
+          "Bottom Pivot": {
+            "open": true
+          },
+          "Telescope": {
+            "open": true
+          },
+          "Top Pivot": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
       },
       "SmartDashboard": {
         "PPSwerveControllerCommand_field": {

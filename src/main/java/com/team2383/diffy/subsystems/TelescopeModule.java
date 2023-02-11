@@ -5,16 +5,12 @@ import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.TelescopeConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
@@ -29,6 +25,9 @@ public class TelescopeModule implements Sendable {
     private final PIDController m_fb = new PIDController(Constants.TelescopeConstants.kP, 0, 0);
     private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.TelescopeConstants.kS,
             Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
+
+    private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
+            .identifyVelocitySystem(Constants.TelescopeConstants.kS, Constants.TelescopeConstants.kV);
 
     private double m_voltageLeft;
     private double m_voltageRight;
@@ -51,12 +50,11 @@ public class TelescopeModule implements Sendable {
     private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedExtension;
 
+    private double m_desired;
+
     public TelescopeModule(DataLog log) {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
         m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionLeftID, MotorType.kBrushless);
-
-        // m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
-        // m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
         m_rightMotor.setPositionConversionFactor(2.0 * Math.PI);
         m_leftMotor.setPositionConversionFactor(2.0 * Math.PI);
@@ -95,15 +93,22 @@ public class TelescopeModule implements Sendable {
         m_expectedSpeed.append(m_desiredSpeed);
 
         m_expectedExtension.append(m_desiredExtension);
+
+        m_voltageLeft = m_ff.calculate(m_desired) + m_fb.calculate(m_speed, m_desiredSpeed);
+        m_voltageRight = m_voltageLeft;
+
+        setVoltage();
+
     }
 
     public void simulate() {
+        double vel = m_motorSim.calculateX(VecBuilder.fill(m_speed), VecBuilder.fill(m_voltageLeft), 0.02).get(0, 0);
 
-        // m_rightMotor.set(velocity);
-        // m_leftMotor.set(velocity);
+        m_rightMotor.set(vel);
+        m_leftMotor.set(vel);
 
-        m_rightMotor.setPosition(m_position);
-        m_leftMotor.setPosition(m_position);
+        m_rightMotor.setPosition(m_position + vel);
+        m_leftMotor.setPosition(m_position + vel);
 
         SmartDashboard.putNumber("Simulated Telescope Motor Velocity",
                 m_rightMotor.get() / 2 + m_leftMotor.get() / 2);
@@ -117,20 +122,7 @@ public class TelescopeModule implements Sendable {
     public void setVelocity(double desiredSpeed) {
         m_desiredExtension += desiredSpeed * 0.02;
 
-        if (m_desiredExtension > TelescopeConstants.kUpperBound
-                || m_desiredExtension < TelescopeConstants.kLowerBound) {
-            m_desiredExtension -= desiredSpeed * 0.02;
-            desiredSpeed = 0;
-        }
-
-        m_speed = m_rightMotor.getEncoder().getVelocity() / 2 + m_leftMotor.getEncoder().getVelocity() / 2;
-
-        m_extension = getExtension();
-
-        m_voltageLeft = m_ff.calculate(desiredSpeed) + m_fb.calculate(m_speed, m_desiredSpeed);
-        m_voltageRight = m_voltageLeft;
-
-        setVoltage();
+        m_desired = desiredSpeed;
     }
 
     public void setExtension(double extension) {

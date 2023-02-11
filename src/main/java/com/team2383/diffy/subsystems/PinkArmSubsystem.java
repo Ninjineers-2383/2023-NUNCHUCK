@@ -66,15 +66,14 @@ public class PinkArmSubsystem extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         m_bottomPivot.simulate();
-        // m_telescope.simulate();
+        m_telescope.simulate();
         m_topPivot.simulate();
     }
 
-    // public PinkArmState getState() {
-    // return new PinkArmState(m_telescope.getExtension(), new
-    // Rotation2d(Math.toRadians(m_bottomPivot.getAngle())),
-    // new Rotation2d(Math.toRadians(m_topPivot.getAngle())));
-    // }
+    public PinkArmState getState() {
+        return new PinkArmState(m_telescope.getExtension(), new Rotation2d(Math.toRadians(m_bottomPivot.getAngle())),
+                new Rotation2d(Math.toRadians(m_topPivot.getAngle())));
+    }
 
     public void setDesiredState(PinkArmState state) {
         m_bottomPivot.setAngle(state.getBottomAngle().getDegrees(),

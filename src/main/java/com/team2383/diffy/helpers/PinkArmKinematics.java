@@ -1,9 +1,5 @@
 package com.team2383.diffy.helpers;
 
-import org.ejml.simple.SimpleMatrix;
-
-import com.team2383.diffy.subsystems.TopPivotModule;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class PinkArmKinematics {
@@ -13,7 +9,7 @@ public class PinkArmKinematics {
     public PinkArmKinematics(double extensionInitLength, double topPivotLength) {
         m_extensionInitLength = extensionInitLength;
         m_topPivotLength = topPivotLength;
-        
+
     }
 
     public PinkArmState toPinkArmState(double x, double y, double topAngle) {
@@ -25,7 +21,9 @@ public class PinkArmKinematics {
 
     public double calculateExtension(double x, double y, double topAngle) {
         double magnitude = Math.sqrt(x * x + y * y);
-        double extension = (magnitude * Math.sin((Math.PI - topAngle - Math.asin((m_topPivotLength * Math.sin(topAngle))) / (2 * magnitude)))) / Math.sin(topAngle);
+        double extension = (magnitude
+                * Math.sin((Math.PI - topAngle - Math.asin((m_topPivotLength * Math.sin(topAngle))) / (2 * magnitude))))
+                / Math.sin(topAngle);
         return extension;
     }
 
@@ -34,6 +32,5 @@ public class PinkArmKinematics {
         double bottomAngle = Math.atan2(y, x) + Math.asin((m_topPivotLength * Math.sin(topAngle)) / (2 * magnitude));
         return bottomAngle;
     }
-
 
 }
