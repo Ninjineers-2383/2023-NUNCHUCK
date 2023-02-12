@@ -18,7 +18,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeModule implements Sendable {
-    // TODO: Comment
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
@@ -36,7 +35,6 @@ public class TelescopeModule implements Sendable {
     private double m_desiredSpeed;
 
     private double m_speed;
-    private double m_position;
     private double m_extension;
 
     private final DataLog m_log;
@@ -75,8 +73,6 @@ public class TelescopeModule implements Sendable {
 
         m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
         m_expectedExtension = new DoubleLogEntry(m_log, "/expectedExtension");
-
-        m_position = 0;
     }
 
     public void periodic() {

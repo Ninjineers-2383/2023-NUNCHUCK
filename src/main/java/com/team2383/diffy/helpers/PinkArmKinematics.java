@@ -3,11 +3,9 @@ package com.team2383.diffy.helpers;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class PinkArmKinematics {
-    private double m_extensionInitLength;
     private double m_topPivotLength;
 
     public PinkArmKinematics(double extensionInitLength, double topPivotLength) {
-        m_extensionInitLength = extensionInitLength;
         m_topPivotLength = topPivotLength;
 
     }

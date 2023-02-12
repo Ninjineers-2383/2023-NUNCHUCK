@@ -77,11 +77,10 @@ public class PinkArmSubsystem extends SubsystemBase {
     }
 
     public void setDesiredState(PinkArmState state) {
-        m_bottomPivot.setAngle(state.getBottomAngle().getDegrees(),
+        m_bottomPivot.setAngle(state.getBottomAngle().getRadians(),
                 m_telescope.getExtension());
-        // m_bottomPivot.setAngle(state.getBottomAngle().getDegrees(), 0);
         m_telescope.setExtension(state.getExtension());
-        m_topPivot.setAngle(state.getTopAngle().getDegrees());
+        m_topPivot.setAngle(state.getTopAngle().getRadians(), state.getBottomAngle().getRadians());
     }
 
     public void setPosition(double x, double y, double topAngle) {
@@ -98,7 +97,7 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_bottomPivot.setVelocity(desiredBottomSpeed, m_telescope.getExtension());
         // m_bottomPivot.setVelocity(desiredBottomSpeed, 0);
         m_telescope.setVelocity(desiredExtensionSpeed);
-        m_topPivot.setVelocity(desiredTopSpeed);
+        m_topPivot.setVelocity(desiredTopSpeed, m_bottomPivot.getAngleRadians());
     }
 
 }

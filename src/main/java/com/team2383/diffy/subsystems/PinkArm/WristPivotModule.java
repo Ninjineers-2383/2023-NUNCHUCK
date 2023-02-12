@@ -3,7 +3,7 @@ package com.team2383.diffy.subsystems.PinkArm;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.Constants.TopPivotConstants;
+import com.team2383.diffy.Constants.WristConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -25,19 +25,20 @@ public class WristPivotModule implements Sendable {
     private final Ninja_CANSparkMax m_pivotMotor;
 
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-            .identifyVelocitySystem(Constants.TopPivotConstants.kV, Constants.TopPivotConstants.kA);
+            .identifyVelocitySystem(Constants.WristConstants.kV, Constants.WristConstants.kA);
 
     private final DutyCycleEncoder m_topAngleEncoder;
     private final DutyCycleEncoderSim m_topAngleEncoderSim;
 
-    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.TopPivotConstants.kS,
-            Constants.TopPivotConstants.kV, Constants.TopPivotConstants.kA);
-    private final PIDController m_fb = new PIDController(Constants.TopPivotConstants.kP, 0, 0);
+    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.WristConstants.kS,
+            Constants.WristConstants.kV, Constants.WristConstants.kA);
+    private final PIDController m_fb = new PIDController(Constants.WristConstants.kP, 0, 0);
 
     private double m_voltage;
 
     // In radians
     private double m_desiredAngle;
+    private double m_bottomAngle;
     private double m_angle;
     private double m_prevAngle = 0;
 
@@ -63,11 +64,11 @@ public class WristPivotModule implements Sendable {
     double m_simVelocity = 0;
 
     public WristPivotModule(DataLog log) {
-        m_pivotMotor = new Ninja_CANSparkMax(TopPivotConstants.kMotorID, MotorType.kBrushless);
+        m_pivotMotor = new Ninja_CANSparkMax(WristConstants.kMotorID, MotorType.kBrushless);
 
         m_pivotMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
-        m_topAngleEncoder = new DutyCycleEncoder(Constants.TopPivotConstants.kEncoderPortAbs);
+        m_topAngleEncoder = new DutyCycleEncoder(Constants.WristConstants.kEncoderPortAbs);
 
         m_topAngleEncoderSim = new DutyCycleEncoderSim(m_topAngleEncoder);
 
@@ -100,7 +101,7 @@ public class WristPivotModule implements Sendable {
                 + m_fb.calculate(m_angle, state.position);
 
         if (Robot.isReal()) {
-            m_voltage += Math.sin(m_angle) * Constants.TopPivotConstants.kG;
+            m_voltage += Math.sin(m_angle + m_bottomAngle) * Constants.WristConstants.kG;
         }
 
         setVoltage();
@@ -118,23 +119,25 @@ public class WristPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Encoder Radians", getAngleRadians());
     }
 
-    public void setAngle(double desiredAngle) {
+    public void setAngle(double desiredAngle, double bottomAngle) {
         m_desiredAngle = desiredAngle;
+
+        m_bottomAngle = bottomAngle;
 
         goal = new TrapezoidProfile.State(
                 m_desiredAngle,
                 0);
     }
 
-    public void setVelocity(double desiredSpeed) {
+    public void setVelocity(double desiredSpeed, double bottomAngle) {
         m_desiredAngle += desiredSpeed * 0.02;
 
-        if (m_desiredAngle > TopPivotConstants.kUpperBound || m_desiredAngle < TopPivotConstants.kLowerBound) {
+        if (m_desiredAngle > WristConstants.kUpperBound || m_desiredAngle < WristConstants.kLowerBound) {
             m_desiredAngle -= desiredSpeed * 0.02;
             desiredSpeed = 0;
         }
 
-        setAngle(m_desiredAngle);
+        setAngle(m_desiredAngle, bottomAngle);
     }
 
     public double getAngleRadians() {
