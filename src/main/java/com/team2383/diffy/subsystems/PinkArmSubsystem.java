@@ -97,7 +97,7 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_bottomPivot.setVelocity(desiredBottomSpeed, m_telescope.getExtension());
         // m_bottomPivot.setVelocity(desiredBottomSpeed, 0);
         m_telescope.setVelocity(desiredExtensionSpeed);
-        m_topPivot.setVelocity(desiredTopSpeed);
+        m_topPivot.setVelocity(desiredTopSpeed, m_bottomPivot.getAngle());
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -43,21 +44,18 @@ public class RobotContainer {
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveY = () -> m_driverController.getRawAxis(5);
-    private final DoubleSupplier m_driveX = () -> m_driverController.getRawAxis(4);
-    private final DoubleSupplier m_driveOmega = () -> m_driverController.getRawAxis(0);
+    private final DoubleSupplier m_driveY = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(5), .1);
+    private final DoubleSupplier m_driveX = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(4), .1);
+    private final DoubleSupplier m_driveOmega = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(0), .1);
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
     private final IntSupplier m_povSupplier = () -> -1;
 
-    private final BooleanSupplier m_bottomArmUp = () -> m_operatorController.getAButton();
-    private final BooleanSupplier m_bottomArmDown = () -> m_operatorController.getYButton();
-    private final BooleanSupplier m_topArmUp = () -> m_operatorController.getXButton();
-    private final BooleanSupplier m_topArmDown = () -> m_operatorController.getBButton();
-    private final BooleanSupplier m_extensionUp = () -> m_operatorController.getLeftBumper();
-    private final BooleanSupplier m_extensionDown = () -> m_operatorController.getRightBumper();
+    private final DoubleSupplier m_intake = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(2) - m_driverController.getRawAxis(3), .1);
 
-    private final BooleanSupplier m_intake = () -> m_operatorController.getPOV() == 0;
-    private final BooleanSupplier m_outtake = () -> m_operatorController.getPOV() == 180;
+
+    private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(5), .1);
+    private final DoubleSupplier m_extension = () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2), .1);
+    private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(0), .1);
 
     // private final DoubleSupplier m_dickControl = () -> 0.3 *
     // (m_operatorController.getLeftTriggerAxis()
@@ -72,10 +70,9 @@ public class RobotContainer {
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
-    private final PinkArmTestCommand m_pinkArmCommand = new PinkArmTestCommand(m_pinkArmSubsystem, m_bottomArmDown,
-            m_bottomArmUp, m_topArmDown, m_topArmUp, m_extensionDown, m_extensionUp);
+    private final PinkArmTestCommand m_pinkArmCommand = new PinkArmTestCommand(m_pinkArmSubsystem, m_pivot, m_extension, m_wrist);
 
-    private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake, m_outtake);
+    private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
     // private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem,
     // m_dickControl);

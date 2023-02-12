@@ -42,11 +42,11 @@ public class JoystickDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double x = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_x.getAsDouble(), 0.1))
+        double x = -ThrottleSoftener.soften(m_x.getAsDouble())
                 * DriveConstants.kMaxVelocity;
-        double y = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_y.getAsDouble(), 0.1))
+        double y = -ThrottleSoftener.soften(m_y.getAsDouble())
                 * DriveConstants.kMaxVelocity;
-        double omega = -ThrottleSoftener.soften(MathUtil.applyDeadband(m_omega.getAsDouble(), 0.1))
+        double omega = -ThrottleSoftener.soften(m_omega.getAsDouble())
                 * DriveConstants.kMaxAngularVelocity;
 
         int hatPosition = m_hatSupplier.getAsInt();

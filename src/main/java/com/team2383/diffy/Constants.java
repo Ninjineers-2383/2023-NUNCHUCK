@@ -189,7 +189,7 @@ public final class Constants {
         public static final double kgb = 1 / 112.5;
     }
 
-    public static final class TopPivotConstants {
+    public static final class WristConstants {
         // FF Values
         // TODO: Tune these values
         public static final double kS = 0.21143;
