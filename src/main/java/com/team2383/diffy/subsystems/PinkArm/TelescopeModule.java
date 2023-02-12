@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.PinkArm;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
@@ -27,7 +27,7 @@ public class TelescopeModule implements Sendable {
             Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
 
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-            .identifyVelocitySystem(Constants.TelescopeConstants.kS, Constants.TelescopeConstants.kV);
+            .identifyVelocitySystem(Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
 
     private double m_voltageLeft;
     private double m_voltageRight;
@@ -107,8 +107,8 @@ public class TelescopeModule implements Sendable {
         m_rightMotor.set(vel);
         m_leftMotor.set(vel);
 
-        m_rightMotor.setPosition(m_position + vel);
-        m_leftMotor.setPosition(m_position + vel);
+        m_rightMotor.setPosition(m_rightMotor.getPosition() + vel * 0.02);
+        m_leftMotor.setPosition(m_leftMotor.getPosition() + vel * 0.02);
 
         SmartDashboard.putNumber("Simulated Telescope Motor Velocity",
                 m_rightMotor.get() / 2 + m_leftMotor.get() / 2);

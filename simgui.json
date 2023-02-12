@@ -44,6 +44,7 @@
       "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
+      "/LiveWindow/Ungrouped/Pigeon 2 (Pro) [0]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX (Pro) [20]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX (Pro) [21]": "Motor Controller",

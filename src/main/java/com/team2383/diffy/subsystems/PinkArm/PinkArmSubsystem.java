@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.PinkArm;
 
 import com.team2383.diffy.helpers.PinkArmKinematics;
 import com.team2383.diffy.helpers.PinkArmState;
@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PinkArmSubsystem extends SubsystemBase {
-    private final BottomPivotModule m_bottomPivot;
+    private final MainPivotModule m_bottomPivot;
     private final TelescopeModule m_telescope;
-    private final TopPivotModule m_topPivot;
+    private final WristPivotModule m_topPivot;
 
     private final PinkArmKinematics m_kinematics;
 
@@ -32,9 +32,9 @@ public class PinkArmSubsystem extends SubsystemBase {
     public PinkArmSubsystem(DataLog log) {
         m_log = log;
 
-        m_bottomPivot = new BottomPivotModule(m_log);
+        m_bottomPivot = new MainPivotModule(m_log);
         m_telescope = new TelescopeModule(m_log);
-        m_topPivot = new TopPivotModule(m_log);
+        m_topPivot = new WristPivotModule(m_log);
 
         m_mechanism2d = new Mechanism2d(3, 3);
         m_mechanismRoot2d = m_mechanism2d.getRoot("Bottom Pivot", 1.5, 1.5);
@@ -56,9 +56,9 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_telescope.periodic();
         m_topPivot.periodic();
 
-        m_telescopeLigament.setAngle(m_bottomPivot.getAngle());
+        m_telescopeLigament.setAngle(m_bottomPivot.getAngleDegrees());
         m_telescopeLigament.setLength(m_telescope.getExtension());
-        m_feederLigament.setAngle(m_topPivot.getAngle());
+        m_feederLigament.setAngle(m_topPivot.getAngleDegrees());
 
         SmartDashboard.putData("Pink Arm", m_mechanism2d);
     }
@@ -71,8 +71,9 @@ public class PinkArmSubsystem extends SubsystemBase {
     }
 
     public PinkArmState getState() {
-        return new PinkArmState(m_telescope.getExtension(), new Rotation2d(Math.toRadians(m_bottomPivot.getAngle())),
-                new Rotation2d(Math.toRadians(m_topPivot.getAngle())));
+        return new PinkArmState(m_telescope.getExtension(),
+                new Rotation2d(m_bottomPivot.getAngleRadians()),
+                new Rotation2d(m_topPivot.getAngleRadians()));
     }
 
     public void setDesiredState(PinkArmState state) {

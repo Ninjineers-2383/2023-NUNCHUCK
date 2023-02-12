@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.Drivetrain;
 
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;

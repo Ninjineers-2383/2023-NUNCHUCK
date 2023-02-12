@@ -2,7 +2,7 @@ package com.team2383.diffy.commands;
 
 import java.util.function.BooleanSupplier;
 
-import com.team2383.diffy.subsystems.PinkArmSubsystem;
+import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -21,7 +21,7 @@ public class PinkArmTeleCommand extends CommandBase {
     double m_topAngle = 0.1;
 
     public PinkArmTeleCommand(PinkArmSubsystem pinkArm,
-            BooleanSupplier topUp, BooleanSupplier topDown, BooleanSupplier xUp, 
+            BooleanSupplier topUp, BooleanSupplier topDown, BooleanSupplier xUp,
             BooleanSupplier xDown, BooleanSupplier yUp, BooleanSupplier yDown) {
         m_pinkArm = pinkArm;
         m_topUp = topUp;
@@ -30,7 +30,7 @@ public class PinkArmTeleCommand extends CommandBase {
         m_xDown = xDown;
         m_yUp = yUp;
         m_yDown = yDown;
-        
+
         addRequirements(m_pinkArm);
     }
 
@@ -66,6 +66,6 @@ public class PinkArmTeleCommand extends CommandBase {
             m_topAngle = -0.1;
         }
 
-        m_pinkArm.setPosition(m_x, m_y, m_topAngle);    
+        m_pinkArm.setPosition(m_x, m_y, m_topAngle);
     }
 }

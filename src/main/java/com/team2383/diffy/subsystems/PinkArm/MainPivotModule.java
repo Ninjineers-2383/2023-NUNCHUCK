@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.PinkArm;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
@@ -12,7 +12,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class BottomPivotModule implements Sendable {
+public class MainPivotModule implements Sendable {
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId.identifyVelocitySystem(
             Constants.BottomPivotConstants.kV,
             Constants.BottomPivotConstants.kA);
@@ -56,7 +56,11 @@ public class BottomPivotModule implements Sendable {
 
     private final DoubleLogEntry m_expectedAngle;
 
-    private int reset_counter = 0;
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
+
+    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
+
+    private TrapezoidProfile.State state = new TrapezoidProfile.State();
 
     private double m_currentVelocity = 0;
     private double m_prevAngle = 0;
@@ -65,7 +69,7 @@ public class BottomPivotModule implements Sendable {
 
     private double kG = Constants.BottomPivotConstants.kG;
 
-    public BottomPivotModule(DataLog log) {
+    public MainPivotModule(DataLog log) {
         m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
 
@@ -99,7 +103,7 @@ public class BottomPivotModule implements Sendable {
         m_leftSpeed = m_leftMotor.get();
         m_rightSpeed = m_rightMotor.get();
 
-        m_angle = getAngle();
+        m_angle = getAngleRadians();
 
         m_leftMotorCurrent.append(m_leftMotor.getOutputCurrent());
         m_rightMotorCurrent.append(m_rightMotor.getOutputCurrent());
@@ -111,26 +115,18 @@ public class BottomPivotModule implements Sendable {
 
         m_expectedAngle.append(m_desiredAngle);
 
-        if (reset_counter < 200) {
-            if (reset_counter == 199) {
-                m_bottomAngleEncoder.reset();
-            }
-            reset_counter++;
-        }
+        m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
+        m_prevAngle = m_angle;
 
-        double m_currentAngle = Units.degreesToRadians(-m_bottomAngleEncoder.getDistance() * 360);
+        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
 
-        m_currentVelocity = (m_currentAngle - m_prevAngle) / 0.02;
-
-        m_prevAngle = m_currentAngle;
-
-        m_leftVoltage = m_ff.calculate(setVelocity) +
-                m_fb.calculate(m_currentVelocity, setVelocity);
+        m_leftVoltage = m_ff.calculate(state.velocity) +
+                m_fb.calculate(m_angle, state.position);
 
         m_rightVoltage = m_leftVoltage;
 
         if (Robot.isReal()) { // Am I on a planet with gravity
-            m_leftVoltage += Math.sin(m_currentAngle) * 1 * kG;
+            m_leftVoltage += Math.sin(m_angle) * 1 * kG;
         }
 
         setVoltage();
@@ -143,7 +139,7 @@ public class BottomPivotModule implements Sendable {
         m_rightMotor.set(newX.get(0, 0));
 
         m_bottomAngleEncoderSim
-                .setDistance(m_bottomAngleEncoder.getDistance() - (newX.get(0, 0) / (2 * Math.PI)) * 0.02);
+                .setDistance(m_angle / (2 * Math.PI) + (newX.get(0, 0) / (2 * Math.PI) * 0.02));
 
         SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
                 m_leftMotor.get());
@@ -151,7 +147,7 @@ public class BottomPivotModule implements Sendable {
         SmartDashboard.putNumber("Simulated Right Motor Output Velocity",
                 m_rightMotor.get());
 
-        SmartDashboard.putNumber("Simulated Encoder Rotation", getAngle());
+        SmartDashboard.putNumber("Simulated Encoder Radians", getAngleRadians());
     }
 
     public void setAngle(double angle, double extension) {
@@ -163,13 +159,22 @@ public class BottomPivotModule implements Sendable {
             m_desiredAngle = angle;
         }
 
+        goal = new TrapezoidProfile.State(
+                m_desiredAngle, 0);
+
     }
 
     public void setVelocity(double angularVelocity, double extension) {
-        setVelocity = angularVelocity;
+        m_desiredAngle += angularVelocity * 0.02;
+
+        setAngle(m_desiredAngle, extension);
     }
 
-    public double getAngle() {
+    public double getAngleRadians() {
+        return m_bottomAngleEncoder.getDistance() * 2 * Math.PI;
+    }
+
+    public double getAngleDegrees() {
         return m_bottomAngleEncoder.getDistance() * 360;
     }
 
@@ -216,21 +221,5 @@ public class BottomPivotModule implements Sendable {
         builder.addDoubleProperty("PID", () -> {
             return m_fb.calculate(m_currentVelocity, setVelocity);
         }, null);
-        builder.addDoubleProperty("kG", () -> {
-            return kG;
-        }, (double val) -> {
-            kG = val;
-        });
-        // builder.addDoubleProperty("Estimated Module Angle (x hat)", () -> {
-        // return Math.toDegrees(m_systemLoop.getXHat(2));
-        // }, null);
-
-        // builder.addDoubleProperty("Estimated Left Velocity (x hat)", () -> {
-        // return m_systemLoop.getXHat(0);
-        // }, null);
-
-        // builder.addDoubleProperty("Estimated Right Velocity (x hat)", () -> {
-        // return m_systemLoop.getXHat(1);
-        // }, null);
     }
 }

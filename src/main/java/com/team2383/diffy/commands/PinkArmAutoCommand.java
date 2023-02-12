@@ -2,7 +2,7 @@ package com.team2383.diffy.commands;
 
 import java.util.function.DoubleSupplier;
 
-import com.team2383.diffy.subsystems.PinkArmSubsystem;
+import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -16,8 +16,9 @@ public class PinkArmAutoCommand extends CommandBase {
     // private DoubleSupplier m_topAngle;
     // private DoubleSupplier m_topSpeed;
 
-    public PinkArmAutoCommand(PinkArmSubsystem pinkArm, DoubleSupplier desiredBottomAngle, DoubleSupplier desiredBottomSpeed, DoubleSupplier desiredExtension, 
-        DoubleSupplier desiredExtensionSpeed, DoubleSupplier desiredTopAngle, DoubleSupplier desiredTopSpeed) {
+    public PinkArmAutoCommand(PinkArmSubsystem pinkArm, DoubleSupplier desiredBottomAngle,
+            DoubleSupplier desiredBottomSpeed, DoubleSupplier desiredExtension,
+            DoubleSupplier desiredExtensionSpeed, DoubleSupplier desiredTopAngle, DoubleSupplier desiredTopSpeed) {
         // m_pinkArm = pinkArm;
         // m_bottomAngle = desiredBottomAngle;
         // m_bottomSpeed = desiredBottomSpeed;
@@ -31,7 +32,8 @@ public class PinkArmAutoCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // m_pinkArm.setDesiredState(m_bottomAngle.getAsDouble(), 
-        //     m_extension.getAsDouble(), m_extensionSpeed.getAsDouble(), m_topAngle.getAsDouble(), m_topSpeed.getAsDouble());
+        // m_pinkArm.setDesiredState(m_bottomAngle.getAsDouble(),
+        // m_extension.getAsDouble(), m_extensionSpeed.getAsDouble(),
+        // m_topAngle.getAsDouble(), m_topSpeed.getAsDouble());
     }
 }

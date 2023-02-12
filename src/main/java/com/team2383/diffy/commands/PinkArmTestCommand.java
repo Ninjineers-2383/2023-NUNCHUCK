@@ -2,7 +2,7 @@ package com.team2383.diffy.commands;
 
 import java.util.function.BooleanSupplier;
 
-import com.team2383.diffy.subsystems.PinkArmSubsystem;
+import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -45,9 +45,9 @@ public class PinkArmTestCommand extends CommandBase {
         }
 
         if (m_yUp.getAsBoolean()) {
-            m_y = 1;
+            m_y = 2;
         } else if (m_yDown.getAsBoolean()) {
-            m_y = -1;
+            m_y = -2;
         } else {
             m_y = 0;
         }

@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Constants.DriveConstants;
 import com.team2383.diffy.helpers.ThrottleSoftener;
-import com.team2383.diffy.subsystems.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
 
 public class JoystickDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrain;
