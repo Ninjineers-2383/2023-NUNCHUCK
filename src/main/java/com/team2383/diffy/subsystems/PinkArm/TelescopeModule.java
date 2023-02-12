@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
@@ -31,11 +32,11 @@ public class TelescopeModule implements Sendable {
     private double m_voltageLeft;
     private double m_voltageRight;
 
-    private double m_desiredExtension;
-    private double m_desiredSpeed;
-
     private double m_speed;
     private double m_extension;
+
+    private double m_desiredSpeed;
+    private double m_desiredExtension;
 
     private final DataLog m_log;
 
@@ -48,7 +49,13 @@ public class TelescopeModule implements Sendable {
     private final DoubleLogEntry m_expectedSpeed;
     private final DoubleLogEntry m_expectedExtension;
 
-    private double m_desired;
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
+
+    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
+
+    private TrapezoidProfile.State state = new TrapezoidProfile.State();
+
+    double m_simVelocity = 0;
 
     public TelescopeModule(DataLog log) {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
@@ -90,7 +97,10 @@ public class TelescopeModule implements Sendable {
 
         m_expectedExtension.append(m_desiredExtension);
 
-        m_voltageLeft = m_ff.calculate(m_desired) + m_fb.calculate(m_speed, m_desiredSpeed);
+        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
+
+        m_voltageLeft = m_ff.calculate(state.velocity) + m_fb.calculate(m_extension, state.position);
+
         m_voltageRight = m_voltageLeft;
 
         setVoltage();
@@ -98,13 +108,14 @@ public class TelescopeModule implements Sendable {
     }
 
     public void simulate() {
-        double vel = m_motorSim.calculateX(VecBuilder.fill(m_speed), VecBuilder.fill(m_voltageLeft), 0.02).get(0, 0);
+        m_simVelocity = m_motorSim.calculateX(VecBuilder.fill(m_simVelocity), VecBuilder.fill(m_voltageLeft), 0.02)
+                .get(0, 0);
 
-        m_rightMotor.set(vel);
-        m_leftMotor.set(vel);
+        m_rightMotor.set(m_simVelocity);
+        m_leftMotor.set(m_simVelocity);
 
-        m_rightMotor.setPosition(m_rightMotor.getPosition() + vel * 0.02);
-        m_leftMotor.setPosition(m_leftMotor.getPosition() + vel * 0.02);
+        m_rightMotor.setPosition(m_rightMotor.getPosition() + m_simVelocity * 0.02);
+        m_leftMotor.setPosition(m_leftMotor.getPosition() + m_simVelocity * 0.02);
 
         SmartDashboard.putNumber("Simulated Telescope Motor Velocity",
                 m_rightMotor.get() / 2 + m_leftMotor.get() / 2);
@@ -118,7 +129,7 @@ public class TelescopeModule implements Sendable {
     public void setVelocity(double desiredSpeed) {
         m_desiredExtension += desiredSpeed * 0.02;
 
-        m_desired = desiredSpeed;
+        setExtension(m_desiredExtension);
     }
 
     public void setExtension(double extension) {
@@ -130,11 +141,7 @@ public class TelescopeModule implements Sendable {
             m_desiredExtension = extension;
         }
 
-        m_speed = m_rightMotor.get() / 2 + m_leftMotor.get() / 2;
-
-        m_extension = getExtension();
-
-        setVoltage();
+        goal = new TrapezoidProfile.State(m_desiredExtension, 0);
     }
 
     public double getExtension() {
