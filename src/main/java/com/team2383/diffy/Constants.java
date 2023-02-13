@@ -140,13 +140,17 @@ public final class Constants {
         }
     }
 
+    public static final class DickConstants {
+        public static final int ID = 32;
+    }
+
     public static final class TelescopeConstants {
         // FF Values
         public static final double kS = 0.55714;
         public static final double kV = 3;
         public static final double kA = 0.013931;
 
-        public static final double kP = 0;
+        public static final double kP = 1;
 
         public static final double kUpperBound = 5;
         public static final double kLowerBound = 0.0;
@@ -156,12 +160,8 @@ public final class Constants {
         public static final int kExtensionLeftID = 4;
         public static final int kExtensionRightID = 5;
 
-        public static final double kRadPerSecToInchesPerSec = 19.25 / 192.0;
+        public static final double kRotToInches = 6.0;
 
-    }
-
-    public static final class DickConstants {
-        public static final int port = 32;
     }
 
     public static final class BottomPivotConstants {
@@ -171,8 +171,8 @@ public final class Constants {
         public static final double kP = 1.4;
         public static final double kG = 0.5;
 
-        public static final double kUpperBound = 180;
-        public static final double kLowerBound = 0;
+        public static final double kUpperBound = Units.degreesToRadians(170);
+        public static final double kLowerBound = Units.degreesToRadians(-170);
 
         public static final double pivotLength = 0.5;
         public static final double gravity = 9.8;
@@ -217,8 +217,6 @@ public final class Constants {
     }
 
     public static final class FeederConstants {
-        // TODO: Tune SS control values
-
         public static final double kV = 0.01;
         public static final double kA = 0.001;
 

@@ -24,6 +24,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.commands.PinkArmAutoCommand;
 import com.team2383.diffy.commands.PinkArmTestCommand;
 import com.team2383.diffy.subsystems.FeederSubsystem;
 import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
@@ -74,6 +75,9 @@ public class RobotContainer {
             m_wrist);
 
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
+
+    private final PinkArmAutoCommand m_pinkArmAutoCommand = new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2,
+            -Math.PI / 4);
 
     // private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem,
     // m_dickControl);
@@ -136,7 +140,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
         // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
-        return autoChooser.getSelected();
+        // return autoChooser.getSelected();
+        return m_pinkArmAutoCommand;
     }
 
     private void setAutoCommands() {
