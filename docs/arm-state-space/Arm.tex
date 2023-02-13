@@ -40,6 +40,9 @@ The purpose of this paper is to explain how concepts like PID control, feedforwa
 \subsection{Who should read this paper?}
 This paper is aimed at high school students in FRC who are looking to learn how to control a complex robot subsystem and apply the principles in this paper to their own robots. However, these principles are not exclusive to FRC and can be applied in many other places in the real world.
 
+\subsection{What is a double pink arm with a wrist?}
+The double pink arm with a wrist is a spin on the original pink arm design, created by team 2383, the Ninjineers. It comprises of a single jointed arm, with a telescoping extension, and a wrist at the end. This allows for three degrees of freedom to score cones and cubes. Two neo's at the base control the pivot, two neo 550's control the telescoping extension arms, and one neo 550 controls the wrist at the very top.
+
 \section{Kinematics}
 \subsection{Forward Kinematics}
 The three axes of the arm, will be denoted as following. 
@@ -65,6 +68,19 @@ Where \(\theta_m\) is the angle of the pivot joint, \(\theta_{wrel}\) is the ang
 \end{equation}
 
 \subsection{Inverse Kinematics}
+When controlling a mechanism like the pink arm, it is often more convenient to control the mechanism in terms of the x, y, and \(\theta_{wabs}\) coordinates, rather than the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is because the x, y, and \(\theta_{wabs}\) coordinates are more intuitive to control, and are easier to visualize. It is much easier to measure values for the arm to reach and input them into the system rather than calculate the conversions by hand for every preset. However, the x, y, and \(\theta_{wabs}\) coordinates are not directly related to the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is where inverse kinematics comes in. Inverse kinematics is the process of converting the x, y, and \(\theta_{wabs}\) coordinates into the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. The inverse kinematics for the pink arm are as follows:
+
+\begin{equation} \label{theta_m}
+    \theta_m = \arctan\biggl(\frac{y}{x}\biggl)
+\end{equation}
+
+\begin{equation} \label{l}
+    l = \sqrt{x^2 + y^2}
+\end{equation}
+
+\begin{equation} \label{theta_wrel}
+    \theta_{wrel} = \theta_m - \theta_{wabs}
+\end{equation}
 
 \section{PID Control}
 
@@ -75,6 +91,6 @@ Where \(\theta_m\) is the angle of the pivot joint, \(\theta_{wrel}\) is the ang
 
 \section{Motion Profiling}
 
-\subsection{Presets}
+\section{Presets}
 
 \end{document}
