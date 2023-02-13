@@ -35,8 +35,11 @@
     "diffy",
     "drivetrains",
     "Feedforward",
+    "feedforwards",
     "Holonomic",
+    "Irizarry",
     "Kalman",
+    "Ninjineers",
     "Odometry",
     "Penrose",
     "pseudoinverse",
@@ -48,5 +51,6 @@
   "explorer.fileNesting.patterns": {
     "simgui.json": "*.wpilog"
   },
-  "explorer.fileNesting.enabled": true
+  "explorer.fileNesting.enabled": true,
+  "latex.linter.config": ""
 }
