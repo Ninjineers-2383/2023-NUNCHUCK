@@ -3,6 +3,8 @@
 
 \newcommand{\code}[1]{\texttt{#1}}
 
+\DeclareMathOperator{\sgn}{sgn}
+
 \begin{document}
 %Title of the report, name of coworkers and dates (of experiment and of report).
 \begin{titlepage}
@@ -82,12 +84,58 @@ When controlling a mechanism like the pink arm, it is often more convenient to c
     \theta_{wrel} = \theta_m - \theta_{wabs}
 \end{equation}
 
+\section{Feedforwards}
+
+\subsection{Introduction}
+Feedforward control provides a more accurate way to model the movement of a motor. It is a formula that models the dynamics of the system in question, with feedforward constants that are specific to each subsystem.
+
+\subsection{Kv and Ka}
+\begin{equation} \label{Motor Feedforward Equation}
+    V = Kv \dot{x} + Ka \ddot{x}
+\end{equation}
+
+Where \(V\) is the voltage, \(\dot{x}\) is the velocity, \(\ddot{x}\) is the acceleration, \(Kv\) is the velocity gain, and \(Ka\) is the acceleration gain. Kv determines the voltage required to keep the motor at a constant velocity, and Ka determines the voltage required to induce an acceleration on the motor. Kv and Ka are constants that are specific to each motor, and can be calculated by hand or by using software like System Identification.
+
+\subsection{Ks}
+In a frictionless world, the formula above works perfectly. However, in the real world, at very small velocities, the motor will not be able to overcome the static friction of the system. This is where Ks comes in. Ks is the static friction gain, and is the voltage required to overcome the static friction of the system. The updated motor feedforward equation with Ks is as following:
+
+\begin{equation} \label{Motor Feedforward Equation with Static Friction}
+    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot \sgn(\dot{x})
+\end{equation}
+
+Ks is proportional to the velocity of the motor, and is multiplied by the signum of the velocity. This means that if the velocity is positive, Ks will be positive, and if the velocity is negative, Ks will be negative.
+
+\subsection{Kg}
+For the telescoping extension of the arm, the effect of gravity is negligible. However, for the pivot and wrist joint, gravity applies a significant force on the system, causing it to fall down if unmodeled. This can lead to a system that is inaccurate and hard to control. To combat this, a gain, Kg, is added to the feedforward equation. Kg is the gravity gain, and is the voltage required to overcome the force of gravity. The motor feedforward equation for the pivot with Kg is as following:
+
+\begin{equation} \label{Motor Feedforward Equation with Gravity Pivot}
+    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot  \sgn(\dot{x}) + Kg \cdot \sin(\theta_{m})
+\end{equation}
+
+The angle of the pivot is defined as 0 when it is vertically pointed up. As the angle of the pivot reaches 90 or 270 degrees, the effect of gravity is highest, which leads to the sine function outputting 1 or -1, leading to the most aggressive voltage compensation to counteract gravity.The formula for the wrist is very similar, but an important thing to note is that the angle of concern is the angle of the wrist with respect to the x axis, as gravity is applied in the y direction. A gravity feedforward that takes in the angle of the wrist relative to the arm will be inaccurate when the pivot is at any angle other than 0. The motor feedforward equation for the wrist with Kg is as following:
+
+\begin{equation} \label{Motor Feedforward Equation with Gravity Wrist}
+    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot \sgn(\dot{x}) + Kg \cdot \cos(\theta_{wabs})
+\end{equation}
+
+There is a cosine here because the angle of the wrist is with respect to the x axis. As the angle approaches 0 or 180, the cosine approaches 1 or negative 1, leading to the most aggressive voltage compensation to counteract gravity.
+\subsection{Conclusion}
+To conclude, the motor feedforward equations for the pivot, extension, and wrist are as following:
+
+\begin{equation} \label{Motor Feedforward Equation Pivot}
+    V_{m} = Kv \cdot \dot{x}_{m} + Ka \cdot \ddot{x}_{m} + Ks \cdot \sgn(\dot{x}_{m}) + Kg \cdot \sin(\theta_{m})
+\end{equation}
+
+\begin{equation} \label{Motor Feedforward Equation Extension}
+    V_{l} = Kv \cdot \dot{x}_{l} + Ka \cdot \ddot{x}_{l} + Ks \cdot \sgn(\dot{x}_{l})
+\end{equation}
+
+\begin{equation} \label{Motor Feedforward Equation Wrist}
+    V_{w} = Kv \cdot \dot{x}_{w} + Ka \cdot \ddot{x}_{w} + Ks \cdot \sgn(\dot{x}_{w}) + Kg \cdot \cos(\theta_{wabs})
+\end{equation}
+
 \section{PID Control}
 
-\section{Feedforwards}
-\subsection{Kv and Ka}
-\subsection{Ks}
-\subsection{Kg}
 
 \section{Motion Profiling}
 

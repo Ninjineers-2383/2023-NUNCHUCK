@@ -43,10 +43,12 @@
     "Odometry",
     "Penrose",
     "pseudoinverse",
+    "signum",
     "Tele",
     "teleop",
     "teleoperated",
-    "timestep"
+    "timestep",
+    "unmodeled"
   ],
   "explorer.fileNesting.patterns": {
     "simgui.json": "*.wpilog"
