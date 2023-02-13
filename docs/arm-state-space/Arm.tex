@@ -190,6 +190,12 @@ In total, the entire control system for the arm is as following:
 
 \section{Motion Profiling}
 
+\subsection{Introduction}
+When trying to control a system, it is unreasonable to expect the system to instantly reach the setpoint, even with well tuned values. Motion profiling solves this issue, because it creates a path that the subsystem can take to reach the setpoint that is possible for the system to follow. There are many different motion profiles, but the one that is used on the pink arm is the trapezoidal motion profile.
+
+\subsection{Trapezoidal Motion Profile}
+The trapezoidal motion profile is constrained by the maximum velocity and acceleration of the system. Instead of expecting the system to have infinite acceleration, the motion profile creates a line with a slope of the maximum acceleration, until it reaches the setpoint velocity, when it stops accelerating and turns into a line with slope 0.
+
 \section{Presets}
 
 \end{document}

@@ -1,7 +1,5 @@
 package com.team2383.diffy.commands;
 
-import java.util.function.DoubleSupplier;
-
 import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
