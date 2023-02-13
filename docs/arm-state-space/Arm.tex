@@ -1,0 +1,80 @@
+\documentclass{scrartcl}
+\input{File_Setup.tex}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+%Title of the report, name of coworkers and dates (of experiment and of report).
+\begin{titlepage}
+    \centering
+    {\large \today\par}
+    \vfill
+
+    %%%% PROJECT TITLE
+    {\huge\bfseries Double Pink Arm With Wrist Controller Design\par}
+    \vfill
+
+    %%%% AUTHOR(S)
+    {\Large\itshape Javier Irizarry-Delgado}\par
+    {\itshape FRC Team 2383, The Ninjineers}\par
+    \vspace{1.5cm}
+
+    \vfill
+    % Bottom of the page
+\end{titlepage}
+
+\newpage
+
+\doublespacing
+\tableofcontents
+\singlespacing
+\newpage
+\doublespacing
+\section{Introduction}
+\subsection{What is the Pink Arm?}
+The Pink Arm is an arm design originally used by Team 233 (The Pink Team) in 2004 to play defense and climb in endgame. It is comprised of a single jointed arm, with a telescoping joint at the end. This is a very versatile design, as it allows a subsystem mounted at the end to span a large area. This is useful for manipulating game elements, and has proven over the years to be a very efficient design in FRC.
+
+\subsection{Purpose}
+The purpose of this paper is to explain how concepts like PID control, feedforwards, forward and inverse kinematics, motion profiling, and presets, play a role in the programming of a complex robot subsystem. These concepts can turn a mechanism into a competitively viable subsystem that is easy to control in the teleoperated and autonomous periods of the FRC match.
+
+\subsection{Who should read this paper?}
+This paper is aimed at high school students in FRC who are looking to learn how to control a complex robot subsystem and apply the principles in this paper to their own robots. However, these principles are not exclusive to FRC and can be applied in many other places in the real world.
+
+\section{Kinematics}
+\subsection{Forward Kinematics}
+The three axes of the arm, will be denoted as following. 
+
+\begin{equation} \label{Notation}
+    \theta_m,
+    \theta_{wrel},
+    l
+\end{equation}
+
+Where \(\theta_m\) is the angle of the pivot joint, \(\theta_{wrel}\) is the angle of the wrist joint relative to the arm itself, and \(l\) is the length of the arm. These three axes can be mathematically converted into an x, y, and \(\theta_{wabs}\) coordinate system, where \(\theta_{wabs}\) is the absolute angle of the wrist joint with regards to the x axis. The x and y values are the coordinates that the tip of the arm fall on. The conversion is as follows: 
+
+\begin{equation} \label{X Coordinate}
+    x = l \cos(\theta_m)
+\end{equation}
+
+\begin{equation} \label{Y Coordinate}
+    y = l \sin(\theta_m)
+\end{equation}
+
+\begin{equation} \label{Pivot Absolute Coordinate}
+    \theta_{wabs} = \theta_m + \theta_{wrel}
+\end{equation}
+
+\subsection{Inverse Kinematics}
+
+\section{PID Control}
+
+\section{Feedforwards}
+\subsection{Kv and Ka}
+\subsection{Ks}
+\subsection{Kg}
+
+\section{Motion Profiling}
+
+\subsection{Presets}
+
+\end{document}
