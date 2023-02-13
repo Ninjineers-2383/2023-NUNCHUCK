@@ -43,6 +43,7 @@
     "Odometry",
     "Penrose",
     "pseudoinverse",
+    "setpoint",
     "signum",
     "Tele",
     "teleop",

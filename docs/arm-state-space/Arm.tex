@@ -84,14 +84,14 @@ When controlling a mechanism like the pink arm, it is often more convenient to c
     \theta_{wrel} = \theta_m - \theta_{wabs}
 \end{equation}
 
-\section{Feedforwards}
+\section{Feedforward Control}
 
 \subsection{Introduction}
 Feedforward control provides a more accurate way to model the movement of a motor. It is a formula that models the dynamics of the system in question, with feedforward constants that are specific to each subsystem.
 
 \subsection{Kv and Ka}
 \begin{equation} \label{Motor Feedforward Equation}
-    V = Kv \dot{x} + Ka \ddot{x}
+    V = K_v \dot{x} + K_a \ddot{x}
 \end{equation}
 
 Where \(V\) is the voltage, \(\dot{x}\) is the velocity, \(\ddot{x}\) is the acceleration, \(Kv\) is the velocity gain, and \(Ka\) is the acceleration gain. Kv determines the voltage required to keep the motor at a constant velocity, and Ka determines the voltage required to induce an acceleration on the motor. Kv and Ka are constants that are specific to each motor, and can be calculated by hand or by using software like System Identification.
@@ -100,7 +100,7 @@ Where \(V\) is the voltage, \(\dot{x}\) is the velocity, \(\ddot{x}\) is the acc
 In a frictionless world, the formula above works perfectly. However, in the real world, at very small velocities, the motor will not be able to overcome the static friction of the system. This is where Ks comes in. Ks is the static friction gain, and is the voltage required to overcome the static friction of the system. The updated motor feedforward equation with Ks is as following:
 
 \begin{equation} \label{Motor Feedforward Equation with Static Friction}
-    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot \sgn(\dot{x})
+    V = K_v \cdot \dot{x} + K_a \cdot \ddot{x} + K_s \cdot \sgn(\dot{x})
 \end{equation}
 
 Ks is proportional to the velocity of the motor, and is multiplied by the signum of the velocity. This means that if the velocity is positive, Ks will be positive, and if the velocity is negative, Ks will be negative.
@@ -109,13 +109,13 @@ Ks is proportional to the velocity of the motor, and is multiplied by the signum
 For the telescoping extension of the arm, the effect of gravity is negligible. However, for the pivot and wrist joint, gravity applies a significant force on the system, causing it to fall down if unmodeled. This can lead to a system that is inaccurate and hard to control. To combat this, a gain, Kg, is added to the feedforward equation. Kg is the gravity gain, and is the voltage required to overcome the force of gravity. The motor feedforward equation for the pivot with Kg is as following:
 
 \begin{equation} \label{Motor Feedforward Equation with Gravity Pivot}
-    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot  \sgn(\dot{x}) + Kg \cdot \sin(\theta_{m})
+    V = K_v \cdot \dot{x} + K_a \cdot \ddot{x} + K_s \cdot  \sgn(\dot{x}) + K_g \cdot \sin(\theta_{m})
 \end{equation}
 
 The angle of the pivot is defined as 0 when it is vertically pointed up. As the angle of the pivot reaches 90 or 270 degrees, the effect of gravity is highest, which leads to the sine function outputting 1 or -1, leading to the most aggressive voltage compensation to counteract gravity.The formula for the wrist is very similar, but an important thing to note is that the angle of concern is the angle of the wrist with respect to the x axis, as gravity is applied in the y direction. A gravity feedforward that takes in the angle of the wrist relative to the arm will be inaccurate when the pivot is at any angle other than 0. The motor feedforward equation for the wrist with Kg is as following:
 
 \begin{equation} \label{Motor Feedforward Equation with Gravity Wrist}
-    V = Kv \cdot \dot{x} + Ka \cdot \ddot{x} + Ks \cdot \sgn(\dot{x}) + Kg \cdot \cos(\theta_{wabs})
+    V = K_v \cdot \dot{x} + K_a \cdot \ddot{x} + K_s \cdot \sgn(\dot{x}) + K_g \cdot \cos(\theta_{wabs})
 \end{equation}
 
 There is a cosine here because the angle of the wrist is with respect to the x axis. As the angle approaches 0 or 180, the cosine approaches 1 or negative 1, leading to the most aggressive voltage compensation to counteract gravity.
@@ -123,19 +123,70 @@ There is a cosine here because the angle of the wrist is with respect to the x a
 To conclude, the motor feedforward equations for the pivot, extension, and wrist are as following:
 
 \begin{equation} \label{Motor Feedforward Equation Pivot}
-    V_{m} = Kv \cdot \dot{x}_{m} + Ka \cdot \ddot{x}_{m} + Ks \cdot \sgn(\dot{x}_{m}) + Kg \cdot \sin(\theta_{m})
+    V_{m} = K_v \cdot \dot{x}_{m} + K_a \cdot \ddot{x}_{m} + K_s \cdot \sgn(\dot{x}_{m}) + K_g \cdot \sin(\theta_{m})
 \end{equation}
 
 \begin{equation} \label{Motor Feedforward Equation Extension}
-    V_{l} = Kv \cdot \dot{x}_{l} + Ka \cdot \ddot{x}_{l} + Ks \cdot \sgn(\dot{x}_{l})
+    V_{l} = K_v \cdot \dot{x}_{l} + K_a \cdot \ddot{x}_{l} + K_s \cdot \sgn(\dot{x}_{l})
 \end{equation}
 
 \begin{equation} \label{Motor Feedforward Equation Wrist}
-    V_{w} = Kv \cdot \dot{x}_{w} + Ka \cdot \ddot{x}_{w} + Ks \cdot \sgn(\dot{x}_{w}) + Kg \cdot \cos(\theta_{wabs})
+    V_{w} = K_v \cdot \dot{x}_{w} + K_a \cdot \ddot{x}_{w} + K_s \cdot \sgn(\dot{x}_{w}) + K_g \cdot \cos(\theta_{wabs})
 \end{equation}
 
 \section{PID Control}
+\subsection{Introduction}
+Although feedforward control is very accurate for modeled dynamics, it cannot account for all scenarios during an FRC match. When an unmodeled force hits the arm, the arm must be able to hit the setpoint despite the disturbance. This is where PID control comes in. As opposed to feedforward control, which does not use encoder values to dictate voltage inputs, PID control is a feedback control system that uses a proportional, integral, and derivative term to calculate voltage inputs using encoder measurements. The PID control equation is as following:
 
+\begin{equation} \label{PID Control Equation}
+    V = K_p \cdot e + K_i \cdot \int_{0}^{t} e(\tau) d\tau + K_d \cdot \frac{de}{dt}
+\end{equation}
+
+Where V is the voltage to input into the motor, e is the error, or the difference between the set position and the actual position, \(K_p\) is the proportional gain, \(K_i\) is the integral gain, \(K_d\) is the derivative gain, and t is the time. \(\tau\) is simply a dummy variable for the integral.
+
+\subsection{Proportional Gain}
+The proportional term in the PID is meant to drive the positional error down to 0. To do this. the P term is proportional to the error. The higher the error, the larger the voltage, and this springs the motor position back to its setpoint. Conversely, the smaller the error, the lower the effort voltage. For some systems, this is all that is needed, and it is called a P loop, and looks like this:
+
+\begin{equation} \label{P Loop}
+    V = K_p \cdot e
+\end{equation}
+
+The Kp term can be tuned by hand, by running the motor and viewing graphs of the setpoint and actual position.
+
+\subsection{Derivative Gain}
+The derivative term works exactly like the proportional term. However, instead of being proportional to the error, it is proportional to the rate of change of the error. This means that the derivative term is proportional to the velocity of the motor. The higher the velocity error, the higher the control effort, just like proportional control. This term brings the velocity error down to 0. Sometimes, this term is coupled with the proportional term, and is called a PD loop, and looks like this:
+
+\begin{equation} \label{PD Loop}
+    V = K_p \cdot e + K_d \cdot \frac{de}{dt}
+\end{equation}
+
+The derivative term can be tuned just like the proportional term, by running the motor and viewing graphs of the setpoint and actual position.
+
+\subsection{Integral Gain}
+Although PD loops are very effective, these systems sometimes have a steady state error, or a constant error that is not 0. This is because the proportional and derivative terms are not enough to drive the error to 0. This is where the integral term comes in. The integral term is proportional to the area under the error curve, meaning that it gets more aggressive as time passes during steady state error. This is useful because during steady state error, the velocity is 0, and the proportional term is not enough to drive the error to 0, leading to no control effort during a period of error. The integral term is coupled with a P and a D term, completing the PID loop:
+
+\begin{equation}
+    V = K_p \cdot e + K_i \cdot \int_{0}^{t} e(\tau) d\tau + K_d \cdot \frac{de}{dt}
+\end{equation}
+
+However, designers should refrain from using the integral term, because feedforward control can usually avoid steady state error. The arm does not use the integral term in its PID.
+
+\section{Feedforward and PID Control}
+
+\subsection{Putting it all together}
+In total, the entire control system for the arm is as following:
+
+\begin{equation} \label{Pivot Control Equation}
+    V_{m} = K_v \cdot \dot{x}_{m} + K_a \cdot \ddot{x}_{m} + K_s \cdot \sgn(\dot{x}_{m}) + K_g \cdot \sin(\theta_{m}) + K_p \cdot e_{m} K_d \cdot \frac{de_{m}}{dt}
+\end{equation}
+
+\begin{equation} \label{Extension Control Equation}
+    V_{l} = K_v \cdot \dot{x}_{l} + K_a \cdot \ddot{x}_{l} + K_s \cdot \sgn(\dot{x}_{l}) + K_p \cdot e_{l} + K_d \cdot \frac{de_{l}}{dt}
+\end{equation}
+
+\begin{equation} \label{Wrist Control Equation}
+    V_{w} = K_v \cdot \dot{x}_{w} + K_a \cdot \ddot{x}_{w} + K_s \cdot \sgn(\dot{x}_{w}) + K_g \cdot \cos(\theta_{wabs}) + K_p \cdot e_{w} + K_d \cdot \frac{de_{w}}{dt}
+\end{equation}
 
 \section{Motion Profiling}
 
