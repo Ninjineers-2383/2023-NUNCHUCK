@@ -26,6 +26,6 @@ public class PinkArmAutoCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return pinkArm.isAtPosition();
     }
 }

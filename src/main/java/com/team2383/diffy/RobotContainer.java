@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import com.pathplanner.lib.auto.PIDConstants;
@@ -57,6 +58,10 @@ public class RobotContainer {
     private final DoubleSupplier m_extension = () -> MathUtil
             .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRawAxis(2), .1);
     private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(3), .1);
+
+    private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
+    private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
+    private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
 
     // private final DoubleSupplier m_dickControl = () -> 0.3 *
     // (m_operatorController.getLeftTriggerAxis()
@@ -123,6 +128,9 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        m_presetFeed.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, -2, -1, Math.PI));
+        m_presetShootLow.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2, -Math.PI / 4));
+        m_presetShootHigh.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 1, -Math.PI / 4));
     }
 
     private void configureDefaultCommands() {
