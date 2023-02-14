@@ -34,7 +34,7 @@
 \doublespacing
 \section{Introduction}
 \subsection{What is the Pink Arm?}
-The Pink Arm is an arm design originally used by Team 233 (The Pink Team) in 2004 to play defense and climb in endgame. It is comprised of a single jointed arm, with a telescoping joint at the end. This is a very versatile design, as it allows a subsystem mounted at the end to span a large area. This is useful for manipulating game elements, and has proven over the years to be a very efficient design in FRC.
+The Pink Arm is a telescoping arm design originally developed by Team 233 (The Pink Team) in 2004 to play defense and climb in endgame. It is comprised of a single jointed arm, with a telescoping joint at the end. This is a very versatile design, as it allows a subsystem mounted at the end to span a large area. This is useful for manipulating game elements, and has proven over the years to be a very efficient design in FRC.
 
 \subsection{Purpose}
 The purpose of this paper is to explain how concepts like PID control, feedforwards, forward and inverse kinematics, motion profiling, and presets, play a role in the programming of a complex robot subsystem. These concepts can turn a mechanism into a competitively viable subsystem that is easy to control in the teleoperated and autonomous periods of the FRC match.
@@ -70,7 +70,7 @@ Where \(\theta_m\) is the angle of the pivot joint, \(\theta_{wrel}\) is the ang
 \end{equation}
 
 \subsection{Inverse Kinematics}
-When controlling a mechanism like the pink arm, it is often more convenient to control the mechanism in terms of the x, y, and \(\theta_{wabs}\) coordinates, rather than the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is because the x, y, and \(\theta_{wabs}\) coordinates are more intuitive to control, and are easier to visualize. It is much easier to measure values for the arm to reach and input them into the system rather than calculate the conversions by hand for every preset. However, the x, y, and \(\theta_{wabs}\) coordinates are not directly related to the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is where inverse kinematics comes in. Inverse kinematics is the process of converting the x, y, and \(\theta_{wabs}\) coordinates into the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. The inverse kinematics for the pink arm are as follows:
+When controlling an arm mechanism like the pink arm, it is often more convenient to control the mechanism in terms of the x, y, and \(\theta_{wabs}\) coordinates, rather than the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is because the x, y, and \(\theta_{wabs}\) coordinates are more intuitive to control, and are easier to visualize. It is much easier to measure values for the arm to reach and input them into the system rather than calculate the conversions by hand for every preset. However, the x, y, and \(\theta_{wabs}\) coordinates are not directly related to the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. This is where inverse kinematics comes in. Inverse kinematics is the process of converting the x, y, and \(\theta_{wabs}\) coordinates into the \(\theta_m\), \(\theta_{wrel}\), and \(l\) coordinates. The inverse kinematics for the pink arm are as follows:
 
 \begin{equation} \label{theta_m}
     \theta_m = \arctan\biggl(\frac{y}{x}\biggl)
@@ -90,6 +90,7 @@ When controlling a mechanism like the pink arm, it is often more convenient to c
 Feedforward control provides a more accurate way to model the movement of a motor. It is a formula that models the dynamics of the system in question, with feedforward constants that are specific to each subsystem.
 
 \subsection{Kv and Ka}
+The general motor feedforward equation is as follows:
 \begin{equation} \label{Motor Feedforward Equation}
     V = K_v \dot{x} + K_a \ddot{x}
 \end{equation}
@@ -103,10 +104,10 @@ In a frictionless world, the formula above works perfectly. However, in the real
     V = K_v \cdot \dot{x} + K_a \cdot \ddot{x} + K_s \cdot \sgn(\dot{x})
 \end{equation}
 
-Ks is proportional to the velocity of the motor, and is multiplied by the signum of the velocity. This means that if the velocity is positive, Ks will be positive, and if the velocity is negative, Ks will be negative.
+Ks is proportional to the velocity of the motor, and is multiplied by the signum of the velocity. Therefore, if the velocity is positive, Ks will be positive, and if the velocity is negative, Ks will be negative.
 
-\subsection{Kg}
-For the telescoping extension of the arm, the effect of gravity is negligible. However, for the pivot and wrist joint, gravity applies a significant force on the system, causing it to fall down if unmodeled. This can lead to a system that is inaccurate and hard to control. To combat this, a gain, Kg, is added to the feedforward equation. Kg is the gravity gain, and is the voltage required to overcome the force of gravity. The motor feedforward equation for the pivot with Kg is as following:
+\subsection{Kg - Gravity Feedforward Constant}
+For the telescoping extension of the arm, the effect of gravity is negligible. However, for the pivot and wrist joint, gravity applies a significant force on the system, causing it to fall down if unmodeled. This can lead to a system that is inaccurate and hard to control. To combat the force of gravity, a gain, Kg, is added to the feedforward equation. Kg is the gravity gain, and is the voltage required to overcome the force of gravity. The motor feedforward equation for the pivot with Kg is as following:
 
 \begin{equation} \label{Motor Feedforward Equation with Gravity Pivot}
     V = K_v \cdot \dot{x} + K_a \cdot \ddot{x} + K_s \cdot  \sgn(\dot{x}) + K_g \cdot \sin(\theta_{m})
@@ -136,7 +137,7 @@ To conclude, the motor feedforward equations for the pivot, extension, and wrist
 
 \section{PID Control}
 \subsection{Introduction}
-Although feedforward control is very accurate for modeled dynamics, it cannot account for all scenarios during an FRC match. When an unmodeled force hits the arm, the arm must be able to hit the setpoint despite the disturbance. This is where PID control comes in. As opposed to feedforward control, which does not use encoder values to dictate voltage inputs, PID control is a feedback control system that uses a proportional, integral, and derivative term to calculate voltage inputs using encoder measurements. The PID control equation is as following:
+Although feedforward control is very accurate for modeled dynamics, it cannot account for all scenarios during an FRC match. When an unmodeled force hits the arm, the arm must be able to hit the setpoint despite the disturbance. This is where PID control comes in. As opposed to feedforward control, which does not use encoder values to dictate voltage inputs, PID control is a feedback control system that uses the proportional, integral, and derivative gain to calculate voltage inputs using encoder measurements. The differential equation of PID control is as following:
 
 \begin{equation} \label{PID Control Equation}
     V = K_p \cdot e + K_i \cdot \int_{0}^{t} e(\tau) d\tau + K_d \cdot \frac{de}{dt}
