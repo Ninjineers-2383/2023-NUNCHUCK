@@ -1,7 +1,5 @@
 package com.team2383.diffy.subsystems.PinkArm;
 
-import java.util.function.DoubleSupplier;
-
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
