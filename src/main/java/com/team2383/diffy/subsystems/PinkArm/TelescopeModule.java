@@ -61,6 +61,9 @@ public class TelescopeModule implements Sendable {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
         m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionLeftID, MotorType.kBrushless);
 
+        m_rightMotor.getEncoder().setPosition(0);
+        m_leftMotor.getEncoder().setPosition(0);
+
         m_rightMotor.setSmartCurrentLimit(30);
         m_leftMotor.setSmartCurrentLimit(30);
 

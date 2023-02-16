@@ -45,9 +45,12 @@ public class RobotContainer {
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveY = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(0), .1);
-    private final DoubleSupplier m_driveX = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(1), .1);
-    private final DoubleSupplier m_driveOmega = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(2), .1);
+    private final DoubleSupplier m_driveY = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
+    private final DoubleSupplier m_driveX = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
+    private final DoubleSupplier m_driveOmega = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), .1);
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
     private final IntSupplier m_povSupplier = () -> -1;
 

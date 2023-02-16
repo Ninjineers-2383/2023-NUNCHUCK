@@ -141,11 +141,11 @@ public class WristPivotModule implements Sendable {
     }
 
     public double getAngleRadians() {
-        return m_topAngleEncoder.get() * 2 * Math.PI;
+        return (-m_topAngleEncoder.get() + 0.53) * 2 * Math.PI;
     }
 
     public double getAngleDegrees() {
-        return m_topAngleEncoder.get() * 360;
+        return (-m_topAngleEncoder.get() + 0.53) * 360;
     }
 
     public void setVoltage() {

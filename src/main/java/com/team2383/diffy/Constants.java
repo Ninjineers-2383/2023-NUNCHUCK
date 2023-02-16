@@ -35,6 +35,12 @@ public final class Constants {
         };
     }
 
+    public static final class OI {
+        public static int DriveX = Robot.isReal() ? 5 : 0;
+        public static int DriveY = Robot.isReal() ? 4 : 0;
+        public static int DriveOmega = Robot.isReal() ? 0 : 0;
+    }
+
     public static final class PhotonCameraData {
         public final String name;
         public final Transform3d transform;
@@ -165,10 +171,10 @@ public final class Constants {
     }
 
     public static final class BottomPivotConstants {
-        public static final double kS = 0.38118;
-        public static final double kV = 1.7577;
+        public static final double kS = 0.48118;
+        public static final double kV = 1.6577;
         public static final double kA = 0.232;
-        public static final double kP = 1.4;
+        public static final double kP = 1.9;
         public static final double kG = 0.5;
 
         public static final double kUpperBound = Units.degreesToRadians(170);
@@ -196,7 +202,7 @@ public final class Constants {
         public static final double kA = 0.10864;
         public static final double kP = 1;
 
-        public static final double kG = 2;
+        public static final double kG = 1.4;
 
         public static final double kUpperBound = 180;
         public static final double kLowerBound = -180;
