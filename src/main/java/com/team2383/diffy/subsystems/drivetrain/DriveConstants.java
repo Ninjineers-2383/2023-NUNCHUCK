@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.drivetrain;
+package com.team2383.diffy.subsystems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;

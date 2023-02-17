@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.drivetrain;
+package com.team2383.diffy.subsystems.Drivetrain;
 
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.subsystems.drivetrain.DriveConstants.ModuleConstants;
+import com.team2383.diffy.subsystems.Drivetrain.DriveConstants.ModuleConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 

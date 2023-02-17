@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.drivetrain;
+package com.team2383.diffy.subsystems.Drivetrain;
 
 import org.photonvision.EstimatedRobotPose;
 
@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
-import com.team2383.diffy.subsystems.drivetrain.vision.PhotonCameraWrapper;
+import com.team2383.diffy.subsystems.Drivetrain.vision.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;

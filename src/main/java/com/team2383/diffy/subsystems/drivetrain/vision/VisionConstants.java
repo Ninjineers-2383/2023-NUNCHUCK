@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.drivetrain.vision;
+package com.team2383.diffy.subsystems.Drivetrain.vision;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;

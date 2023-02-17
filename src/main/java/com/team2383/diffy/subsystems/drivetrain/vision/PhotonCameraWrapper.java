@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.drivetrain.vision;
+package com.team2383.diffy.subsystems.Drivetrain.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;

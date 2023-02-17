@@ -16,7 +16,7 @@ import com.team2383.diffy.commands.DickCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.subsystems.dick.DickSubsystem;
-import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 
 import edu.wpi.first.math.MathUtil;
