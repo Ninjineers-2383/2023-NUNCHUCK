@@ -1,7 +1,6 @@
-package com.team2383.diffy.subsystems.PinkArm.telescope;
+package com.team2383.diffy.subsystems.pinkArm.telescope;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -25,10 +24,14 @@ public class TelescopeSubsystem extends SubsystemBase {
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
             .identifyVelocitySystem(TelescopeConstants.kV, TelescopeConstants.kA);
 
-    private double m_voltageLeft;
-    private double m_voltageRight;
+    private double m_voltage;
+
+    private double m_speed;
+    private double m_extension;
 
     private double m_desiredExtension;
+
+    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
     double m_simVelocity = 0;
 
@@ -50,17 +53,13 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
+        m_speed = m_rightMotor.get() / 2.0 + m_leftMotor.get() / 2.0;
 
         m_extension = getExtension();
-
-        m_voltageRight = m_voltageLeft;
-
-        setVoltage();
-
     }
 
     public void simulate() {
-        m_simVelocity = m_motorSim.calculateX(VecBuilder.fill(m_simVelocity), VecBuilder.fill(m_voltageLeft), 0.02)
+        m_simVelocity = m_motorSim.calculateX(VecBuilder.fill(m_simVelocity), VecBuilder.fill(m_voltage), 0.02)
                 .get(0, 0);
 
         m_rightMotor.set(m_simVelocity);
@@ -93,6 +92,15 @@ public class TelescopeSubsystem extends SubsystemBase {
             m_desiredExtension = extension;
         }
 
+        goal = new TrapezoidProfile.State(m_desiredExtension, 0);
+
+        double ff = m_ff.calculate(m_speed, 0.02);
+        double fb = m_fb.calculate(m_extension, goal.position);
+
+        m_voltage = ff + fb;
+
+        setVoltage();
+        
     }
 
     public double getExtension() {
@@ -100,7 +108,7 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     private void setVoltage() {
-        m_rightMotor.setVoltage(m_voltageRight);
-        m_leftMotor.setVoltage(m_voltageLeft);
+        m_rightMotor.setVoltage(m_voltage);
+        m_leftMotor.setVoltage(m_voltage);
     }
 }

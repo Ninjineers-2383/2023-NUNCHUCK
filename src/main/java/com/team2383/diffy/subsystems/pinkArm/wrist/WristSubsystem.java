@@ -13,10 +13,6 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,7 +40,6 @@ public class WristSubsystem extends SubsystemBase {
     private double m_prevAngle = 0;
 
     // In radians per second
-    private double m_desiredSpeed;
     private double m_currentVelocity = 0;
 
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
@@ -70,17 +65,6 @@ public class WristSubsystem extends SubsystemBase {
 
         m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
         m_prevAngle = m_angle;
-
-        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
-
-        m_voltage = m_ff.calculate(state.velocity)
-                + m_fb.calculate(m_angle, state.position);
-
-        if (Robot.isReal()) {
-            m_voltage += Math.sin(m_angle + m_bottomAngle) * Constants.WristConstants.kG;
-        }
-
-        setVoltage();
     }
 
     public void simulate() {
@@ -96,23 +80,34 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void setAngle(double desiredAngle, double bottomAngle) {
-        m_desiredAngle = desiredAngle;
-
-        m_bottomAngle = bottomAngle;
+        if (m_desiredAngle > WristConstants.kUpperBound) {
+            m_desiredAngle = WristConstants.kUpperBound;
+        } else if (m_desiredAngle < WristConstants.kLowerBound) {
+            m_desiredAngle = WristConstants.kLowerBound;
+        } else {
+            m_desiredAngle = desiredAngle;
+        }
 
         goal = new TrapezoidProfile.State(
                 m_desiredAngle,
                 0);
+
+        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
+
+        m_voltage = m_ff.calculate(state.velocity)
+                + m_fb.calculate(m_angle, state.position);
+
+        if (Robot.isReal()) {
+            m_voltage += Math.sin(m_angle + m_bottomAngle) * Constants.WristConstants.kG;
+        }
+
+        setVoltage();
+
+        
     }
 
     public void setVelocity(double desiredSpeed, double bottomAngle) {
         m_desiredAngle += desiredSpeed * 0.02;
-
-        if (m_desiredAngle > WristConstants.kUpperBound || m_desiredAngle < WristConstants.kLowerBound) {
-            m_desiredAngle -= desiredSpeed * 0.02;
-            desiredSpeed = 0;
-        }
-
         setAngle(m_desiredAngle, bottomAngle);
     }
 
@@ -125,6 +120,6 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void setVoltage() {
-        //m_pivotMotor.setVoltage(m_voltage);
+        m_pivotMotor.setVoltage(m_voltage);
     }
 }

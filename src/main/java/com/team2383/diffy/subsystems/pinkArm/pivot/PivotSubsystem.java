@@ -16,15 +16,13 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.team2383.diffy.subsystems.pinkArm.PivotConstants;
-
 public class PivotSubsystem extends SubsystemBase {
+    private final Ninja_CANSparkMax m_rightMotor;
+    private final Ninja_CANSparkMax m_leftMotor;
+
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId.identifyVelocitySystem(
             PivotConstants.kV,
             PivotConstants.kA);
-
-    private final Ninja_CANSparkMax m_rightMotor;
-    private final Ninja_CANSparkMax m_leftMotor;
 
     private final DutyCycleEncoder m_bottomAngleEncoder;
     private final DutyCycleEncoderSim m_bottomAngleEncoderSim;
@@ -32,25 +30,16 @@ public class PivotSubsystem extends SubsystemBase {
     private final SimpleMotorFeedforward m_ff;
     private final PIDController m_fb;
 
-    private double m_leftVoltage;
-    private double m_rightVoltage;
+    private double m_voltage;
 
     private double m_desiredAngle;
 
-    private double m_leftSpeed;
-    private double m_rightSpeed;
     private double m_angle;
-
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
 
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
-    private TrapezoidProfile.State state = new TrapezoidProfile.State();
-
     private double m_currentVelocity = 0;
     private double m_prevAngle = 0;
-
-    private double setVelocity = 0;
 
     private double kG = PivotConstants.kG;
 
@@ -74,29 +63,13 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        m_leftSpeed = m_leftMotor.get();
-        m_rightSpeed = m_rightMotor.get();
-
         m_angle = getAngleRadians();
-
         m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
         m_prevAngle = m_angle;
-
-        double fb = m_fb.calculate(m_angle, goal.position);
-
-        m_leftVoltage = Math.min(Math.abs(fb), 3) * Math.signum(fb);
-
-        m_rightVoltage = m_leftVoltage;
-
-        if (Robot.isReal()) { // Am I on a planet with gravity
-            m_leftVoltage += Math.sin(m_angle) * 1 * kG;
-        }
-
-        setVoltage();
     }
 
     public void simulate() {
-        var newX = m_motorSim.calculateX(VecBuilder.fill(m_currentVelocity), VecBuilder.fill(m_leftVoltage), 0.02);
+        var newX = m_motorSim.calculateX(VecBuilder.fill(m_currentVelocity), VecBuilder.fill(m_voltage), 0.02);
 
         m_leftMotor.set(newX.get(0, 0));
         m_rightMotor.set(newX.get(0, 0));
@@ -122,9 +95,18 @@ public class PivotSubsystem extends SubsystemBase {
             m_desiredAngle = angle;
         }
 
-        goal = new TrapezoidProfile.State(
-                m_desiredAngle, 0);
+        goal = new TrapezoidProfile.State(m_desiredAngle, 0);
 
+        double ff = m_ff.calculate(m_currentVelocity, angle, 0.02);
+        double fb = m_fb.calculate(m_angle, goal.position);
+
+        m_voltage = Math.min(Math.abs(fb + ff), 3) * Math.signum(fb + ff);
+
+        if (Robot.isReal()) { // Am I on a planet with gravity
+            m_voltage += Math.sin(m_angle) * 1 * kG;
+        }
+
+        setVoltage();
     }
 
     public void setVelocity(double angularVelocity, double extension) {
@@ -142,7 +124,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setVoltage() {
-        m_leftMotor.setVoltage(m_leftVoltage);
-        m_rightMotor.setVoltage(m_rightVoltage);
+        m_leftMotor.setVoltage(m_voltage);
+        m_rightMotor.setVoltage(m_voltage);
     }
 }
