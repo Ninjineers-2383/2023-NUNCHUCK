@@ -4,15 +4,16 @@ import edu.wpi.first.math.util.Units;
 
 public  final class PivotConstants {
     public static final double kS = 0.48118;
-    public static final double kV = 1.6577;
+    public static final double kV = 0.01;
     public static final double kA = 0.232;
-    public static final double kP = 1.9;
+    public static final double kP = 0.01;
+    public static final double kD = 0.01;
     public static final double kG = 0.5;
 
     public static final double PivotVelocity = .1;
 
-    public static final double kUpperBound = Units.degreesToRadians(170);
-    public static final double kLowerBound = Units.degreesToRadians(-170);
+    public static final double kUpperBound = 170;
+    public static final double kLowerBound = -170;
 
     public static final double kUpperSafety = Units.degreesToRadians(30);
     public static final double kLowerSafety = Units.degreesToRadians(-30);

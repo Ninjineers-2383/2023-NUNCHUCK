@@ -1,11 +1,16 @@
 package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team2383.diffy.Robot;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class WristSubsystem extends SubsystemBase {
     private final TalonSRX m_pivotMotor;
 
-    // private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-    //         .identifyVelocitySystem(WristConstants.kV, WristConstants.kA);
+    private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
+            .identifyVelocitySystem(WristConstants.kV, WristConstants.kA);
 
     private final PIDController m_fb = new PIDController(WristConstants.kP, 0, 0);
 
@@ -48,9 +53,12 @@ public class WristSubsystem extends SubsystemBase {
         calculateVoltage();
     }
 
-    public void simulate() {
-        // var newVel = m_motorSim.calculateX(VecBuilder.fill(m_velocity), VecBuilder.fill(m_voltage), 0.02).get(0,
-        //         0);
+    @Override
+    public void simulationPeriodic() {
+        double newVel = m_motorSim.calculateX(VecBuilder.fill(m_velocity), VecBuilder.fill(m_voltage), 0.02).get(0,
+                0);
+
+        m_pivotMotor.set(TalonSRXControlMode.Velocity, newVel);
 
         // SmartDashboard.putNumber("Simulated Top Pivot Motor Output Velocity", null);
 
@@ -83,22 +91,32 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getAngleRadians() {
-        return -m_pivotMotor.getSelectedSensorPosition() * 2 * Math.PI;
+        return m_pivotMotor.getSelectedSensorPosition() * 2 * Math.PI;
     }
 
     public double getAngleDegrees() {
-        return -m_pivotMotor.getSelectedSensorPosition() * 360;
+        return m_pivotMotor.getSelectedSensorPosition() * 360;
     }
 
     public void setVoltage() {
         m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
     }
 
+    public boolean isAtPosition() {
+        return Math.abs(m_desiredAngle - m_angle) < 1;
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Pivot");
         
-        builder.addDoubleProperty("Angle (Deg)", this::getAngleDegrees, null);
+        builder.addDoubleProperty("Angle (Deg)", () -> {
+            return m_angle;
+        }, null);
+
+        builder.addDoubleProperty("Desired Angle (Deg)", () -> {
+            return m_desiredAngle;
+        }, null);
 
         builder.addDoubleProperty("Velocity (Deg per sec)", () -> {
             return Units.radiansToDegrees(m_velocity);

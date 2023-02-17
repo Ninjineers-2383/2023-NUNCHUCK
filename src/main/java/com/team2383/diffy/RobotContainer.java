@@ -15,9 +15,10 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
-import com.team2383.diffy.commands.PivotCommand;
-import com.team2383.diffy.commands.TelescopeCommand;
-import com.team2383.diffy.commands.WristCommand;
+import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
+import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
+import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
+import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
@@ -63,16 +65,18 @@ public class RobotContainer {
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(3), .1);
+            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(4), .1);
 
-    private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(0), .1);
+    private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(0) * 10, .1);
+
     private final DoubleSupplier m_extension = () -> MathUtil
-            .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRawAxis(2), .1);
-    private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(3), .1);
+            .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRightY
+            (), .1);
+    private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(2), .1);
 
-//     private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
-//     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
-//     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
+    private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
+    private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
+    private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
 
     private final DoubleSupplier m_dickControl = () -> 0.3 *
     (m_operatorController.getLeftTriggerAxis()
@@ -94,9 +98,9 @@ public class RobotContainer {
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
     private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
     m_dickControl);
-    private final PivotCommand m_pivotCommand = new PivotCommand(m_pivotSubsystem, m_pivot.getAsDouble());
-    private final TelescopeCommand m_telescopeCommand = new TelescopeCommand(m_telescopeSubsystem, m_extension.getAsDouble());
-    private final WristCommand m_wristCommand = new WristCommand(m_wristSubsystem, m_wrist.getAsDouble());
+    private final PivotVelocityCommand m_pivotCommand = new PivotVelocityCommand(m_pivotSubsystem, m_pivot);
+    private final TelescopeVelocityCommand m_telescopeCommand = new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension);
+    private final WristVelocityCommand m_wristCommand = new WristVelocityCommand(m_wristSubsystem, m_wrist);
 
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -140,9 +144,9 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        // m_presetFeed.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, -2, -1, Math.PI));
-        // m_presetShootLow.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2, -Math.PI / 4));
-        // m_presetShootHigh.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 1, -Math.PI / 4));
+        m_presetFeed.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 150, -1, 120));
+        m_presetShootLow.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, -60, 2, -90));
+        m_presetShootHigh.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 90, 1, 60));
     }
 
     private void configureDefaultCommands() {

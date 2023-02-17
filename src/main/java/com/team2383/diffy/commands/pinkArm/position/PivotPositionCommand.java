@@ -1,19 +1,19 @@
 // TODO: Implement Command
-package com.team2383.diffy.commands;
+package com.team2383.diffy.commands.pinkArm.position;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.team2383.diffy.subsystems.pinkArm.pivot.*;
 
-public class PivotCommand extends CommandBase {
+public class PivotPositionCommand extends CommandBase {
 
-    private final PivotSubsystem pivot;
-    private final double velocity;
+    private final PivotSubsystem m_pivot;
+    private final double m_angle;
 
-    public PivotCommand(PivotSubsystem pivot, double velocity) {
-        this.pivot = pivot;
-        this.velocity = velocity;
-        addRequirements(pivot);
+    public PivotPositionCommand(PivotSubsystem pivot, double angle) {
+        m_pivot = pivot;
+        m_angle = angle;
+        addRequirements(m_pivot);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class PivotCommand extends CommandBase {
 
     public void execute() {
         // Keeping extension at 0, seems sketchy to rotate and extend at the same time
-        pivot.setAngle(velocity, 0);
+        m_pivot.setAngle(m_angle);
     }
 
     @Override
@@ -31,6 +31,6 @@ public class PivotCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return m_pivot.isAtPosition();
     }
 }

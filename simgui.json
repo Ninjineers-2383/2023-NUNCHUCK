@@ -26,6 +26,7 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
       "/LiveWindow/FeederSubsystem/Feeder": "Subsystem",
+      "/LiveWindow/PaddleSubsystem": "Subsystem",
       "/LiveWindow/PinkArmSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DigitalInput[10]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",
@@ -73,6 +74,7 @@
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/Pink Arm": "Mechanism2d",
+      "/SmartDashboard/Telescope Mechanism": "Mechanism2d",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
@@ -110,6 +112,11 @@
           "visible": true
         }
       },
+      "/SmartDashboard/Telescope Mechanism": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/cam1 Sim Field": {
         "window": {
           "visible": true
@@ -140,9 +147,6 @@
         }
       },
       "open": true
-    },
-    "Retained Values": {
-      "open": false
     },
     "SmartDashboard": {
       "Simulated": {
@@ -181,6 +185,9 @@
           "Top Pivot": {
             "open": true
           },
+          "open": true
+        },
+        "WristSubsystem": {
           "open": true
         },
         "open": true
@@ -345,16 +352,16 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 186,
+          "height": 387,
           "series": [
             {
               "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Desired Angle (Degrees)"
+              "id": "NT:/LiveWindow/PivotSubsystem/Angle (Deg)"
             },
             {
               "color": [
@@ -363,12 +370,12 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Bottom Pivot/Angle"
+              "id": "NT:/LiveWindow/PivotSubsystem/Desired Angle (Deg)"
             }
           ]
         },
         {
-          "height": 186,
+          "height": 387,
           "series": [
             {
               "color": [
@@ -399,15 +406,12 @@
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <3>": {
       "plots": [
         {
-          "height": 2,
+          "height": 289,
           "series": [
             {
               "color": [
@@ -416,16 +420,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Desired Extension (Pick a Unit)"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Estimated Extension (x hat)"
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Desired Extension (Inches)"
             },
             {
               "color": [
@@ -434,12 +429,12 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Telescope/Extension"
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Extension (Inches)"
             }
           ]
         },
         {
-          "height": 2,
+          "height": 289,
           "series": [
             {
               "color": [
@@ -461,15 +456,12 @@
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <4>": {
       "plots": [
         {
-          "height": 2,
+          "height": 273,
           "series": [
             {
               "color": [
@@ -478,7 +470,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Estimated Angle (x hat)"
+              "id": "NT:/LiveWindow/WristSubsystem/Angle (Deg)"
             },
             {
               "color": [
@@ -487,21 +479,12 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Angle (Degrees)"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/LiveWindow/PinkArmSubsystem/Top Pivot/Desired Angle (Degrees)"
+              "id": "NT:/LiveWindow/WristSubsystem/Desired Angle (Deg)"
             }
           ]
         },
         {
-          "height": 2,
+          "height": 273,
           "series": [
             {
               "color": [
@@ -523,10 +506,7 @@
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <5>": {
       "plots": [
