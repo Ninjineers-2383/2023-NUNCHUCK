@@ -1,8 +1,7 @@
-package com.team2383.diffy.subsystems.PinkArm;
+package com.team2383.diffy.subsystems.PinkArm.telescope;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
-import com.team2383.diffy.Constants.TelescopeConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -19,27 +18,17 @@ public class TelescopeSubsystem extends SubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private final PIDController m_fb = new PIDController(Constants.TelescopeConstants.kP, 0, 0);
-    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.TelescopeConstants.kS,
-            Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
+    private final PIDController m_fb = new PIDController(TelescopeConstants.kP, 0, 0);
+    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(TelescopeConstants.kS,
+            TelescopeConstants.kV, TelescopeConstants.kA);
 
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-            .identifyVelocitySystem(Constants.TelescopeConstants.kV, Constants.TelescopeConstants.kA);
+            .identifyVelocitySystem(TelescopeConstants.kV, TelescopeConstants.kA);
 
     private double m_voltageLeft;
     private double m_voltageRight;
 
-    private double m_speed;
-    private double m_extension;
-
-    private double m_desiredSpeed;
     private double m_desiredExtension;
-
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
-
-    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-
-    private TrapezoidProfile.State state = new TrapezoidProfile.State();
 
     double m_simVelocity = 0;
 
@@ -61,13 +50,8 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        m_speed = m_rightMotor.get() / 2.0 + m_leftMotor.get() / 2.0;
 
         m_extension = getExtension();
-
-        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
-
-        m_voltageLeft = m_ff.calculate(state.velocity) + m_fb.calculate(m_extension, state.position);
 
         m_voltageRight = m_voltageLeft;
 
@@ -109,7 +93,6 @@ public class TelescopeSubsystem extends SubsystemBase {
             m_desiredExtension = extension;
         }
 
-        goal = new TrapezoidProfile.State(m_desiredExtension, 0);
     }
 
     public double getExtension() {

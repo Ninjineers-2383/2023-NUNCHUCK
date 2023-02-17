@@ -1,7 +1,6 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.pinkArm.feeder;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.util.datalog.DataLog;
@@ -25,8 +24,8 @@ public class FeederSubsystem extends SubsystemBase {
 
     public FeederSubsystem(DataLog log) {
         // Declare motor instances
-        m_topMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kTopMotorID, MotorType.kBrushless);
-        m_bottomMotor = new Ninja_CANSparkMax(Constants.FeederConstants.kBottomMotorID, MotorType.kBrushless);
+        m_topMotor = new Ninja_CANSparkMax(FeederConstants.kTopMotorID, MotorType.kBrushless);
+        m_bottomMotor = new Ninja_CANSparkMax(FeederConstants.kBottomMotorID, MotorType.kBrushless);
 
         m_log = log;
 

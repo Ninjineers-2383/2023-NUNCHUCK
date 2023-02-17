@@ -1,9 +1,8 @@
-package com.team2383.diffy.subsystems.PinkArm;
+package com.team2383.diffy.subsystems.pinkArm.pivot;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.Constants.BottomPivotConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -17,11 +16,12 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.team2383.diffy.subsystems.pinkArm.PivotConstants;
 
 public class PivotSubsystem extends SubsystemBase {
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId.identifyVelocitySystem(
-            Constants.BottomPivotConstants.kV,
-            Constants.BottomPivotConstants.kA);
+            PivotConstants.kV,
+            PivotConstants.kA);
 
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
@@ -52,25 +52,25 @@ public class PivotSubsystem extends SubsystemBase {
 
     private double setVelocity = 0;
 
-    private double kG = Constants.BottomPivotConstants.kG;
+    private double kG = PivotConstants.kG;
 
     public PivotSubsystem() {
-        m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
-        m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
+        m_leftMotor = new Ninja_CANSparkMax(PivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
+        m_rightMotor = new Ninja_CANSparkMax(PivotConstants.kBottomMotorRightId, MotorType.kBrushless);
 
         m_rightMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
         m_leftMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
-        m_bottomAngleEncoder = new DutyCycleEncoder(BottomPivotConstants.kEncoderPortAbs);
+        m_bottomAngleEncoder = new DutyCycleEncoder(PivotConstants.kEncoderPortAbs);
         m_bottomAngleEncoderSim = new DutyCycleEncoderSim(m_bottomAngleEncoder);
 
         m_leftMotor.setSmartCurrentLimit(40);
         m_rightMotor.setSmartCurrentLimit(40);
 
-        m_ff = new SimpleMotorFeedforward(Constants.BottomPivotConstants.kS, Constants.BottomPivotConstants.kV,
+        m_ff = new SimpleMotorFeedforward(PivotConstants.kS, PivotConstants.kV,
                 Constants.BottomPivotConstants.kA);
 
-        m_fb = new PIDController(Constants.BottomPivotConstants.kP, 0, 0);
+        m_fb = new PIDController(PivotConstants.kP, 0, 0);
     }
 
     public void periodic() {
@@ -114,10 +114,10 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setAngle(double angle, double extension) {
-        if (m_desiredAngle > BottomPivotConstants.kUpperBound) {
-            m_desiredAngle = BottomPivotConstants.kUpperBound;
-        } else if (m_desiredAngle < BottomPivotConstants.kLowerBound) {
-            m_desiredAngle = BottomPivotConstants.kLowerBound;
+        if (m_desiredAngle > PivotConstants.kUpperBound) {
+            m_desiredAngle = PivotConstants.kUpperBound;
+        } else if (m_desiredAngle < PivotConstants.kLowerBound) {
+            m_desiredAngle = PivotConstants.kLowerBound;
         } else {
             m_desiredAngle = angle;
         }

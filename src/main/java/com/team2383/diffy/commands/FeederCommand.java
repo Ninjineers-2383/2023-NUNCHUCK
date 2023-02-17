@@ -2,7 +2,7 @@ package com.team2383.diffy.commands;
 
 import java.util.function.DoubleSupplier;
 
-import com.team2383.diffy.subsystems.FeederSubsystem;
+import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 

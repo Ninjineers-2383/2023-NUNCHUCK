@@ -25,30 +25,10 @@ public final class Constants {
     public static final String kRIOBus = "rio";
     public static final String kCANivoreBus = "Drive";
 
-    public static final class VisionConstants {
-        public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
-                new PhotonCameraData("Microsoft_LifeCam_HD-3000",
-                        new Transform3d(
-                                new Translation3d(Units.inchesToMeters(-4), Units.inchesToMeters(-5.5),
-                                        Units.inchesToMeters(1.0)),
-                                new Rotation3d(VecBuilder.fill(0, 1, 0), Math.PI))),
-        };
-    }
-
     public static final class OI {
         public static int DriveX = Robot.isReal() ? 5 : 0;
         public static int DriveY = Robot.isReal() ? 4 : 0;
         public static int DriveOmega = Robot.isReal() ? 0 : 0;
-    }
-
-    public static final class PhotonCameraData {
-        public final String name;
-        public final Transform3d transform;
-
-        public PhotonCameraData(String name, Transform3d transform) {
-            this.name = name;
-            this.transform = transform;
-        }
     }
 
     public static final class DriveConstants {
@@ -150,25 +130,7 @@ public final class Constants {
         public static final int ID = 32;
     }
 
-    public static final class TelescopeConstants {
-        // FF Values
-        public static final double kS = 0.55714;
-        public static final double kV = 3;
-        public static final double kA = 0.013931;
-
-        public static final double kP = 1;
-
-        public static final double kUpperBound = 5;
-        public static final double kLowerBound = 0.0;
-
-        public static final double kMaxCurrent = 40.0;
-
-        public static final int kExtensionLeftID = 4;
-        public static final int kExtensionRightID = 5;
-
-        public static final double kRotToInches = 6.0;
-
-    }
+    
 
     public static final class BottomPivotConstants {
         public static final double kS = 0.48118;

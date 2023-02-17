@@ -27,9 +27,9 @@ import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.PinkArmAutoCommand;
 import com.team2383.diffy.commands.PinkArmTestCommand;
-import com.team2383.diffy.subsystems.FeederSubsystem;
-import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
+import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

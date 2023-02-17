@@ -1,4 +1,4 @@
-package com.team2383.diffy.helpers;
+package com.team2383.diffy.subsystems.drivetrain.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -13,7 +13,6 @@ import org.photonvision.SimVisionSystem;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.Constants.VisionConstants;
 
 public class PhotonCameraWrapper {
     private int numCameras = Robot.isReal() ? VisionConstants.kPhotonCameras.length : 1;

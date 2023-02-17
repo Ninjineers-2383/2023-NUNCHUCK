@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.PinkArm;
+package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Constants;

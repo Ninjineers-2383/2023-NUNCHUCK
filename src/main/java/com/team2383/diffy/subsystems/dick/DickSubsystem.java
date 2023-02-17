@@ -1,10 +1,8 @@
-package com.team2383.diffy.subsystems;
+package com.team2383.diffy.subsystems.dick;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import com.team2383.diffy.Constants.DickConstants;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
