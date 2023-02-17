@@ -10,10 +10,13 @@ public final class WristConstants {
 
     public static final double kG = 1.4;
 
+    public static final double encoderOffset = .52;
+
     public static final double kUpperBound = 180;
     public static final double kLowerBound = -180;
 
     public static final double kMaxCurrent = 40.0;
+
     public static final int kMotorID = 8;
 
     public static final int kEncoderPortAbs = 6;

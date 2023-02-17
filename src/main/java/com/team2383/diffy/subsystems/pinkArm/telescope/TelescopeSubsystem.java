@@ -5,11 +5,11 @@ import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -17,21 +17,18 @@ public class TelescopeSubsystem extends SubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private final PIDController m_fb = new PIDController(TelescopeConstants.kP, 0, 0);
-    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(TelescopeConstants.kS,
-            TelescopeConstants.kV, TelescopeConstants.kA);
+    private final PIDController m_PIDController = new PIDController(TelescopeConstants.kP, 0, 0);
 
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
             .identifyVelocitySystem(TelescopeConstants.kV, TelescopeConstants.kA);
 
     private double m_voltage;
 
-    private double m_speed;
-    private double m_extension;
+    private double m_extensionInches;
+
+    private double m_velocityInches;
 
     private double m_desiredExtension;
-
-    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
     double m_simVelocity = 0;
 
@@ -48,14 +45,14 @@ public class TelescopeSubsystem extends SubsystemBase {
         m_rightMotor.getEncoder().setPositionConversionFactor(TelescopeConstants.kRotToInches);
         m_leftMotor.getEncoder().setPositionConversionFactor(TelescopeConstants.kRotToInches);
 
-        m_rightMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches);
-        m_leftMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches);
+        m_rightMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
+        m_leftMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
     }
 
     public void periodic() {
-        m_speed = m_rightMotor.get() / 2.0 + m_leftMotor.get() / 2.0;
-
-        m_extension = getExtension();
+        m_velocityInches = getVelocity();
+        m_extensionInches = getExtensionInches();
+        calculateVoltage();
     }
 
     public void simulate() {
@@ -74,13 +71,7 @@ public class TelescopeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Simulated Telescope Motor Position",
                 m_rightMotor.getPosition() / 2 + m_leftMotor.getPosition() / 2);
 
-        SmartDashboard.putNumber("Simulated Extension", getExtension());
-    }
-
-    public void setVelocity(double desiredSpeed) {
-        m_desiredExtension += desiredSpeed * 0.02;
-
-        setExtension(m_desiredExtension);
+        SmartDashboard.putNumber("Simulated Extension", getExtensionInches());
     }
 
     public void setExtension(double extension) {
@@ -91,24 +82,43 @@ public class TelescopeSubsystem extends SubsystemBase {
         } else {
             m_desiredExtension = extension;
         }
-
-        goal = new TrapezoidProfile.State(m_desiredExtension, 0);
-
-        double ff = m_ff.calculate(m_speed, 0.02);
-        double fb = m_fb.calculate(m_extension, goal.position);
-
-        m_voltage = ff + fb;
-
-        setVoltage();
-        
     }
 
-    public double getExtension() {
-        return m_rightMotor.getPosition() / 2.0 + m_leftMotor.getPosition() / 2.0;
+    private void calculateVoltage() {
+        m_voltage = m_PIDController.calculate(m_extensionInches, m_desiredExtension);
+        m_voltage += Math.signum(m_voltage) * TelescopeConstants.kS;
+
+        setVoltage();
+    }
+
+    /* Velocity measured in inches per minute*/
+    public double getVelocity() {
+        return (m_rightMotor.get() + m_leftMotor.get()) / 2.0;
+    }
+
+    public double getExtensionInches() {
+        return (m_rightMotor.getPosition() + m_leftMotor.getPosition()) / 2.0;
     }
 
     private void setVoltage() {
         m_rightMotor.setVoltage(m_voltage);
         m_leftMotor.setVoltage(m_voltage);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Pivot");
+        
+        builder.addDoubleProperty("Extension (Inches)", () -> {
+            return m_extensionInches;
+        }, null);
+
+        builder.addDoubleProperty("Velocity (Inches per Second)", () -> {
+            return m_velocityInches;
+        }, null);
+
+        builder.addDoubleProperty("Voltage (Volts)", () -> {
+            return m_voltage;
+        }, null);
     }
 }

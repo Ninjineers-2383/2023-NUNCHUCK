@@ -15,4 +15,10 @@ package com.team2383.diffy;
 public final class Constants {
     public static final String kRIOBus = "rio";
     public static final String kCANivoreBus = "Drive";
+
+    public static final class OI {
+        public static int DriveX = Robot.isReal() ? 5 : 0;
+        public static int DriveY = Robot.isReal() ? 4 : 0;
+        public static int DriveOmega = Robot.isReal() ? 0 : 0;
+    }
 }

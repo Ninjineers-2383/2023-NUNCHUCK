@@ -3,6 +3,7 @@ package com.team2383.diffy.subsystems.pinkArm.pivot;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
+import com.team2383.diffy.subsystems.pinkArm.wrist.WristConstants;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,10 +12,14 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+
 public class PivotSubsystem extends SubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
@@ -26,8 +31,7 @@ public class PivotSubsystem extends SubsystemBase {
     private final DutyCycleEncoder m_bottomAngleEncoder;
     private final DutyCycleEncoderSim m_bottomAngleEncoderSim;
 
-    private final SimpleMotorFeedforward m_ff;
-    private final PIDController m_fb;
+    private final PIDController m_PIDController;
 
     private double m_voltage;
 
@@ -35,9 +39,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private double m_angle;
 
-    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-
-    private double m_currentVelocity = 0;
+    private double m_velocity = 0;
     private double m_prevAngle = 0;
 
     private double kG = PivotConstants.kG;
@@ -55,20 +57,22 @@ public class PivotSubsystem extends SubsystemBase {
         m_leftMotor.setSmartCurrentLimit(40);
         m_rightMotor.setSmartCurrentLimit(40);
 
-        m_ff = new SimpleMotorFeedforward(PivotConstants.kS, PivotConstants.kV,
-                PivotConstants.kA);
+        m_PIDController = new PIDController(PivotConstants.kP, 0, 0);
 
-        m_fb = new PIDController(PivotConstants.kP, 0, 0);
+        m_bottomAngleEncoder.reset();
+        m_bottomAngleEncoder.setPositionOffset(PivotConstants.encoderOffset);
     }
 
     public void periodic() {
         m_angle = getAngleRadians();
-        m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
+        m_velocity = (m_angle - m_prevAngle) / 0.02;
         m_prevAngle = m_angle;
+        
+        calculateVoltage();
     }
 
     public void simulate() {
-        var newX = m_motorSim.calculateX(VecBuilder.fill(m_currentVelocity), VecBuilder.fill(m_voltage), 0.02);
+        var newX = m_motorSim.calculateX(VecBuilder.fill(m_velocity), VecBuilder.fill(m_voltage), 0.02);
 
         m_leftMotor.set(newX.get(0, 0));
         m_rightMotor.set(newX.get(0, 0));
@@ -85,21 +89,19 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Simulated Encoder Radians", getAngleRadians());
     }
 
-    public void setAngle(double angle, double extension) {
-        if (m_desiredAngle > PivotConstants.kUpperBound) {
+    public void setAngle(double setAngle, double extension) {
+        if (m_desiredAngle > PivotConstants.kUpperBound || (m_desiredAngle < PivotConstants.kUpperSafety && extension > PivotConstants.extensionSafety)) {
             m_desiredAngle = PivotConstants.kUpperBound;
-        } else if (m_desiredAngle < PivotConstants.kLowerBound) {
+        } else if (m_desiredAngle < PivotConstants.kLowerBound || (m_desiredAngle > PivotConstants.kLowerSafety && extension > PivotConstants.extensionSafety)) {
             m_desiredAngle = PivotConstants.kLowerBound;
         } else {
-            m_desiredAngle = angle;
+            m_desiredAngle = setAngle;
         }
-
-        goal = new TrapezoidProfile.State(m_desiredAngle, 0);
-
-        double ff = m_ff.calculate(m_currentVelocity, angle, 0.02);
-        double fb = m_fb.calculate(m_angle, goal.position);
-
-        m_voltage = Math.min(Math.abs(fb + ff), 3) * Math.signum(fb + ff);
+    }
+    
+    private void calculateVoltage() {
+        m_voltage = m_PIDController.calculate(getAngleDegrees(), m_desiredAngle);
+        m_voltage += Math.signum(m_voltage) * PivotConstants.kS;
 
         if (Robot.isReal()) { // Am I on a planet with gravity
             m_voltage += Math.sin(m_angle) * 1 * kG;
@@ -115,15 +117,31 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getAngleRadians() {
-        return (-m_bottomAngleEncoder.getDistance() + 0.095) * 2 * Math.PI;
+        return -m_bottomAngleEncoder.get() * 2 * Math.PI;
     }
 
     public double getAngleDegrees() {
-        return (-m_bottomAngleEncoder.getDistance() + 0.095) * 360;
+        return -m_bottomAngleEncoder.get() * 360;
     }
 
     public void setVoltage() {
         m_leftMotor.setVoltage(m_voltage);
         m_rightMotor.setVoltage(m_voltage);
     }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Pivot");
+        
+        builder.addDoubleProperty("Angle (Deg)", this::getAngleDegrees, null);
+
+        builder.addDoubleProperty("Velocity (Deg per sec)", () -> {
+            return Units.radiansToDegrees(m_velocity);
+        }, null);
+
+        builder.addDoubleProperty("Voltage (Volts)", () -> {
+            return m_voltage;
+        }, null);
+    }
+
 }

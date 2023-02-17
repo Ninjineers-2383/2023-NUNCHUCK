@@ -9,6 +9,16 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.commands.DickCommand;
+import com.team2383.diffy.commands.FeederCommand;
+import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.subsystems.dick.DickSubsystem;
+import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,17 +29,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.FullAutoCommand;
-import com.team2383.diffy.commands.FeederCommand;
-import com.team2383.diffy.commands.JoystickDriveCommand;
-import com.team2383.diffy.commands.PinkArmAutoCommand;
-import com.team2383.diffy.commands.PinkArmTestCommand;
-import com.team2383.diffy.subsystems.PinkArm.PinkArmSubsystem;
-import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
-import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,17 +44,21 @@ public class RobotContainer {
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    // private final DoubleSupplier m_driveY = () -> MathUtil
-    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
-    // private final DoubleSupplier m_driveX = () -> MathUtil
-    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
-    // private final DoubleSupplier m_driveOmega = () -> MathUtil
-    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), .1);
-    // private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
-    // private final IntSupplier m_povSupplier = () -> -1;
+    private final DoubleSupplier m_driveY = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
 
-    // private final DoubleSupplier m_intake = () -> MathUtil
-    //         .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(3), .1);
+    private final DoubleSupplier m_driveX = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
+
+    private final DoubleSupplier m_driveOmega = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), .1);
+
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
+
+    private final IntSupplier m_povSupplier = () -> -1;
+
+    private final DoubleSupplier m_intake = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(3), .1);
 
     private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(0), .1);
     private final DoubleSupplier m_extension = () -> MathUtil
@@ -66,30 +69,25 @@ public class RobotContainer {
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
 
-    // private final DoubleSupplier m_dickControl = () -> 0.3 *
-    // (m_operatorController.getLeftTriggerAxis()
-    // - m_operatorController.getRightTriggerAxis());
+    private final DoubleSupplier m_dickControl = () -> 0.3 *
+    (m_operatorController.getLeftTriggerAxis()
+    - m_operatorController.getRightTriggerAxis());
 
     // The robot's subsystems and commands are defined here...
     
-    //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
-    private final PinkArmSubsystem m_pinkArmSubsystem = new PinkArmSubsystem(DataLogManager.getLog());
-    // private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
-    // private final DickSubsystem m_dickSubsystem = new DickSubsystem();
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
+    private final DickSubsystem m_dickSubsystem = new DickSubsystem();
 
-//     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-//             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
-    private final PinkArmTestCommand m_pinkArmCommand = new PinkArmTestCommand(m_pinkArmSubsystem, m_pivot, m_extension,
-            m_wrist);
 
-    // private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
+    private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
-    private final PinkArmAutoCommand m_pinkArmAutoCommand = new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2,
-            -Math.PI / 4);
 
-    // private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem,
-    // m_dickControl);
+    private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem,
+    m_dickControl);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -103,16 +101,16 @@ public class RobotContainer {
         }
     };
 
-//     SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
-//             m_drivetrainSubsystem::getPose,
-//             m_drivetrainSubsystem::forceOdometry,
-//             m_drivetrainSubsystem.m_kinematics,
-//             new PIDConstants(5, 0, 0),
-//             new PIDConstants(0.5, 0, 0),
-//             m_drivetrainSubsystem::setModuleStates,
-//             eventMap,
-//             true,
-//             m_drivetrainSubsystem);
+    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
+            m_drivetrainSubsystem::getPose,
+            m_drivetrainSubsystem::forceOdometry,
+            m_drivetrainSubsystem.m_kinematics,
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(0.5, 0, 0),
+            m_drivetrainSubsystem::setModuleStates,
+            eventMap,
+            true,
+            m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -132,16 +130,15 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        m_presetFeed.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, -2, -1, Math.PI));
-        m_presetShootLow.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2, -Math.PI / 4));
-        m_presetShootHigh.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 1, -Math.PI / 4));
+        // m_presetFeed.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, -2, -1, Math.PI));
+        // m_presetShootLow.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2, -Math.PI / 4));
+        // m_presetShootHigh.onTrue(new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 1, -Math.PI / 4));
     }
 
     private void configureDefaultCommands() {
-        // m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
-        m_pinkArmSubsystem.setDefaultCommand(m_pinkArmCommand);
-        // m_feederSubsystem.setDefaultCommand(m_feederCommand);
-        // m_dickSubsystem.setDefaultCommand(m_dickCommand);
+        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
+        m_feederSubsystem.setDefaultCommand(m_feederCommand);
+        m_dickSubsystem.setDefaultCommand(m_dickCommand);
     }
 
     /**
@@ -153,19 +150,19 @@ public class RobotContainer {
         // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
         // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
         // return autoChooser.getSelected();
-        return m_pinkArmAutoCommand;
+        return null;//m_pinkArmAutoCommand;
     }
 
     private void setAutoCommands() {
-        // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-        //         m_autoBuilder);
-        // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-        //         m_autoBuilder);
+        Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
+                m_autoBuilder);
+        Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
+                m_autoBuilder);
 
         Command nullAuto = null;
 
-        // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
-        // autoChooser.addOption("Forward Test Auto", forwardTest);
+        autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.addOption("No Auto :(", nullAuto);
     }
 }

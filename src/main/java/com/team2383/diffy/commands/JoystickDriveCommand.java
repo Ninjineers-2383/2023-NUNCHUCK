@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.ThrottleSoftener;
+import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class JoystickDriveCommand extends CommandBase {
@@ -62,9 +63,9 @@ public class JoystickDriveCommand extends CommandBase {
             return new Translation2d(0, 0);
         }
         // Allows rotating around the swerve modules
-        Translation2d pos = new Translation2d((Math.sqrt(3) * Constants.DriveConstants.kTrackWidthMeters) / 3, 0);
+        Translation2d pos = new Translation2d((Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 3, 0);
         pos = pos.rotateBy(Rotation2d.fromDegrees(-hatPosition));
-        return new Translation2d((Math.sqrt(3) * Constants.DriveConstants.kTrackWidthMeters) / 12, 0).plus(pos);
+        return new Translation2d((Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 12, 0).plus(pos);
     }
 
     @Override

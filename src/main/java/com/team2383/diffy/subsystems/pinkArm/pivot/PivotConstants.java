@@ -14,6 +14,10 @@ public  final class PivotConstants {
     public static final double kUpperBound = Units.degreesToRadians(170);
     public static final double kLowerBound = Units.degreesToRadians(-170);
 
+    public static final double kUpperSafety = Units.degreesToRadians(30);
+    public static final double kLowerSafety = Units.degreesToRadians(-30);
+    public static final double extensionSafety = 1;
+
     public static final double pivotLength = 0.5;
     public static final double gravity = 9.8;
     public static final double armMass = 10;
@@ -24,6 +28,7 @@ public  final class PivotConstants {
     public static final int kBottomMotorRightId = 3;
 
     public static final int kEncoderPortAbs = 10;
+    public static final double encoderOffset = 0.095;
 
     public static final double kgb = 1 / 112.5;
 }
