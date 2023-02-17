@@ -23,4 +23,8 @@ public final class WristConstants {
 
     public static final double kgt = 1 / 218.7;
 
+    //TODO: UPDATE THESE VALUES
+    public static final double feedAngle = 0;
+    public static final double outFeedAngle = 0;
+
 }

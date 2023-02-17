@@ -33,7 +33,7 @@ public class WristSubsystem extends SubsystemBase {
 
     // In radians
     private double m_desiredAngle;
-    private double m_bottomAngle;
+    private double m_pivotAngle;
     private double m_angle;
     private double m_prevAngle = 0;
 
@@ -67,7 +67,7 @@ public class WristSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Simulated Encoder Radians", getAngleRadians());
     }
 
-    public void setAngle(double desiredAngle, double bottomAngle) {
+    public void setAngle(double desiredAngle) {
         if (m_desiredAngle > WristConstants.kUpperBound) {
             m_desiredAngle = WristConstants.kUpperBound;
         } else if (m_desiredAngle < WristConstants.kLowerBound) {
@@ -82,14 +82,14 @@ public class WristSubsystem extends SubsystemBase {
         m_voltage += Math.signum(m_voltage) * WristConstants.kS;
 
         if (Robot.isReal()) {
-            m_voltage += Math.sin(m_angle + m_bottomAngle) * WristConstants.kG;
+            m_voltage += Math.sin(m_angle + m_pivotAngle) * WristConstants.kG;
         }
         setVoltage();
     }
 
-    public void setVelocity(double desiredSpeed, double bottomAngle) {
+    public void setVelocity(double desiredSpeed) {
         m_desiredAngle += desiredSpeed * 0.02;
-        setAngle(m_desiredAngle, bottomAngle);
+        setAngle(m_desiredAngle);
     }
 
     public double getAngleRadians() {
