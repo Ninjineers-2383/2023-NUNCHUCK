@@ -5,9 +5,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public final class DriveConstants {
     public static final double kMaxVelocity = 4; // meters per second
-    public static final double kMaxAngularVelocity = 4 * Math.PI; // radians per second
 
     public final static double kTrackWidthMeters = 0.6173724;
+    public final static double kDriveMaxVoltage = 10.0;
+    public final static double kMaxCurrent = 40.0;
+
+    public final static double kDriveGearRatio = (9 / 60.0) * (20 / 84.0) * (64 / 16.0); // 1/7
+    public final static double kTurnGearRatio = 1 / 28.0;
+
+    public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
+    
+    public final static double kMaxAngularVelocity = Math.PI * 100;
+    public final static double kMaxAngularAcceleration = Math.PI * 2 * 100;
 
     public static final class ModuleConstants {
         public final double kS;

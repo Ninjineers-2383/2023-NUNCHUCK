@@ -1,9 +1,7 @@
 package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.Constants.WristConstants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -22,14 +20,14 @@ public class WristSubsystem extends SubsystemBase {
     private final Ninja_CANSparkMax m_pivotMotor;
 
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-            .identifyVelocitySystem(Constants.WristConstants.kV, Constants.WristConstants.kA);
+            .identifyVelocitySystem(WristConstants.kV, WristConstants.kA);
 
     private final DutyCycleEncoder m_topAngleEncoder;
     private final DutyCycleEncoderSim m_topAngleEncoderSim;
 
-    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(Constants.WristConstants.kS,
-            Constants.WristConstants.kV, Constants.WristConstants.kA);
-    private final PIDController m_fb = new PIDController(Constants.WristConstants.kP, 0, 0);
+    private final SimpleMotorFeedforward m_ff = new SimpleMotorFeedforward(WristConstants.kS,
+            WristConstants.kV, WristConstants.kA);
+    private final PIDController m_fb = new PIDController(WristConstants.kP, 0, 0);
 
     private double m_voltage;
 
@@ -55,7 +53,7 @@ public class WristSubsystem extends SubsystemBase {
 
         m_pivotMotor.setVelocityConversionFactor(2.0 * Math.PI * 60);
 
-        m_topAngleEncoder = new DutyCycleEncoder(Constants.WristConstants.kEncoderPortAbs);
+        m_topAngleEncoder = new DutyCycleEncoder(WristConstants.kEncoderPortAbs);
 
         m_topAngleEncoderSim = new DutyCycleEncoderSim(m_topAngleEncoder);
     }
@@ -98,7 +96,7 @@ public class WristSubsystem extends SubsystemBase {
                 + m_fb.calculate(m_angle, state.position);
 
         if (Robot.isReal()) {
-            m_voltage += Math.sin(m_angle + m_bottomAngle) * Constants.WristConstants.kG;
+            m_voltage += Math.sin(m_angle + m_bottomAngle) * WristConstants.kG;
         }
 
         setVoltage();

@@ -28,10 +28,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.Constants.GlobalModuleConstants;
-import com.team2383.diffy.Constants.ModuleConstants;
+import com.team2383.diffy.subsystems.drivetrain.DriveConstants.ModuleConstants;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
@@ -144,7 +142,7 @@ public class DiffSwerveModule implements Sendable {
         m_moduleMountAngle = moduleConstants.mountAngle;
 
         CurrentLimitsConfigs supply = new CurrentLimitsConfigs();
-        supply.SupplyCurrentLimit = GlobalModuleConstants.kMaxCurrent;
+        supply.SupplyCurrentLimit = DriveConstants.kMaxCurrent;
         supply.SupplyCurrentLimitEnable = true;
 
         m_topMotor.getConfigurator().apply(supply);
@@ -178,8 +176,8 @@ public class DiffSwerveModule implements Sendable {
                         // ---
                         0, -moduleConstants.kV / moduleConstants.kA, 0,
                         // ---
-                        Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
-                        Constants.GlobalModuleConstants.kTurnGearRatio / 2.0,
+                        DriveConstants.kTurnGearRatio / 2.0,
+                        DriveConstants.kTurnGearRatio / 2.0,
                         0),
                 Matrix.mat(Nat.N3(), Nat.N2()).fill(
                         // ---
@@ -277,8 +275,8 @@ public class DiffSwerveModule implements Sendable {
      */
     public double getDriveSpeed(double topMotorSpeed, double bottomMotorSpeed) {
         double speed = (topMotorSpeed - bottomMotorSpeed) / 2 /* Average motor speed (rps) */ *
-                Constants.GlobalModuleConstants.kDriveGearRatio /* Output revolutions per second */ *
-                (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI) /*
+                DriveConstants.kDriveGearRatio /* Output revolutions per second */ *
+                (DriveConstants.kDriveWheelDiameterMeters * Math.PI) /*
                                                                                        * Circumference in meters
                                                                                        * (meters/second)
                                                                                        */;
@@ -288,8 +286,8 @@ public class DiffSwerveModule implements Sendable {
 
     public double getDriveDistanceMeters(double topMotorTicks, double bottomMotorTicks) {
         return ((topMotorTicks - bottomMotorTicks) / 2) *
-                Constants.GlobalModuleConstants.kDriveGearRatio *
-                (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI);
+                DriveConstants.kDriveGearRatio *
+                (DriveConstants.kDriveWheelDiameterMeters * Math.PI);
     }
 
     /**
@@ -298,8 +296,8 @@ public class DiffSwerveModule implements Sendable {
      */
     public double driveSpeedToMotorVelocity(double driveSpeed) {
         return driveSpeed *
-                (1 / (Constants.GlobalModuleConstants.kDriveWheelDiameterMeters * Math.PI)) *
-                (1 / Constants.GlobalModuleConstants.kDriveGearRatio) * /* Output revolutions per second */
+                (1 / (DriveConstants.kDriveWheelDiameterMeters * Math.PI)) *
+                (1 / DriveConstants.kDriveGearRatio) * /* Output revolutions per second */
                 2 * Math.PI;
     }
 

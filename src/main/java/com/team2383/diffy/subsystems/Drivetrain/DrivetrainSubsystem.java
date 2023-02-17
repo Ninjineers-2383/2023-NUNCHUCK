@@ -41,9 +41,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-            Constants.DriveConstants.frontLeftConstants.translation,
-            Constants.DriveConstants.frontRightConstants.translation,
-            Constants.DriveConstants.rearConstants.translation);
+            DriveConstants.frontLeftConstants.translation,
+            DriveConstants.frontRightConstants.translation,
+            DriveConstants.rearConstants.translation);
 
     private final SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -54,11 +54,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private int m_counter2;
 
     public DrivetrainSubsystem(DataLog log) {
-        m_frontLeftModule = new DiffSwerveModule(Constants.DriveConstants.frontLeftConstants,
+        m_frontLeftModule = new DiffSwerveModule(DriveConstants.frontLeftConstants,
                 Constants.kCANivoreBus, log);
-        m_frontRightModule = new DiffSwerveModule(Constants.DriveConstants.frontRightConstants,
+        m_frontRightModule = new DiffSwerveModule(DriveConstants.frontRightConstants,
                 Constants.kCANivoreBus, log);
-        m_rearModule = new DiffSwerveModule(Constants.DriveConstants.rearConstants,
+        m_rearModule = new DiffSwerveModule(DriveConstants.rearConstants,
                 Constants.kCANivoreBus, log);
 
         m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
@@ -76,9 +76,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putData("Field", m_field);
         m_COR = m_field.getObject("COR");
 
-        addChild(Constants.DriveConstants.frontLeftConstants.name, m_frontLeftModule);
-        addChild(Constants.DriveConstants.frontRightConstants.name, m_frontRightModule);
-        addChild(Constants.DriveConstants.rearConstants.name, m_rearModule);
+        addChild(DriveConstants.frontLeftConstants.name, m_frontLeftModule);
+        addChild(DriveConstants.frontRightConstants.name, m_frontRightModule);
+        addChild(DriveConstants.rearConstants.name, m_rearModule);
 
         if (RobotBase.isSimulation()) {
             m_poseEstimator.resetPosition(new Rotation2d(), getModulePositions(),
@@ -169,7 +169,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.kMaxVelocity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxVelocity);
 
         for (int i = 0; i < m_modules.length; i++) {
             m_modules[i].setDesiredState(states[i]);

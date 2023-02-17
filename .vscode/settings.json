@@ -30,6 +30,7 @@
   "latex-workshop.latex.autoClean.run": "onBuilt",
   "cSpell.words": [
     "AHRS",
+    "atfl",
     "Brushless",
     "CANivore",
     "diffy",

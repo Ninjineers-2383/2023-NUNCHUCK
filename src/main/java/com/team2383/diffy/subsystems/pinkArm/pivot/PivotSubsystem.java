@@ -1,7 +1,6 @@
 package com.team2383.diffy.subsystems.pinkArm.pivot;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
@@ -57,7 +56,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_rightMotor.setSmartCurrentLimit(40);
 
         m_ff = new SimpleMotorFeedforward(PivotConstants.kS, PivotConstants.kV,
-                Constants.BottomPivotConstants.kA);
+                PivotConstants.kA);
 
         m_fb = new PIDController(PivotConstants.kP, 0, 0);
     }

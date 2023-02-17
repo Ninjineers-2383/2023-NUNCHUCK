@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.PinkArm;
+package com.team2383.diffy.subsystems.pinkArm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 

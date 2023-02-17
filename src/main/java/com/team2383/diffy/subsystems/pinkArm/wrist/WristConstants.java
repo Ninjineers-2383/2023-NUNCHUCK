@@ -1,4 +1,4 @@
-package com.team2383.diffy.subsystems.PinkArm.wrist;
+package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 public final class WristConstants {
     // FF Values
