@@ -13,15 +13,12 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class MainPivotModule implements Sendable {
+public class PivotSubsystem extends SubsystemBase {
     private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId.identifyVelocitySystem(
             Constants.BottomPivotConstants.kV,
             Constants.BottomPivotConstants.kA);
@@ -44,18 +41,6 @@ public class MainPivotModule implements Sendable {
     private double m_rightSpeed;
     private double m_angle;
 
-    private final DataLog m_log;
-
-    private final DoubleLogEntry m_leftMotorCurrent;
-    private final DoubleLogEntry m_rightMotorCurrent;
-
-    private final DoubleLogEntry m_leftMotorVel;
-    private final DoubleLogEntry m_rightMotorVel;
-
-    private final DoubleLogEntry m_moduleAngleLog;
-
-    private final DoubleLogEntry m_expectedAngle;
-
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
 
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -69,7 +54,7 @@ public class MainPivotModule implements Sendable {
 
     private double kG = Constants.BottomPivotConstants.kG;
 
-    public MainPivotModule(DataLog log) {
+    public PivotSubsystem() {
         m_leftMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(BottomPivotConstants.kBottomMotorRightId, MotorType.kBrushless);
 
@@ -79,23 +64,12 @@ public class MainPivotModule implements Sendable {
         m_bottomAngleEncoder = new DutyCycleEncoder(BottomPivotConstants.kEncoderPortAbs);
         m_bottomAngleEncoderSim = new DutyCycleEncoderSim(m_bottomAngleEncoder);
 
-        m_log = log;
-
         m_leftMotor.setSmartCurrentLimit(40);
         m_rightMotor.setSmartCurrentLimit(40);
 
-        m_leftMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
-        m_rightMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
-
-        m_leftMotorVel = new DoubleLogEntry(m_log, "/topMotorVel");
-        m_rightMotorVel = new DoubleLogEntry(m_log, "/bottomMotorVel");
-
-        m_moduleAngleLog = new DoubleLogEntry(m_log, "/moduleAngle");
-
-        m_expectedAngle = new DoubleLogEntry(m_log, "/expectedAngle");
-
         m_ff = new SimpleMotorFeedforward(Constants.BottomPivotConstants.kS, Constants.BottomPivotConstants.kV,
                 Constants.BottomPivotConstants.kA);
+
         m_fb = new PIDController(Constants.BottomPivotConstants.kP, 0, 0);
     }
 
@@ -105,20 +79,10 @@ public class MainPivotModule implements Sendable {
 
         m_angle = getAngleRadians();
 
-        m_leftMotorCurrent.append(m_leftMotor.getOutputCurrent());
-        m_rightMotorCurrent.append(m_rightMotor.getOutputCurrent());
-
-        m_leftMotorVel.append(m_leftSpeed);
-        m_rightMotorVel.append(m_rightSpeed);
-
-        m_moduleAngleLog.append(m_angle);
-
-        m_expectedAngle.append(m_desiredAngle);
-
         m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
         m_prevAngle = m_angle;
 
-        var fb = m_fb.calculate(m_angle, goal.position);
+        double fb = m_fb.calculate(m_angle, goal.position);
 
         m_leftVoltage = Math.min(Math.abs(fb), 3) * Math.signum(fb);
 
@@ -180,47 +144,5 @@ public class MainPivotModule implements Sendable {
     public void setVoltage() {
         m_leftMotor.setVoltage(m_leftVoltage);
         m_rightMotor.setVoltage(m_rightVoltage);
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Bottom Pivot");
-
-        builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
-            return m_desiredAngle * 360 / (2 * Math.PI);
-        }, null);
-
-        builder.addDoubleProperty("Angle", () -> {
-            return m_angle;
-        }, null);
-
-        builder.addDoubleProperty("Angle Degrees", this::getAngleDegrees, null);
-
-        builder.addDoubleProperty("Left Speed", () -> {
-            return m_leftSpeed;
-        }, null);
-
-        builder.addDoubleProperty("Right Speed", () -> {
-            return m_rightSpeed;
-        }, null);
-
-        builder.addDoubleProperty("Left Voltage", () -> {
-            return m_leftVoltage;
-        }, null);
-        builder.addDoubleProperty("Right Voltage", () -> {
-            return m_rightVoltage;
-        }, null);
-
-        builder.addDoubleProperty("Set Velocity", () -> {
-            return setVelocity;
-        }, null);
-
-        builder.addDoubleProperty("Current Velocity", () -> {
-            return m_currentVelocity;
-        }, null);
-
-        builder.addDoubleProperty("PID", () -> {
-            return m_fb.calculate(m_currentVelocity, setVelocity);
-        }, null);
     }
 }

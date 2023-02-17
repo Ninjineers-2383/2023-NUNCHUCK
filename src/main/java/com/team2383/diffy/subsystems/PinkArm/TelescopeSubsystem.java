@@ -12,13 +12,10 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class TelescopeModule implements Sendable {
+public class TelescopeSubsystem extends SubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
@@ -38,17 +35,6 @@ public class TelescopeModule implements Sendable {
     private double m_desiredSpeed;
     private double m_desiredExtension;
 
-    private final DataLog m_log;
-
-    private final DoubleLogEntry m_motorCurrent;
-
-    private final DoubleLogEntry m_motorVel;
-
-    private final DoubleLogEntry m_moduleExtensionLog;
-
-    private final DoubleLogEntry m_expectedSpeed;
-    private final DoubleLogEntry m_expectedExtension;
-
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
 
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -57,7 +43,7 @@ public class TelescopeModule implements Sendable {
 
     double m_simVelocity = 0;
 
-    public TelescopeModule(DataLog log) {
+    public TelescopeSubsystem() {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
         m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionLeftID, MotorType.kBrushless);
 
@@ -72,33 +58,12 @@ public class TelescopeModule implements Sendable {
 
         m_rightMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches);
         m_leftMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches);
-
-        m_log = log;
-
-        m_motorCurrent = new DoubleLogEntry(m_log, "/motorCurrent");
-
-        m_motorVel = new DoubleLogEntry(m_log, "/motorVel");
-
-        m_moduleExtensionLog = new DoubleLogEntry(m_log, "/moduleExtension");
-
-        m_expectedSpeed = new DoubleLogEntry(m_log, "/expectedSpeed");
-        m_expectedExtension = new DoubleLogEntry(m_log, "/expectedExtension");
     }
 
     public void periodic() {
         m_speed = m_rightMotor.get() / 2.0 + m_leftMotor.get() / 2.0;
 
         m_extension = getExtension();
-
-        m_motorCurrent.append(m_rightMotor.getOutputCurrent());
-
-        m_motorVel.append(m_speed);
-
-        m_moduleExtensionLog.append(m_extension);
-
-        m_expectedSpeed.append(m_desiredSpeed);
-
-        m_expectedExtension.append(m_desiredExtension);
 
         state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
 
@@ -155,31 +120,4 @@ public class TelescopeModule implements Sendable {
         m_rightMotor.setVoltage(m_voltageRight);
         m_leftMotor.setVoltage(m_voltageLeft);
     }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Telescope");
-
-        builder.addDoubleProperty("Desired Speed", () -> {
-            return m_desiredSpeed;
-        }, null);
-
-        builder.addDoubleProperty("Desired Extension (Inches)", () -> {
-            return m_desiredExtension;
-        }, null);
-
-        builder.addDoubleProperty("Speed", () -> {
-            return m_speed;
-        }, null);
-
-        builder.addDoubleProperty("Extension", () -> {
-            return m_extension;
-        }, null);
-
-        builder.addDoubleProperty("Voltage", () -> {
-            return m_voltageLeft;
-        }, null);
-
-    }
-
 }
