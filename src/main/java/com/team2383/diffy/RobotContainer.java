@@ -12,14 +12,14 @@ import java.util.function.IntSupplier;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
-import com.team2383.diffy.commands.DickCommand;
+import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.PivotCommand;
 import com.team2383.diffy.commands.TelescopeCommand;
 import com.team2383.diffy.commands.WristCommand;
-import com.team2383.diffy.subsystems.dick.DickSubsystem;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
@@ -82,7 +82,7 @@ public class RobotContainer {
     
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
-    private final DickSubsystem m_dickSubsystem = new DickSubsystem();
+    private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
     private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
     private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem();
     private final WristSubsystem m_wristSubsystem = new WristSubsystem();
@@ -92,7 +92,7 @@ public class RobotContainer {
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
-    private final DickCommand m_dickCommand = new DickCommand(m_dickSubsystem,
+    private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
     m_dickControl);
     private final PivotCommand m_pivotCommand = new PivotCommand(m_pivotSubsystem, m_pivot.getAsDouble());
     private final TelescopeCommand m_telescopeCommand = new TelescopeCommand(m_telescopeSubsystem, m_extension.getAsDouble());

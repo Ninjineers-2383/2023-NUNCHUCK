@@ -2,16 +2,16 @@ package com.team2383.diffy.commands;
 
 import java.util.function.DoubleSupplier;
 
-import com.team2383.diffy.subsystems.dick.DickSubsystem;
+import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DickCommand extends CommandBase {
+public class PaddleCommand extends CommandBase {
 
-    private final DickSubsystem m_dick;
+    private final PaddleSubsystem m_dick;
     private final DoubleSupplier m_erect;
 
-    public DickCommand(DickSubsystem dick, DoubleSupplier viagra) {
+    public PaddleCommand(PaddleSubsystem dick, DoubleSupplier viagra) {
 
         m_dick = dick;
         m_erect = viagra;
