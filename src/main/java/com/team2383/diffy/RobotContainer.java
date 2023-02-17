@@ -45,14 +45,17 @@ public class RobotContainer {
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveY = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(0), .1);
-    private final DoubleSupplier m_driveX = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(1), .1);
-    private final DoubleSupplier m_driveOmega = () -> MathUtil.applyDeadband(m_driverController.getRawAxis(2), .1);
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
-    private final IntSupplier m_povSupplier = () -> -1;
+    // private final DoubleSupplier m_driveY = () -> MathUtil
+    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
+    // private final DoubleSupplier m_driveX = () -> MathUtil
+    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
+    // private final DoubleSupplier m_driveOmega = () -> MathUtil
+    //         .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), .1);
+    // private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
+    // private final IntSupplier m_povSupplier = () -> -1;
 
-    private final DoubleSupplier m_intake = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(3), .1);
+    // private final DoubleSupplier m_intake = () -> MathUtil
+    //         .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(3), .1);
 
     private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(0), .1);
     private final DoubleSupplier m_extension = () -> MathUtil
@@ -68,18 +71,19 @@ public class RobotContainer {
     // - m_operatorController.getRightTriggerAxis());
 
     // The robot's subsystems and commands are defined here...
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    
+    //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final PinkArmSubsystem m_pinkArmSubsystem = new PinkArmSubsystem(DataLogManager.getLog());
-    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
+    // private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     // private final DickSubsystem m_dickSubsystem = new DickSubsystem();
 
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+//     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+//             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
 
     private final PinkArmTestCommand m_pinkArmCommand = new PinkArmTestCommand(m_pinkArmSubsystem, m_pivot, m_extension,
             m_wrist);
 
-    private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
+    // private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
     private final PinkArmAutoCommand m_pinkArmAutoCommand = new PinkArmAutoCommand(m_pinkArmSubsystem, 1, 2,
             -Math.PI / 4);
@@ -99,16 +103,16 @@ public class RobotContainer {
         }
     };
 
-    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
-            m_drivetrainSubsystem::getPose,
-            m_drivetrainSubsystem::forceOdometry,
-            m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(5, 0, 0),
-            new PIDConstants(0.5, 0, 0),
-            m_drivetrainSubsystem::setModuleStates,
-            eventMap,
-            true,
-            m_drivetrainSubsystem);
+//     SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
+//             m_drivetrainSubsystem::getPose,
+//             m_drivetrainSubsystem::forceOdometry,
+//             m_drivetrainSubsystem.m_kinematics,
+//             new PIDConstants(5, 0, 0),
+//             new PIDConstants(0.5, 0, 0),
+//             m_drivetrainSubsystem::setModuleStates,
+//             eventMap,
+//             true,
+//             m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -134,9 +138,9 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
+        // m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_pinkArmSubsystem.setDefaultCommand(m_pinkArmCommand);
-        m_feederSubsystem.setDefaultCommand(m_feederCommand);
+        // m_feederSubsystem.setDefaultCommand(m_feederCommand);
         // m_dickSubsystem.setDefaultCommand(m_dickCommand);
     }
 
@@ -153,15 +157,15 @@ public class RobotContainer {
     }
 
     private void setAutoCommands() {
-        Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-                m_autoBuilder);
-        Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-                m_autoBuilder);
+        // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
+        //         m_autoBuilder);
+        // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
+        //         m_autoBuilder);
 
         Command nullAuto = null;
 
-        autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
-        autoChooser.addOption("Forward Test Auto", forwardTest);
+        // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.addOption("No Auto :(", nullAuto);
     }
 }

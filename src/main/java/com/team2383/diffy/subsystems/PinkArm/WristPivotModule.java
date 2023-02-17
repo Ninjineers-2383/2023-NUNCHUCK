@@ -141,15 +141,15 @@ public class WristPivotModule implements Sendable {
     }
 
     public double getAngleRadians() {
-        return m_topAngleEncoder.get() * 2 * Math.PI;
+        return (-m_topAngleEncoder.get() + 0.53) * 2 * Math.PI;
     }
 
     public double getAngleDegrees() {
-        return m_topAngleEncoder.get() * 360;
+        return (-m_topAngleEncoder.get() + 0.53) * 360;
     }
 
     public void setVoltage() {
-        m_pivotMotor.setVoltage(m_voltage);
+        //m_pivotMotor.setVoltage(m_voltage);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class WristPivotModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
-            return m_desiredAngle;
+            return m_desiredAngle * 360 / Math.PI;
         }, null);
 
         builder.addDoubleProperty("Speed", () -> {
@@ -169,7 +169,7 @@ public class WristPivotModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Angle (Degrees)", () -> {
-            return m_angle;
+            return m_angle * 360 / Math.PI;
         }, null);
 
         builder.addDoubleProperty("Voltage", () -> {

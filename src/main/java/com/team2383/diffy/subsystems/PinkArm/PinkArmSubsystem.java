@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PinkArmSubsystem extends SubsystemBase {
     private final MainPivotModule m_bottomPivot;
-    private final TelescopeModule m_telescope;
+    // private final TelescopeModule m_telescope;
     private final WristPivotModule m_wristPivot;
 
     private final PinkArmKinematics m_kinematics;
@@ -33,7 +33,7 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_log = log;
 
         m_bottomPivot = new MainPivotModule(m_log);
-        m_telescope = new TelescopeModule(m_log);
+        // m_telescope = new TelescopeModule(m_log);
         m_wristPivot = new WristPivotModule(m_log);
 
         m_mechanism2d = new Mechanism2d(10, 10);
@@ -46,17 +46,18 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_kinematics = new PinkArmKinematics(1);
 
         addChild("Bottom Pivot", m_bottomPivot);
-        addChild("Telescope", m_telescope);
+        // addChild("Telescope", m_telescope);
         addChild("Top Pivot", m_wristPivot);
     }
 
     @Override
     public void periodic() {
         m_bottomPivot.periodic();
-        m_telescope.periodic();
+        // m_telescope.periodic();
         m_wristPivot.periodic();
 
-        double extension = m_telescope.getExtension();
+        // double extension = m_telescope.getExtension();
+        double extension = 0;
 
         m_telescopeLigament.setAngle(m_bottomPivot.getAngleDegrees() - 90);
         m_telescopeLigament.setLength((extension >= 0 ? extension : 0) + 1);
@@ -71,18 +72,20 @@ public class PinkArmSubsystem extends SubsystemBase {
 
         if (cState.getExtension() > 0.1 && Math.signum(m_state.getBottomAngle().getDegrees()) != Math
                 .signum(cState.getBottomAngle().getDegrees())) {
-            m_wristPivot.setAngle(0, cState.getBottomAngle().getRadians());
+            //m_wristPivot.setAngle(0, cState.getBottomAngle().getRadians());
             if (Math.abs(cState.getTopAngle().getDegrees()) < 2) {
-                m_telescope.setExtension(0);
+                // m_telescope.setExtension(0);
             }
         } else {
-            if (Math.abs(cState.getBottomAngle().getDegrees() - m_state.getBottomAngle().getDegrees()) > 1) {
+            if (Math.abs(cState.getBottomAngle().getDegrees() - m_state.getBottomAngle().getDegrees()) > 10) {
                 m_bottomPivot.setAngle(m_state.getBottomAngle().getRadians(),
-                        m_telescope.getExtension());
+                        // m_telescope.getExtension());
+                        0);
             } else if (Math.abs(cState.getTopAngle().getDegrees() - m_state.getTopAngle().getDegrees()) > 1) {
-                m_wristPivot.setAngle(m_state.getTopAngle().getRadians(), cState.getBottomAngle().getRadians());
+                //m_wristPivot.setAngle(m_state.getTopAngle().getRadians(),
+                //        cState.getBottomAngle().getRadians());
             } else if (Math.abs(cState.getExtension() - m_state.getExtension()) > 1) {
-                m_telescope.setExtension(m_state.getExtension());
+                // m_telescope.setExtension(m_state.getExtension());
             }
         }
 
@@ -91,14 +94,14 @@ public class PinkArmSubsystem extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         m_bottomPivot.simulate();
-        m_telescope.simulate();
+        // m_telescope.simulate();
         m_wristPivot.simulate();
     }
 
     public PinkArmState getState() {
-        return new PinkArmState(m_telescope.getExtension(),
+        return new PinkArmState(0,
                 new Rotation2d(m_bottomPivot.getAngleRadians()),
-                new Rotation2d(m_wristPivot.getAngleRadians()));
+                new Rotation2d(0));
     }
 
     public void setDesiredState(PinkArmState state) {
@@ -109,15 +112,26 @@ public class PinkArmSubsystem extends SubsystemBase {
         m_state = m_kinematics.toPinkArmState(x, y, topAngle);
         System.out.println("Bottom Angle: " + m_state.getBottomAngle());
         System.out.println("Top Angle: " + m_state.getTopAngle());
-        System.out.println("Extension: " + m_state.getExtension());
+        // System.out.println("Extension: " + m_state.getExtension());
+
+        setDesiredState(m_state);
+    }
+
+    //stupid meaning less brain cells used to do this
+    public void setPositionStupid(double pivotAngle, double extension, double topAngle) {
+        m_state = new PinkArmState(extension, new Rotation2d(pivotAngle), new Rotation2d(topAngle));
+        System.out.println("Bottom Angle: " + m_state.getBottomAngle());
+        System.out.println("Top Angle: " + m_state.getTopAngle());
+        // System.out.println("Extension: " + m_state.getExtension());
 
         setDesiredState(m_state);
     }
 
     public void setDesiredVelocities(double desiredBottomSpeed,
             double desiredExtensionSpeed, double desiredTopSpeed) {
-        m_bottomPivot.setVelocity(desiredBottomSpeed, m_telescope.getExtension());
-        m_telescope.setVelocity(desiredExtensionSpeed);
+        m_bottomPivot.setVelocity(desiredBottomSpeed, 0);
+        // m_bottomPivot.setVelocity(desiredBottomSpeed, m_telescope.getExtension());
+        // m_telescope.setVelocity(desiredExtensionSpeed);
         m_wristPivot.setVelocity(desiredTopSpeed, m_bottomPivot.getAngleRadians());
     }
 

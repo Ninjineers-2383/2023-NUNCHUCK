@@ -118,10 +118,9 @@ public class MainPivotModule implements Sendable {
         m_currentVelocity = (m_angle - m_prevAngle) / 0.02;
         m_prevAngle = m_angle;
 
-        state = new TrapezoidProfile(constraints, goal, state).calculate(0.02);
+        var fb = m_fb.calculate(m_angle, goal.position);
 
-        m_leftVoltage = m_ff.calculate(state.velocity) +
-                m_fb.calculate(m_angle, state.position);
+        m_leftVoltage = Math.min(Math.abs(fb), 3) * Math.signum(fb);
 
         m_rightVoltage = m_leftVoltage;
 
@@ -171,11 +170,11 @@ public class MainPivotModule implements Sendable {
     }
 
     public double getAngleRadians() {
-        return m_bottomAngleEncoder.getDistance() * 2 * Math.PI;
+        return (-m_bottomAngleEncoder.getDistance() + 0.095) * 2 * Math.PI;
     }
 
     public double getAngleDegrees() {
-        return m_bottomAngleEncoder.getDistance() * 360;
+        return (-m_bottomAngleEncoder.getDistance() + 0.095) * 360;
     }
 
     public void setVoltage() {
@@ -188,12 +187,14 @@ public class MainPivotModule implements Sendable {
         builder.setSmartDashboardType("Bottom Pivot");
 
         builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
-            return m_desiredAngle;
+            return m_desiredAngle * 360 / (2 * Math.PI);
         }, null);
 
         builder.addDoubleProperty("Angle", () -> {
             return m_angle;
         }, null);
+
+        builder.addDoubleProperty("Angle Degrees", this::getAngleDegrees, null);
 
         builder.addDoubleProperty("Left Speed", () -> {
             return m_leftSpeed;
