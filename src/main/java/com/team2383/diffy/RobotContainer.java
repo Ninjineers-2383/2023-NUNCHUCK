@@ -19,7 +19,7 @@ import com.team2383.diffy.commands.PivotCommand;
 import com.team2383.diffy.commands.TelescopeCommand;
 import com.team2383.diffy.commands.WristCommand;
 import com.team2383.diffy.subsystems.dick.DickSubsystem;
-import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
@@ -33,7 +33,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
@@ -71,9 +70,9 @@ public class RobotContainer {
             .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRawAxis(2), .1);
     private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(3), .1);
 
-    private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
-    private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
-    private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
+//     private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
+//     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
+//     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
 
     private final DoubleSupplier m_dickControl = () -> 0.3 *
     (m_operatorController.getLeftTriggerAxis()

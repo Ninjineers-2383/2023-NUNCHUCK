@@ -1,31 +1,21 @@
 package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Robot;
-import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.numbers.*;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class WristSubsystem extends SubsystemBase {
     private final TalonSRX m_pivotMotor;
 
-    private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
-            .identifyVelocitySystem(WristConstants.kV, WristConstants.kA);
+    // private final LinearSystem<N1, N1, N1> m_motorSim = LinearSystemId
+    //         .identifyVelocitySystem(WristConstants.kV, WristConstants.kA);
 
     private final PIDController m_fb = new PIDController(WristConstants.kP, 0, 0);
 

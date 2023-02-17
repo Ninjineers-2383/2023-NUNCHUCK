@@ -8,10 +8,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.ThrottleSoftener;
-import com.team2383.diffy.subsystems.Drivetrain.DriveConstants;
-import com.team2383.diffy.subsystems.Drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
+import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class JoystickDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrain;
