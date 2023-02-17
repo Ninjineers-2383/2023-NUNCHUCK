@@ -72,7 +72,7 @@ public class PinkArmSubsystem extends SubsystemBase {
 
         if (cState.getExtension() > 0.1 && Math.signum(m_state.getBottomAngle().getDegrees()) != Math
                 .signum(cState.getBottomAngle().getDegrees())) {
-            m_wristPivot.setAngle(0, cState.getBottomAngle().getRadians());
+            //m_wristPivot.setAngle(0, cState.getBottomAngle().getRadians());
             if (Math.abs(cState.getTopAngle().getDegrees()) < 2) {
                 // m_telescope.setExtension(0);
             }
@@ -82,8 +82,8 @@ public class PinkArmSubsystem extends SubsystemBase {
                         // m_telescope.getExtension());
                         0);
             } else if (Math.abs(cState.getTopAngle().getDegrees() - m_state.getTopAngle().getDegrees()) > 1) {
-                m_wristPivot.setAngle(m_state.getTopAngle().getRadians(),
-                        cState.getBottomAngle().getRadians());
+                //m_wristPivot.setAngle(m_state.getTopAngle().getRadians(),
+                //        cState.getBottomAngle().getRadians());
             } else if (Math.abs(cState.getExtension() - m_state.getExtension()) > 1) {
                 // m_telescope.setExtension(m_state.getExtension());
             }
@@ -110,6 +110,16 @@ public class PinkArmSubsystem extends SubsystemBase {
 
     public void setPosition(double x, double y, double topAngle) {
         m_state = m_kinematics.toPinkArmState(x, y, topAngle);
+        System.out.println("Bottom Angle: " + m_state.getBottomAngle());
+        System.out.println("Top Angle: " + m_state.getTopAngle());
+        // System.out.println("Extension: " + m_state.getExtension());
+
+        setDesiredState(m_state);
+    }
+
+    //stupid meaning less brain cells used to do this
+    public void setPositionStupid(double pivotAngle, double extension, double topAngle) {
+        m_state = new PinkArmState(extension, new Rotation2d(pivotAngle), new Rotation2d(topAngle));
         System.out.println("Bottom Angle: " + m_state.getBottomAngle());
         System.out.println("Top Angle: " + m_state.getTopAngle());
         // System.out.println("Extension: " + m_state.getExtension());

@@ -187,12 +187,14 @@ public class MainPivotModule implements Sendable {
         builder.setSmartDashboardType("Bottom Pivot");
 
         builder.addDoubleProperty("Desired Angle (Degrees)", () -> {
-            return m_desiredAngle;
+            return m_desiredAngle * 360 / (2 * Math.PI);
         }, null);
 
         builder.addDoubleProperty("Angle", () -> {
             return m_angle;
         }, null);
+
+        builder.addDoubleProperty("Angle Degrees", this::getAngleDegrees, null);
 
         builder.addDoubleProperty("Left Speed", () -> {
             return m_leftSpeed;
