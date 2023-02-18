@@ -91,15 +91,15 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getAngleRadians() {
-        return m_pivotMotor.getSelectedSensorPosition() * 2 * Math.PI;
+        return (m_pivotMotor.getSelectedSensorPosition() + 2200) * Math.PI / 2000.0;
     }
 
     public double getAngleDegrees() {
-        return m_pivotMotor.getSelectedSensorPosition() * 360;
+        return Units.radiansToDegrees(getAngleRadians());
     }
 
     public void setVoltage() {
-        m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
+        //m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
     }
 
     public boolean isAtPosition() {
@@ -110,8 +110,12 @@ public class WristSubsystem extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Pivot");
         
+        builder.addDoubleProperty("Angle (Raw)", () -> {
+            return m_pivotMotor.getSelectedSensorPosition() + 2200;
+        }, null);
+
         builder.addDoubleProperty("Angle (Deg)", () -> {
-            return m_angle;
+            return getAngleDegrees();
         }, null);
 
         builder.addDoubleProperty("Desired Angle (Deg)", () -> {

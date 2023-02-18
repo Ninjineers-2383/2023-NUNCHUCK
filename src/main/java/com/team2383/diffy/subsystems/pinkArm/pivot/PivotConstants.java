@@ -28,8 +28,8 @@ public  final class PivotConstants {
     public static final int kBottomMotorLeftId = 2;
     public static final int kBottomMotorRightId = 3;
 
-    public static final int kEncoderPortAbs = 10;
-    public static final double encoderOffset = 0.095;
+    public static final int kEncoderPortAbs = 6;
+    public static final double encoderOffset = 13.0/360;
 
     public static final double kgb = 1 / 112.5;
 }

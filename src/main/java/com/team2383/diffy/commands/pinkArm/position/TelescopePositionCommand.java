@@ -1,5 +1,3 @@
-// TODO: Implement Command
-
 package com.team2383.diffy.commands.pinkArm.position;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;

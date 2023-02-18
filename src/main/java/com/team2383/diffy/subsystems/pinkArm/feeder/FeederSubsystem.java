@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FeederSubsystem extends SubsystemBase {
-    // TODO: Comment
     private final Ninja_CANSparkMax m_topMotor;
     private final Ninja_CANSparkMax m_bottomMotor;
 

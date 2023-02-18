@@ -8,7 +8,7 @@ public final class TelescopeConstants {
 
     public static final double kP = 1;
 
-    public static final double TelescopeVelocity = .1;
+    public static final double TelescopeVelocity = .2;
 
     public static final double kUpperBound = 5;
     public static final double kLowerBound = 0.0;
@@ -18,6 +18,6 @@ public final class TelescopeConstants {
     public static final int kExtensionLeftID = 4;
     public static final int kExtensionRightID = 5;
 
-    public static final double kRotToInches = 6.0;
+    public static final double kRotToInches = 20.0 / 324.0;
 
 }

@@ -2,7 +2,6 @@ package com.team2383.diffy.subsystems.pinkArm.wrist;
 
 public final class WristConstants {
     // FF Values
-    // TODO: Tune these values
     public static final double kS = 0.21143;
     public static final double kV = 2.091;
     public static final double kA = 0.10864;
@@ -19,11 +18,8 @@ public final class WristConstants {
 
     public static final int kMotorID = 8;
 
-    public static final int kEncoderPortAbs = 6;
-
     public static final double kgt = 1 / 218.7;
 
-    //TODO: UPDATE THESE VALUES
     public static final double feedAngle = 0;
     public static final double outFeedAngle = 0;
 

@@ -1,6 +1,7 @@
 package com.team2383.diffy.subsystems.pinkArm.telescope;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -41,12 +42,19 @@ public class TelescopeSubsystem extends SubsystemBase {
 
         m_rightMotor.setSmartCurrentLimit(30);
         m_leftMotor.setSmartCurrentLimit(30);
+        
+        m_leftMotor.setInverted(true);
+        m_rightMotor.setInverted(false);
 
-        m_rightMotor.getEncoder().setPositionConversionFactor(TelescopeConstants.kRotToInches);
-        m_leftMotor.getEncoder().setPositionConversionFactor(TelescopeConstants.kRotToInches);
 
-        m_rightMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
-        m_leftMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
+        // m_rightMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
+        // m_leftMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
+
+        // m_rightMotor.getEncoder().setPositionConversionFactor(-1);
+        // m_leftMotor.getEncoder().setPositionConversionFactor(-1);
+
+        // m_rightMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
+        // m_leftMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
     }
 
     public void periodic() {
@@ -95,7 +103,7 @@ public class TelescopeSubsystem extends SubsystemBase {
         m_voltage = m_PIDController.calculate(m_extensionInches, m_desiredExtension);
         m_voltage += Math.signum(m_voltage) * TelescopeConstants.kS;
 
-        setVoltage();
+        //setVoltage();
     }
 
     /* Velocity measured in inches per minute*/
@@ -104,12 +112,17 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     public double getExtensionInches() {
-        return (m_rightMotor.getPosition() + m_leftMotor.getPosition()) / 2.0;
+        return -20 + ((m_rightMotor.getPosition() * TelescopeConstants.kRotToInches) + (m_leftMotor.getPosition() * TelescopeConstants.kRotToInches)) / 2.0;
     }
 
     private void setVoltage() {
         m_rightMotor.setVoltage(m_voltage);
         m_leftMotor.setVoltage(m_voltage);
+    }
+
+    public void setVoltage(double volt) {
+        m_rightMotor.setVoltage(volt);
+        m_leftMotor.setVoltage(volt);
     }
 
     public boolean isAtPosition() {
@@ -119,6 +132,10 @@ public class TelescopeSubsystem extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Pivot");
+
+        builder.addDoubleProperty("Extension (Raw)", () -> {
+            return m_rightMotor.getEncoder().getPosition();
+        }, null);
         
         builder.addDoubleProperty("Extension (Inches)", () -> {
             return m_extensionInches;
@@ -130,6 +147,14 @@ public class TelescopeSubsystem extends SubsystemBase {
 
         builder.addDoubleProperty("Velocity (Inches per Second)", () -> {
             return m_velocityInches;
+        }, null);
+
+        builder.addDoubleProperty("Right Current (Amperage)", () -> {
+            return m_rightMotor.getOutputCurrent();
+        }, null);
+
+        builder.addDoubleProperty("Left Current (Amperage)", () -> {
+            return m_leftMotor.getOutputCurrent();
         }, null);
 
         builder.addDoubleProperty("Voltage (Volts)", () -> {

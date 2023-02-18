@@ -112,11 +112,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Telescope Mechanism": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/cam1 Sim Field": {
         "window": {
           "visible": true
@@ -185,6 +180,9 @@
           "Top Pivot": {
             "open": true
           },
+          "open": true
+        },
+        "PivotSubsystem": {
           "open": true
         },
         "WristSubsystem": {

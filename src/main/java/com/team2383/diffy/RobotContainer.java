@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -60,7 +61,7 @@ public class RobotContainer {
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
 
     private final DoubleSupplier m_driveOmega = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), .1);
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
 
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
 
@@ -157,11 +158,11 @@ public class RobotContainer {
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_dickSubsystem.setDefaultCommand(m_dickCommand);
         m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
-        m_telescopeSubsystem.setDefaultCommand(m_telescopeCommand);
-        m_wristSubsystem.setDefaultCommand(m_wristCommand);
-        if (Robot.isSimulation()) {
-            m_pinkArmSimSubsystem.setDefaultCommand(m_pinkArmSimCommand);
-        }
+        m_telescopeSubsystem.setDefaultCommand(new InstantCommand(() -> m_telescopeSubsystem.setVoltage(m_extension.getAsDouble()*12), m_telescopeSubsystem).repeatedly());
+        //m_wristSubsystem.setDefaultCommand(m_wristCommand);
+        // if (Robot.isSimulation()) {
+        //     m_pinkArmSimSubsystem.setDefaultCommand(m_pinkArmSimCommand);
+        // }
     }
 
     /**
