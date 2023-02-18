@@ -16,11 +16,13 @@ import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
+import com.team2383.diffy.commands.pinkArm.PinkArmSimCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
+import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
@@ -90,6 +92,7 @@ public class RobotContainer {
     private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
     private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem();
     private final WristSubsystem m_wristSubsystem = new WristSubsystem();
+    private final PinkArmSimSubsystem m_pinkArmSimSubsystem = new PinkArmSimSubsystem(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
 
@@ -101,7 +104,7 @@ public class RobotContainer {
     private final PivotVelocityCommand m_pivotCommand = new PivotVelocityCommand(m_pivotSubsystem, m_pivot);
     private final TelescopeVelocityCommand m_telescopeCommand = new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension);
     private final WristVelocityCommand m_wristCommand = new WristVelocityCommand(m_wristSubsystem, m_wrist);
-
+    private final PinkArmSimCommand m_pinkArmSimCommand = new PinkArmSimCommand(m_pinkArmSimSubsystem);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -156,6 +159,9 @@ public class RobotContainer {
         m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
         m_telescopeSubsystem.setDefaultCommand(m_telescopeCommand);
         m_wristSubsystem.setDefaultCommand(m_wristCommand);
+        if (Robot.isSimulation()) {
+            m_pinkArmSimSubsystem.setDefaultCommand(m_pinkArmSimCommand);
+        }
     }
 
     /**

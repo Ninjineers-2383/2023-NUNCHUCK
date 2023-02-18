@@ -34,3 +34,4 @@ public class PivotPositionCommand extends CommandBase {
         return m_pivot.isAtPosition();
     }
 }
+

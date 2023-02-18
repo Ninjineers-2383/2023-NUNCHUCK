@@ -352,7 +352,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 387,
+          "height": 391,
           "series": [
             {
               "color": [
@@ -375,7 +375,7 @@
           ]
         },
         {
-          "height": 387,
+          "height": 391,
           "series": [
             {
               "color": [
@@ -406,12 +406,15 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
         {
-          "height": 289,
+          "height": 294,
           "series": [
             {
               "color": [
@@ -434,7 +437,7 @@
           ]
         },
         {
-          "height": 289,
+          "height": 294,
           "series": [
             {
               "color": [
@@ -456,12 +459,15 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <4>": {
       "plots": [
         {
-          "height": 273,
+          "height": 278,
           "series": [
             {
               "color": [
@@ -484,7 +490,7 @@
           ]
         },
         {
-          "height": 273,
+          "height": 278,
           "series": [
             {
               "color": [
@@ -506,7 +512,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <5>": {
       "plots": [

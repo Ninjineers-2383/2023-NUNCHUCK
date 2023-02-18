@@ -9,9 +9,6 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -34,9 +31,6 @@ public class TelescopeSubsystem extends SubsystemBase {
 
     double m_simVelocity = 0;
 
-    private final Mechanism2d m_mechanism2d;
-    private final MechanismRoot2d m_mechanismRoot2d;
-    private final MechanismLigament2d m_telescopeLigament;
 
     public TelescopeSubsystem() {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.kExtensionRightID, MotorType.kBrushless);
@@ -53,20 +47,12 @@ public class TelescopeSubsystem extends SubsystemBase {
 
         m_rightMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
         m_leftMotor.getEncoder().setVelocityConversionFactor(TelescopeConstants.kRotToInches / 60);
-
-        m_mechanism2d = new Mechanism2d(3, 3);
-        m_mechanismRoot2d = m_mechanism2d.getRoot("Bottom Pivot", 1.5, 1.5);
-
-        m_telescopeLigament = m_mechanismRoot2d.append(new MechanismLigament2d("Telescope Ligament", 0.5, 0.5));
     }
 
     public void periodic() {
         m_velocityInches = getVelocity();
         m_extensionInches = getExtensionInches();
         
-        m_telescopeLigament.setLength(m_extensionInches);
-
-        SmartDashboard.putData("Telescope Mechanism", m_mechanism2d);
         calculateVoltage();
     }
 

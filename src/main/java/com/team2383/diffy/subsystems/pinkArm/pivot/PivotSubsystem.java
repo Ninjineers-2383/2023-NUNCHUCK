@@ -13,9 +13,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,11 +41,6 @@ public class PivotSubsystem extends SubsystemBase {
 
     private double kG = PivotConstants.kG;
 
-    private final Mechanism2d m_mechanism2d;
-    private final MechanismRoot2d m_mechanismRoot2d;
-
-    private final MechanismLigament2d m_telescopeLigament;
-
     public PivotSubsystem() {
         m_leftMotor = new Ninja_CANSparkMax(PivotConstants.kBottomMotorLeftId, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(PivotConstants.kBottomMotorRightId, MotorType.kBrushless);
@@ -67,10 +59,6 @@ public class PivotSubsystem extends SubsystemBase {
         m_bottomAngleEncoder.reset();
         m_bottomAngleEncoder.setPositionOffset(PivotConstants.encoderOffset);
 
-        m_mechanism2d = new Mechanism2d(3, 3);
-        m_mechanismRoot2d = m_mechanism2d.getRoot("Bottom Pivot", 1.5, 1.5);
-
-        m_telescopeLigament = m_mechanismRoot2d.append(new MechanismLigament2d("Telescope Ligament", 0.5, 0.5));
     }
 
     public void periodic() {
@@ -79,10 +67,6 @@ public class PivotSubsystem extends SubsystemBase {
         m_prevAngle = m_angle;
         
         calculateVoltage();
-
-        m_telescopeLigament.setAngle(getAngleDegrees() - 90);
-
-        SmartDashboard.putData("Pink Arm", m_mechanism2d);
     }
 
     @Override
