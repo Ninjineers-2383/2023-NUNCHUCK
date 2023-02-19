@@ -12,8 +12,8 @@ public  final class PivotConstants {
 
     public static final double PivotVelocity = .1;
 
-    public static final double kUpperBound = 170;
-    public static final double kLowerBound = -170;
+    public static final double kUpperBound = Units.degreesToRadians(170);
+    public static final double kLowerBound = Units.degreesToRadians(-170);
 
     public static final double kUpperSafety = Units.degreesToRadians(30);
     public static final double kLowerSafety = Units.degreesToRadians(-30);

@@ -16,7 +16,6 @@ import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
-import com.team2383.diffy.commands.pinkArm.PinkArmSimCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
@@ -105,7 +104,6 @@ public class RobotContainer {
     private final PivotVelocityCommand m_pivotCommand = new PivotVelocityCommand(m_pivotSubsystem, m_pivot);
     private final TelescopeVelocityCommand m_telescopeCommand = new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension);
     private final WristVelocityCommand m_wristCommand = new WristVelocityCommand(m_wristSubsystem, m_wrist);
-    private final PinkArmSimCommand m_pinkArmSimCommand = new PinkArmSimCommand(m_pinkArmSimSubsystem);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 

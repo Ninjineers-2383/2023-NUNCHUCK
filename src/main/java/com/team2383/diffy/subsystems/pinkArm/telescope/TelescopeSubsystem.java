@@ -1,7 +1,6 @@
 package com.team2383.diffy.subsystems.pinkArm.telescope;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Constants;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -10,7 +9,6 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TelescopeSubsystem extends SubsystemBase {
@@ -47,14 +45,12 @@ public class TelescopeSubsystem extends SubsystemBase {
         m_rightMotor.setInverted(false);
 
 
-        // m_rightMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
-        // m_leftMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
+        m_rightMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
+        m_leftMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.kRotToInches);
 
-        // m_rightMotor.getEncoder().setPositionConversionFactor(-1);
-        // m_leftMotor.getEncoder().setPositionConversionFactor(-1);
 
-        // m_rightMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
-        // m_leftMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
+        m_rightMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
+        m_leftMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.kRotToInches / 60);
     }
 
     public void periodic() {
@@ -74,14 +70,6 @@ public class TelescopeSubsystem extends SubsystemBase {
 
         m_rightMotor.setPosition(m_rightMotor.getPosition() + m_simVelocity * 0.02);
         m_leftMotor.setPosition(m_leftMotor.getPosition() + m_simVelocity * 0.02);
-
-        SmartDashboard.putNumber("Simulated Telescope Motor Velocity",
-                m_rightMotor.get() / 2 + m_leftMotor.get() / 2);
-
-        SmartDashboard.putNumber("Simulated Telescope Motor Position",
-                m_rightMotor.getPosition() / 2 + m_leftMotor.getPosition() / 2);
-
-        SmartDashboard.putNumber("Simulated Extension", getExtensionInches());
     }
 
     public void setExtension(double extension) {
@@ -112,7 +100,7 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     public double getExtensionInches() {
-        return -20 + ((m_rightMotor.getPosition() * TelescopeConstants.kRotToInches) + (m_leftMotor.getPosition() * TelescopeConstants.kRotToInches)) / 2.0;
+        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) / 2.0;
     }
 
     private void setVoltage() {

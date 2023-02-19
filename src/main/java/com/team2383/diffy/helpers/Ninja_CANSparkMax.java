@@ -19,8 +19,8 @@ public class Ninja_CANSparkMax extends CANSparkMax {
      * @param deviceID
      * @param type
      */
-    public Ninja_CANSparkMax(int deviceID, MotorType type) {
-        super(deviceID, type);
+    public Ninja_CANSparkMax(int deviceID, MotorType motorType) {
+        super(deviceID, motorType);
 
         m_device = SimDevice.create("Spark Max", this.getDeviceId());
 
