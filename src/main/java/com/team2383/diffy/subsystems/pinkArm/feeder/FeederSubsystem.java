@@ -42,13 +42,6 @@ public class FeederSubsystem extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        // Set simulated VictorSPX voltage
-
-        SmartDashboard.putNumber("Simulated Top Motor Feeder Big Booty Bitches Output Velocity",
-                m_topMotor.get());
-
-        SmartDashboard.putNumber("Simulated Bottom Motor Feeder Output Velocity",
-                m_bottomMotor.get());
     }
 
     public void setPower(double top, double bottom) {

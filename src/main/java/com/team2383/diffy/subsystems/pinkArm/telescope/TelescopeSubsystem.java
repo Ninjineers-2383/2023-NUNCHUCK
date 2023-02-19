@@ -91,7 +91,7 @@ public class TelescopeSubsystem extends SubsystemBase {
         m_voltage = m_PIDController.calculate(m_extensionInches, m_desiredExtension);
         m_voltage += Math.signum(m_voltage) * TelescopeConstants.kS;
 
-        //setVoltage();
+        setVoltage(m_voltage);
     }
 
     /* Velocity measured in inches per minute*/
@@ -101,11 +101,6 @@ public class TelescopeSubsystem extends SubsystemBase {
 
     public double getExtensionInches() {
         return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) / 2.0;
-    }
-
-    private void setVoltage() {
-        m_rightMotor.setVoltage(m_voltage);
-        m_leftMotor.setVoltage(m_voltage);
     }
 
     public void setVoltage(double volt) {

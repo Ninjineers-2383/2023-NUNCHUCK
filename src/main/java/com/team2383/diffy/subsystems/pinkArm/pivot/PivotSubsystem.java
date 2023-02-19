@@ -78,14 +78,6 @@ public class PivotSubsystem extends SubsystemBase {
 
         m_bottomAngleEncoderSim
                 .setDistance(m_angle / (2 * Math.PI) + (newX.get(0, 0) / (2 * Math.PI) * 0.02));
-
-        SmartDashboard.putNumber("Simulated Left Motor Output Velocity",
-                m_leftMotor.get());
-
-        SmartDashboard.putNumber("Simulated Right Motor Output Velocity",
-                m_rightMotor.get());
-
-        SmartDashboard.putNumber("Simulated Encoder Radians", getAngleRadians());
     }
 
     public void setAngle(double setAngle) {
