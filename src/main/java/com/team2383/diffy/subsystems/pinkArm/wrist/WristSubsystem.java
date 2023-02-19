@@ -99,7 +99,7 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void setVoltage() {
-        //m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
+        m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
     }
 
     public boolean isAtPosition() {

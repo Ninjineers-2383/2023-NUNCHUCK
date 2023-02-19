@@ -12,6 +12,13 @@ public class Ninja_CANSparkMax extends CANSparkMax {
     private SimDouble m_position;
     private SimDouble m_voltage;
 
+    /**
+     * Takes in a device ID and a motor type and creates a CANSparkMax wrapper class. 
+     * All the methods in this file are overriden for our convenience BRIAN.
+     * 
+     * @param deviceID
+     * @param type
+     */
     public Ninja_CANSparkMax(int deviceID, MotorType type) {
         super(deviceID, type);
 
@@ -36,6 +43,11 @@ public class Ninja_CANSparkMax extends CANSparkMax {
         }
     }
 
+    /**
+     * Gets the velocity of the encoder with the conversion factor applied.
+     * 
+     * @return The velocity of the encoder.
+     */
     @Override
     public double get() {
         if (m_device != null) {
@@ -54,24 +66,48 @@ public class Ninja_CANSparkMax extends CANSparkMax {
         }
     }
 
+   /**
+     * Set the conversion factor for velocity of the encoder. Multiplied by the native output units to
+     * give you velocity
+     *
+     * @param factor The conversion factor to multiply the native units by
+     * @return {@link REVLibError#kOk} if successful
+     */
     public void setVelocityConversionFactor(double factor) {
         if (m_device == null) {
             super.getEncoder().setVelocityConversionFactor(factor);
         }
     }
 
+    /**
+     * Set the conversion factor for position of the encoder. Multiplied by the native output units to
+     * give you position.
+     *
+     * @param factor The conversion factor to multiply the native units by
+     * @return {@link REVLibError#kOk} if successful
+     */
     public void setPositionConversionFactor(double factor) {
         if (m_device == null) {
             super.getEncoder().setPositionConversionFactor(factor);
         }
     }
     
+    /**
+     * Sets the position of the simulated motor. 
+     * 
+     * @param pos
+     */
     public void setPosition(double pos) {
         if (m_device != null) {
             m_position.set(pos);
         }
     }
 
+    /**
+     * Gets the position of the simulated motor.
+     * 
+     * @return
+     */
     public double getPosition() {
         if (m_device != null) {
             return m_position.get();
