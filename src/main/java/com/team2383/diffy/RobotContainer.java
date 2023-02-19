@@ -16,9 +16,6 @@ import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
-import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
-import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
-import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
@@ -28,6 +25,7 @@ import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -101,9 +99,6 @@ public class RobotContainer {
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
     private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
     m_dickControl);
-    private final PivotVelocityCommand m_pivotCommand = new PivotVelocityCommand(m_pivotSubsystem, m_pivot);
-    private final TelescopeVelocityCommand m_telescopeCommand = new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension);
-    private final WristVelocityCommand m_wristCommand = new WristVelocityCommand(m_wristSubsystem, m_wrist);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -146,16 +141,20 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        m_presetFeed.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 150, -1, 120));
-        m_presetShootLow.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, -60, 2, -90));
-        m_presetShootHigh.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 90, 1, 60));
+        m_presetFeed.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                Rotation2d.fromDegrees(150), -1, 120));
+
+        m_presetShootLow.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                Rotation2d.fromDegrees(-60), 2, -90));
+
+        m_presetShootHigh.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                Rotation2d.fromDegrees(90), 1, 60));
     }
 
     private void configureDefaultCommands() {
         m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_dickSubsystem.setDefaultCommand(m_dickCommand);
-        m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
         m_telescopeSubsystem.setDefaultCommand(new InstantCommand(() -> m_telescopeSubsystem.setVoltage(m_extension.getAsDouble()*12), m_telescopeSubsystem).repeatedly());
         //m_wristSubsystem.setDefaultCommand(m_wristCommand);
         // if (Robot.isSimulation()) {

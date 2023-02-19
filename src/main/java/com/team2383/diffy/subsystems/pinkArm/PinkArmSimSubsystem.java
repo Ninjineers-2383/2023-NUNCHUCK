@@ -37,7 +37,7 @@ public class PinkArmSimSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_telescopeLigament.setAngle(m_pivot.getAngleDegrees() - 90);
+        m_telescopeLigament.setAngle(m_pivot.getAngle().getDegrees() - 90);
         m_telescopeLigament.setLength((m_telescope.getExtensionInches() >= 0 ? m_telescope.getExtensionInches() : 0) + 1);
         m_feederLigament.setAngle(m_wrist.getAngleDegrees() + 180);
 

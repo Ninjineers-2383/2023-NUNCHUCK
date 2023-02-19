@@ -1,35 +1,36 @@
 package com.team2383.diffy.subsystems.pinkArm.pivot;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public  final class PivotConstants {
-    public static final double kS = 0.48118;
-    public static final double kV = 0.01;
-    public static final double kA = 0.232;
-    public static final double kP = 0.005;
-    public static final double kD = 0.01;
     public static final double kG = 0.5;
 
-    public static final double PivotVelocity = .1;
+    public static final PIDController PID_CONTROLLER = new PIDController(0.005, 0, 0.01);
 
-    public static final double kUpperBound = Units.degreesToRadians(170);
-    public static final double kLowerBound = Units.degreesToRadians(-170);
+    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.48118, 0.01, 0.232);
 
-    public static final double kUpperSafety = Units.degreesToRadians(30);
-    public static final double kLowerSafety = Units.degreesToRadians(-30);
-    public static final double extensionSafety = 1;
+    public static final Rotation2d UPPER_BOUND = Rotation2d.fromDegrees(170);
+    public static final Rotation2d LOWER_BOUND = Rotation2d.fromDegrees(-170);
 
-    public static final double pivotLength = 0.5;
-    public static final double gravity = 9.8;
-    public static final double armMass = 10;
+    public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(30);
+    public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-30);
+    public static final double EXTENSION_SAFETY = 1;
 
-    public static final double kMaxCurrent = 40.0;
+    public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);
 
-    public static final int kBottomMotorLeftId = 2;
-    public static final int kBottomMotorRightId = 3;
+    // Values will be in radians and seconds
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(1, 0.1);
 
-    public static final int kEncoderPortAbs = 6;
-    public static final double encoderOffset = 13.0/360;
+    public static final int MAX_CURRENT = 40;
 
-    public static final double kgb = 1 / 112.5;
+    public static final double ANGLE_THRESHOLD = 0;
+
+    public static final int BOTTOM_MOTOR_LEFT_ID = 2;
+    public static final int BOTTOM_MOTOR_RIGHT_ID = 3;
+
+    public static final int ABS_ENCODER_PORT = 6;
+    public static final double ENCODER_OFFSET = 13.0/360;
 }

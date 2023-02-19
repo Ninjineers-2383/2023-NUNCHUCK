@@ -1,27 +1,37 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import java.util.function.DoubleSupplier;
 
 import com.team2383.diffy.subsystems.pinkArm.pivot.*;
 
 public class PivotPositionCommand extends CommandBase {
 
     private final PivotSubsystem m_pivot;
-    private final double m_angle;
+    private final Rotation2d m_angle;
+    private final DoubleSupplier m_extension;
 
-    public PivotPositionCommand(PivotSubsystem pivot, double angle) {
+    private boolean success = false;
+
+    public PivotPositionCommand(PivotSubsystem pivot, Rotation2d angle, DoubleSupplier extension) {
         m_pivot = pivot;
         m_angle = angle;
+        m_extension = extension;
         addRequirements(m_pivot);
     }
 
     @Override
     public void initialize() {
+        success = false;
     }
 
     public void execute() {
-        // Keeping extension at 0, seems sketchy to rotate and extend at the same time
-        m_pivot.setAngle(m_angle);
+        // Keeps attempting to move arm until success
+        if (!success) {
+            success = m_pivot.setAngle(m_angle, m_extension.getAsDouble());
+        }
     }
 
     @Override
