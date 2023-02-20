@@ -30,7 +30,7 @@ public class PivotPositionCommand extends CommandBase {
     public void execute() {
         // Keeps attempting to move arm until success
         if (!success) {
-            success = m_pivot.setAngle(m_angle, m_extension.getAsDouble());
+            success = m_pivot.setGoal(m_angle, m_extension.getAsDouble());
         }
     }
 

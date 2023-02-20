@@ -67,12 +67,10 @@ public class RobotContainer {
     private final DoubleSupplier m_intake = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(4), .1);
 
-    private final DoubleSupplier m_pivot = () -> MathUtil.applyDeadband(-m_operatorController.getRawAxis(0) * 10, .1);
 
     private final DoubleSupplier m_extension = () -> MathUtil
             .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRightY
             (), .1);
-    private final DoubleSupplier m_wrist = () -> 2 * MathUtil.applyDeadband(m_operatorController.getRawAxis(2), .1);
 
     private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);

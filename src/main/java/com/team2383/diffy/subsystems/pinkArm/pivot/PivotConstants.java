@@ -8,6 +8,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public  final class PivotConstants {
     public static final double kG = 0.5;
 
+    public static final Rotation2d POSITION_TOLERANCE = Rotation2d.fromDegrees(.5);
+
     public static final PIDController PID_CONTROLLER = new PIDController(0.005, 0, 0.01);
 
     public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.48118, 0.01, 0.232);
