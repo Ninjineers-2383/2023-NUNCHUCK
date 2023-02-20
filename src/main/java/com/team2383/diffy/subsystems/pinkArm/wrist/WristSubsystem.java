@@ -6,12 +6,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
-import com.team2383.diffy.subsystems.pinkArm.pivot.PivotConstants;
-import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;

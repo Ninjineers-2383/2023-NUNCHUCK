@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -84,11 +85,12 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
-    private DoubleSupplier m_extensionSupplier;
-    private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_extensionSupplier);
-    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSubsystem::getAngle);
+    private Supplier<Rotation2d> m_pivotSupplier;
+    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
+    private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
+    private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_telescopeSubsystem::getExtensionInches);
+
     
-    private final WristSubsystem m_wristSubsystem = new WristSubsystem();
     private final PinkArmSimSubsystem m_pinkArmSimSubsystem = new PinkArmSimSubsystem(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
@@ -126,7 +128,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        m_extensionSupplier = m_telescopeSubsystem::getExtensionInches;
+        m_pivotSupplier = m_pivotSubsystem::getAngle;
         // Configure the button bindings
         configureButtonBindings();
         configureDefaultCommands();
