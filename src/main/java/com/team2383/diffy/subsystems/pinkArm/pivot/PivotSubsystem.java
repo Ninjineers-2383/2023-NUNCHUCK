@@ -34,7 +34,7 @@ public class PivotSubsystem extends TrapezoidProfileSubsystem {
 
     private double m_voltage;
     private Rotation2d m_desiredAngle;
-    private AngularVelocityWrapper m_velocity;
+    private final AngularVelocityWrapper m_velocity;
 
     private DoubleSupplier m_extensionSupplier;
 
@@ -56,8 +56,9 @@ public class PivotSubsystem extends TrapezoidProfileSubsystem {
         m_leftMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
         m_rightMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
 
-
         m_absEncoder.setPositionOffset(PivotConstants.ENCODER_OFFSET);
+
+        m_velocity = new AngularVelocityWrapper(getAngle());
     }
 
     public void periodic() {
@@ -69,15 +70,25 @@ public class PivotSubsystem extends TrapezoidProfileSubsystem {
     public void simulationPeriodic() {
         var newX = m_motorSim.calculateX(VecBuilder.fill(m_velocity.get().getRadians()), VecBuilder.fill(m_voltage), 0.02);
 
-        m_leftMotor.set(newX.get(0, 0));
-        m_rightMotor.set(newX.get(0, 0));
+        m_leftMotor.setSimVelocity(newX.get(0, 0));
+        m_rightMotor.setSimVelocity(newX.get(0, 0));
 
         m_absEncoderSim
                 .setDistance(getAngle().getRotations() + (newX.get(0, 0) / (2 * Math.PI) * 0.02));
     }
 
     /**
+     * updates 
+     * @param state desired state of the pivot
+     */
+    @Override
+    public void useState(TrapezoidProfile.State state) {
+        setVelocity(Rotation2d.fromRadians(state.velocity));
+    }
+
+    /**
      * Uses trapezoidal motion-profiling to implement pseudo-positional control
+     * @param angle
      * @return boolean state to determine whether the input angle is safe
      */
     public boolean setGoal(Rotation2d angle) {
@@ -88,20 +99,18 @@ public class PivotSubsystem extends TrapezoidProfileSubsystem {
         adjustedAngle = m_extensionSupplier.getAsDouble() < PivotConstants.EXTENSION_SAFETY ? adjustedAngle : 
             Clip.invClip(PivotConstants.LOWER_SAFETY.getRadians(), adjustedAngle, PivotConstants.UPPER_SAFETY.getRadians());
 
-        setGoal(new TrapezoidProfile.State(adjustedAngle, 0));
+        m_desiredAngle = angle;
+        super.setGoal(new TrapezoidProfile.State(adjustedAngle, 0));
         return adjustedAngle != angle.getRadians();
     }
 
-    public void setGoal(double angle) {
-        m_desiredAngle = Rotation2d.fromDegrees(angle);
-    }
-
     /**
-     * uses motion profile to set the velocity of the pivot
+     * Overrided goal method (bad practice to use because it uses double for angle)
+     * @param angle in radians
      */
     @Override
-    public void useState(TrapezoidProfile.State state) {
-        setVelocity(Rotation2d.fromRadians(state.velocity));
+    public void setGoal(double angle) {
+        setGoal(Rotation2d.fromRadians(angle));
     }
 
     /**

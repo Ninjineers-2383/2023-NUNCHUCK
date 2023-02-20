@@ -21,7 +21,7 @@ public class TelescopePositionCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_telescope.setExtension(m_extension);
+        m_telescope.setGoal(m_extension);
     }
 
     @Override

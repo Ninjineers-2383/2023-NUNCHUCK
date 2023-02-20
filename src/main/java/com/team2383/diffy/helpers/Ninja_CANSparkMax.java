@@ -34,13 +34,10 @@ public class Ninja_CANSparkMax extends CANSparkMax {
         }
     }
     
-    @Override
-    public void set(double speed) {
+    public void setSimVelocity(double speed) {
         if (m_device != null) {
             m_velocity.set(speed);
-        } else {
-            super.set(speed);
-        }
+        } 
     }
 
     /**
@@ -97,7 +94,7 @@ public class Ninja_CANSparkMax extends CANSparkMax {
      * 
      * @param pos
      */
-    public void setPosition(double pos) {
+    public void setSimPosition(double pos) {
         if (m_device != null) {
             m_position.set(pos);
         }

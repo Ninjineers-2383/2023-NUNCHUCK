@@ -23,7 +23,7 @@ public class PaddleSubsystem extends SubsystemBase {
     public void periodic() {
     }
 
-    public void erect(double speed) {
-        m_dick.set(speed);
+    public void erect(double dutyCycle) {
+        m_dick.set(dutyCycle);
     }
 }
