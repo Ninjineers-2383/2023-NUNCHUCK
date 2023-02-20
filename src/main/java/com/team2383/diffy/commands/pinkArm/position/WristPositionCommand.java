@@ -20,7 +20,7 @@ public class WristPositionCommand extends CommandBase {
     }
 
     public void execute() {
-        m_wrist.setAngle(m_angle);
+        m_wrist.setGoal(m_angle);
     }
 
     @Override
