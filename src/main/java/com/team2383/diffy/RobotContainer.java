@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -85,8 +84,10 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
-    private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
-    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem();
+    private DoubleSupplier m_extensionSupplier;
+    private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_extensionSupplier);
+    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSubsystem::getAngle);
+    
     private final WristSubsystem m_wristSubsystem = new WristSubsystem();
     private final PinkArmSimSubsystem m_pinkArmSimSubsystem = new PinkArmSimSubsystem(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
 
@@ -125,6 +126,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        m_extensionSupplier = m_telescopeSubsystem::getExtensionInches;
         // Configure the button bindings
         configureButtonBindings();
         configureDefaultCommands();
@@ -153,7 +155,7 @@ public class RobotContainer {
         m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_dickSubsystem.setDefaultCommand(m_dickCommand);
-        m_telescopeSubsystem.setDefaultCommand(new InstantCommand(() -> m_telescopeSubsystem.setVoltage(m_extension.getAsDouble()*12), m_telescopeSubsystem).repeatedly());
+        // m_telescopeSubsystem.setDefaultCommand(new InstantCommand(() -> m_telescopeSubsystem.setVoltage(m_extension.getAsDouble()*12), m_telescopeSubsystem).repeatedly());
         //m_wristSubsystem.setDefaultCommand(m_wristCommand);
         // if (Robot.isSimulation()) {
         //     m_pinkArmSimSubsystem.setDefaultCommand(m_pinkArmSimCommand);

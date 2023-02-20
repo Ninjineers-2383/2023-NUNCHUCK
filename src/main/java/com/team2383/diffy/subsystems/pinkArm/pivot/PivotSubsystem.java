@@ -4,24 +4,18 @@ package com.team2383.diffy.subsystems.pinkArm.pivot;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
+import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
 
 
 public class PivotSubsystem extends TrapezoidalSubsystemBase {
@@ -49,7 +43,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
         m_rightMotor.setVelocityConversionFactor(PivotConstants.VELOCITY_CONVERSION_FACTOR.getRadians());
         m_leftMotor.setVelocityConversionFactor(PivotConstants.VELOCITY_CONVERSION_FACTOR.getRadians());
 
-        m_absEncoder = new DutyCycleEncoder(PivotConstants.ABS_ENCODER_PORT);
+        m_absEncoder = new DutyCycleEncoder(PivotConstants.ABS_ENCODER_ID);
         m_absEncoderSim = new DutyCycleEncoderSim(m_absEncoder);
 
         m_leftMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
@@ -77,7 +71,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
         double adjustedAngle = Clip.clip(PivotConstants.LOWER_BOUND.getRadians(), angle.getRadians(), PivotConstants.UPPER_BOUND.getRadians());
 
         // safety for inside robot
-        adjustedAngle = m_extensionSupplier.getAsDouble() < PivotConstants.EXTENSION_SAFETY ? adjustedAngle : 
+        adjustedAngle = m_extensionSupplier.getAsDouble() < TelescopeConstants.SAFETY_BOUND ? adjustedAngle : 
             Clip.invClip(PivotConstants.LOWER_SAFETY.getRadians(), adjustedAngle, PivotConstants.UPPER_SAFETY.getRadians());
 
         super.setGoal(new TrapezoidProfile.State(adjustedAngle, 0));
@@ -96,11 +90,15 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
 
     /** Handles simulation */
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        m_leftMotor.setSimVelocity(matrix.get(0, 0));
-        m_rightMotor.setSimVelocity(matrix.get(0, 0));
+        double simVelocity = matrix.get(0, 0);
+        m_leftMotor.setSimVelocity(simVelocity);
+        m_rightMotor.setSimVelocity(simVelocity);
+
+        m_rightMotor.setSimPosition(m_rightMotor.getPosition() + simVelocity * 0.02);
+        m_leftMotor.setSimPosition(m_leftMotor.getPosition() + simVelocity * 0.02);
 
         m_absEncoderSim
-                .setDistance(getAngle().getRotations() + (matrix.get(0, 0) / (2 * Math.PI) * 0.02));
+                .setDistance(getAngle().getRotations() + (simVelocity / (2 * Math.PI) * 0.02));
         
     }
 
