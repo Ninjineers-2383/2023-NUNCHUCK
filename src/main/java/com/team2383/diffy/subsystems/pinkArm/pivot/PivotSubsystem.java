@@ -22,8 +22,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    
-
     private final DutyCycleEncoder m_absEncoder;
     private final DutyCycleEncoderSim m_absEncoderSim;
 
