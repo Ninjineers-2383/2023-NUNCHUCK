@@ -8,8 +8,6 @@ import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -25,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   private final TrapezoidProfile.Constraints m_constraints;
 
-  private final PIDController m_PIDController;
-  private final SimpleMotorFeedforward m_FeedforwardController;
   private final LinearSystem<N1, N1, N1> m_simSubsystem;
 
   private TrapezoidProfile.State m_state;
@@ -47,17 +43,13 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
    * @param period The period of the main robot loop, in seconds.
    */
   protected TrapezoidalSubsystemBase(
-      String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem,
-      PIDController pidController, SimpleMotorFeedforward feedforwardController, 
-      double initialPosition) {
+      String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem, double initialPosition) {
         
     m_constraints = requireNonNullParam(constraints, "constraints", "TrapezoidProfileSubsystemBase");
     m_state = new TrapezoidProfile.State(initialPosition, 0);
     setGoal(new TrapezoidProfile.State(initialPosition, 0));
 
     m_simSubsystem = simSubsystem;
-    m_PIDController = requireNonNullParam(pidController, "PID Controller", "TrapezoidProfileSubsystemBase");
-    m_FeedforwardController = requireNonNullParam(feedforwardController, "Feedforward Controller", "TrapezoidProfileSubsystemBase");
     m_name = name;
   }
 
@@ -66,9 +58,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
    *
    * @param constraints The constraints (maximum velocity and acceleration) for the profiles.
    */
-  protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem,
-  PIDController pidController, SimpleMotorFeedforward feedforwardController) {
-    this(name, constraints, simSubsystem, pidController, feedforwardController, 0);
+  protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem) {
+    this(name, constraints, simSubsystem, 0);
   }
 
   @Override
@@ -85,10 +76,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
       m_desiredVelocity = m_isFinished ? 0 : m_state.velocity;
     }
 
-    // Compute controllers outputs
-    m_voltage = m_PIDController.calculate(m_desiredVelocity);
-    m_voltage += m_FeedforwardController.calculate(m_desiredVelocity);
-    setVoltage(m_voltage);
+    // Calculate voltage to send to motors
+    setVoltage(calculateVoltage(m_desiredVelocity));
   }
 
   @Override
@@ -133,6 +122,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     m_desiredVelocity = velocity;
     disable();
   }
+
+  protected abstract double calculateVoltage(double velocity);
 
   /** Set voltage of motors 
    * @param voltage to be passed to motors
