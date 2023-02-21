@@ -144,13 +144,13 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         m_presetFeed.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
-                Rotation2d.fromDegrees(150), -1, 120));
+                Rotation2d.fromDegrees(150), -1, Rotation2d.fromDegrees(120)));
 
         m_presetShootLow.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
-                Rotation2d.fromDegrees(-60), 2, -90));
+                Rotation2d.fromDegrees(-60), 2, Rotation2d.fromDegrees(-90)));
 
         m_presetShootHigh.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
-                Rotation2d.fromDegrees(90), 1, 60));
+                Rotation2d.fromDegrees(90), 1, Rotation2d.fromDegrees(60)));
     }
 
     private void configureDefaultCommands() {
