@@ -67,10 +67,9 @@ public class RobotContainer {
     private final DoubleSupplier m_intake = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(4), .1);
 
-
-    private final DoubleSupplier m_extension = () -> MathUtil
-            .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRightY
-            (), .1);
+//     private final DoubleSupplier m_extension = () -> MathUtil
+//             .applyDeadband(m_operatorController.getRawAxis(1) - m_operatorController.getRightY
+//             (), .1);
 
     private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
@@ -157,11 +156,6 @@ public class RobotContainer {
         m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_dickSubsystem.setDefaultCommand(m_dickCommand);
-        // m_telescopeSubsystem.setDefaultCommand(new InstantCommand(() -> m_telescopeSubsystem.setVoltage(m_extension.getAsDouble()*12), m_telescopeSubsystem).repeatedly());
-        //m_wristSubsystem.setDefaultCommand(m_wristCommand);
-        // if (Robot.isSimulation()) {
-        //     m_pinkArmSimSubsystem.setDefaultCommand(m_pinkArmSimCommand);
-        // }
     }
 
     /**
