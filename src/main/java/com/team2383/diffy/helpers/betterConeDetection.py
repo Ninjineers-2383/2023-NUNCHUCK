@@ -4,18 +4,25 @@ import cv2
 image = cv2.imread('/Users/john/FRC 2023/2023-Diffy-Swerve/src/main/java/com/team2383/diffy/helpers/SampleImages/img1.png')
 original = image.copy()
 image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-lower = np.array([22, 93, 0], dtype="uint8")
-upper = np.array([45, 255, 255], dtype="uint8")
-mask = cv2.inRange(image, lower, upper)
+blur = cv2.GaussianBlur(image, (3, 3), sigmaX=1.5, borderType=cv2.BORDER_DEFAULT)
+lower = np.array([24, 93, 20], dtype="uint8")
+upper = np.array([43, 255, 255], dtype="uint8")
+mask = cv2.inRange(blur, lower, upper)
 
 cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
 for c in cnts:
     x,y,w,h = cv2.boundingRect(c)
-    cv2.rectangle(original, (x, y), (x + w, y + h), (36,255,12), 2)
+    # cv2.drawContours(original, [c], -1, (36,255,12), 5)
+    if(w > 50 and h > 50):
+        cv2.rectangle(original, (x, y), (x + w, y + h), (36,255,12), 5)
+        print("Width: " + str(w))
+        print("Height: " + str(h))
+        cv2.rectangle(original, (x + int(w/2) + 30, y + int(h/2) + 30), (x + int(w/2) - 30, y + int(h/2) - 30), (0,128,255), -1)
 
 cv2.imshow('mask', mask)
+cv2.imshow('Blurred', blur)
 cv2.imshow('original', original)
 
 if cv2.waitKey(0) & 0xFF == ord('enter'):
