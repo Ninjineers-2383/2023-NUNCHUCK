@@ -18,8 +18,6 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private double encoderOffset = 0;
-
     private Supplier<Rotation2d> m_pivotAngle;
 
     public TelescopeSubsystem(Supplier<Rotation2d> pivotAngle) {
@@ -32,20 +30,13 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         m_rightMotor.restoreFactoryDefaults();
         m_leftMotor.restoreFactoryDefaults();
 
-        m_rightMotor.getEncoder().setPosition(0);
-        m_leftMotor.getEncoder().setPosition(0);
+        resetPosition();
 
         m_rightMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
         m_leftMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
 
         m_leftMotor.setInverted(true);
         m_rightMotor.setInverted(false);
-
-        m_rightMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.ROTATION_CONVERSION);
-        m_leftMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.ROTATION_CONVERSION);
-
-        m_rightMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.ROTATION_CONVERSION / 60);
-        m_leftMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.ROTATION_CONVERSION / 60);
     }
 
     public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
@@ -88,11 +79,12 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
 
     /* Velocity measured in inches per minute */
     public double getVelocity() {
-        return (m_rightMotor.get() + m_leftMotor.get()) / 2.0;
+        return (m_rightMotor.get() + m_leftMotor.get()) * TelescopeConstants.ROTATION_CONVERSION / 2.0;
     }
 
     public double getExtensionInches() {
-        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) / 2.0 + encoderOffset;
+        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) * TelescopeConstants.ROTATION_CONVERSION
+                / 2.0;
     }
 
     protected TrapezoidProfile.State getState() {
@@ -134,7 +126,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public void resetPosition() {
-        encoderOffset = -getExtensionInches();
+        m_rightMotor.getEncoder().setPosition(0);
+        m_leftMotor.getEncoder().setPosition(0);
     }
 
     private double getAmpDraw() {

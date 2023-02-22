@@ -1,5 +1,6 @@
 package com.team2383.diffy.helpers;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -10,6 +11,7 @@ public class AngularVelocityWrapper {
     private Rotation2d lastDisplacement;
     private double lastTime;
     private Rotation2d velocity = Rotation2d.fromDegrees(0);
+    private MedianFilter filter = new MedianFilter(3);
 
     public AngularVelocityWrapper() {
         this(Rotation2d.fromDegrees(0));
@@ -19,21 +21,24 @@ public class AngularVelocityWrapper {
         lastDisplacement = initialPosition;
         lastTime = Timer.getFPGATimestamp();
     }
+
     /**
      * Calculates the velocity of a system given a displacement
      * Need to run this every loop to be accurate
+     * 
      * @param displacement
      * @return discrete-time-derivitive velocity
      */
     public Rotation2d calculate(Rotation2d displacement) {
-        double deltaTime = Timer.getFPGATimestamp() - lastTime;
-        velocity = Rotation2d.fromRadians((displacement.getRadians() - lastDisplacement.getRadians()) / (deltaTime - lastTime));
+        double time = Timer.getFPGATimestamp();
+        velocity = Rotation2d
+                .fromRadians(filter
+                        .calculate((displacement.getRadians() - lastDisplacement.getRadians()) / (time - lastTime)));
         lastDisplacement = displacement;
-        lastTime = deltaTime;
+        lastTime = time;
         return velocity;
     }
 
-    
     /** Returns velocity value without recalculating */
     public Rotation2d get() {
         return velocity;
