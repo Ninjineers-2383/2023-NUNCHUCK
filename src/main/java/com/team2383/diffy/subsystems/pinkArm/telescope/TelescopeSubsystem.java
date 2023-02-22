@@ -12,15 +12,15 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
     private final Ninja_CANSparkMax m_leftMotor;
 
-    private double m_voltage;
+    private double encoderOffset = 0;
 
     private Supplier<Rotation2d> m_pivotAngle;
-
 
     public TelescopeSubsystem(Supplier<Rotation2d> pivotAngle) {
         super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS, TelescopeConstants.SIMULATION_SUBSYSTEM);
@@ -29,34 +29,48 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.EXTENSION_RIGHT_ID, MotorType.kBrushless);
         m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.EXTENSION_LEFT_ID, MotorType.kBrushless);
 
+        m_rightMotor.restoreFactoryDefaults();
+        m_leftMotor.restoreFactoryDefaults();
+
         m_rightMotor.getEncoder().setPosition(0);
         m_leftMotor.getEncoder().setPosition(0);
 
-        m_rightMotor.setSmartCurrentLimit(30);
-        m_leftMotor.setSmartCurrentLimit(30);
-        
+        m_rightMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
+        m_leftMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
+
         m_leftMotor.setInverted(true);
         m_rightMotor.setInverted(false);
 
-
         m_rightMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.ROTATION_CONVERSION);
         m_leftMotor.getEncoder().setPositionConversionFactor(-TelescopeConstants.ROTATION_CONVERSION);
-
 
         m_rightMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.ROTATION_CONVERSION / 60);
         m_leftMotor.getEncoder().setVelocityConversionFactor(-TelescopeConstants.ROTATION_CONVERSION / 60);
     }
 
+    public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
+        m_pivotAngle = pivotAngle;
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+    }
 
     /**
      * Uses trapezoidal motion-profiling to implement pseudo-positional control
      * Using this method disables velocity control
+     * 
      * @param extension
      * @return boolean state to determine whether the input extension is safe
      */
     public boolean setGoal(double extension) {
-        boolean isSafe = m_pivotAngle.get().getRadians() < PivotConstants.LOWER_SAFETY.getRadians() || m_pivotAngle.get().getRadians() > PivotConstants.UPPER_SAFETY.getRadians();
-        double adjustedExtension = Clip.clip( TelescopeConstants.LOWER_BOUND, extension, isSafe ? TelescopeConstants.UPPER_BOUND: TelescopeConstants.SAFETY_BOUND);
+        boolean isSafe = (m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0) < PivotConstants.LOWER_SAFETY
+                .getRadians()
+                || (m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0) > PivotConstants.UPPER_SAFETY
+                        .getRadians();
+        double adjustedExtension = Clip.clip(TelescopeConstants.LOWER_BOUND, extension,
+                isSafe ? TelescopeConstants.UPPER_BOUND : TelescopeConstants.SAFETY_BOUND);
         super.setGoal(new TrapezoidProfile.State(adjustedExtension, 0));
         return adjustedExtension == extension;
     }
@@ -65,19 +79,20 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      * Set velocity of the extension using PID and feedforward control
      * If used externally, call disable() before using this method
      * Make sure to call enable() to resume positional control
+     * 
      * @param desiredVelocity in inches per second
      */
     public void setVelocity(double desiredVelocity) {
         super.setVelocity(desiredVelocity);
     }
 
-    /* Velocity measured in inches per minute*/
+    /* Velocity measured in inches per minute */
     public double getVelocity() {
         return (m_rightMotor.get() + m_leftMotor.get()) / 2.0;
     }
 
     public double getExtensionInches() {
-        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) / 2.0;
+        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) / 2.0 + encoderOffset;
     }
 
     protected TrapezoidProfile.State getState() {
@@ -91,25 +106,56 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         m_rightMotor.setSimVelocity(simVelocity);
 
         m_rightMotor.setSimPosition(m_rightMotor.getPosition() + simVelocity * 0.02);
-        m_leftMotor.setSimPosition(m_leftMotor.getPosition() + simVelocity * 0.02);        
+        m_leftMotor.setSimPosition(m_leftMotor.getPosition() + simVelocity * 0.02);
     }
 
-    /** PIDF calculations used by trapezoidal motion profiling
-     *  @param velocity in radians per second
+    /**
+     * PIDF calculations used by trapezoidal motion profiling
+     * 
+     * @param velocity in radians per second
      */
+    @Override
     protected double calculateVoltage(double velocity) {
         double voltage = TelescopeConstants.PID_CONTROLLER.calculate(getVelocity(), velocity);
-        voltage += TelescopeConstants.FEEDFORWARD_CONTROLLER.calculate(m_pivotAngle.get().getRadians() + 90, velocity);
+        voltage += TelescopeConstants.FEEDFORWARD_CONTROLLER
+                .calculate(m_pivotAngle != null ? m_pivotAngle.get().getRadians() - 90 : 0, velocity);
         return voltage;
     }
 
     /**
      * Sets the voltage of the pivot motors
+     * 
      * @param voltage
      */
+    @Override
     protected void setVoltage(double voltage) {
-        m_rightMotor.setVoltage(m_voltage);
-        m_leftMotor.setVoltage(m_voltage);
+        m_rightMotor.setVoltage(voltage);
+        m_leftMotor.setVoltage(voltage);
+    }
+
+    public void resetPosition() {
+        encoderOffset = -getExtensionInches();
+    }
+
+    private double getAmpDraw() {
+        return (m_rightMotor.getOutputCurrent() + m_leftMotor.getOutputCurrent()) / 2;
+    }
+
+    public boolean getZeroState() {
+        return getAmpDraw() > TelescopeConstants.CURRENT_THRESHOLD;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addBooleanProperty("Pivot angle does the existy", () -> m_pivotAngle != null, null);
+
+        builder.addDoubleProperty("Pivot Angle", () -> m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0,
+                null);
+
+        builder.addDoubleProperty("Current", this::getAmpDraw,
+                null);
+
     }
 }
-    

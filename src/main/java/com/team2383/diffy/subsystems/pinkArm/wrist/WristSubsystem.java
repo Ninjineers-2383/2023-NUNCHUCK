@@ -14,10 +14,9 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 public class WristSubsystem extends TrapezoidalSubsystemBase {
     private final TalonSRX m_pivotMotor;
-
-    private double m_voltage;
 
     private AngularVelocityWrapper m_velocity;
 
@@ -35,45 +34,50 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         m_velocity = new AngularVelocityWrapper(getAngle());
     }
 
+    @Override
     public void periodic() {
+        super.periodic();
         m_velocity.calculate(getAngle());
     }
 
     public void setGoal(Rotation2d desiredAngle) {
         // safety for upper bounds
-        double adjustedAngle = Clip.clip(WristConstants.kLowerBound.getRadians(), desiredAngle.getRadians(), WristConstants.kUpperBound.getRadians());
+        double adjustedAngle = Clip.clip(WristConstants.kLowerBound.getRadians(), desiredAngle.getRadians(),
+                WristConstants.kUpperBound.getRadians());
         super.setGoal(new TrapezoidProfile.State(adjustedAngle, 0));
     }
 
-    public void setVelocity(double velocity) {
-        super.setVelocity(velocity);
+    public void setVelocity(Rotation2d velocity) {
+        super.setVelocity(velocity.getRadians());
     }
 
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations((m_pivotMotor.getSelectedSensorPosition() + WristConstants.encoderOffset) / 4000.0);
+        return Rotation2d
+                .fromRotations((m_pivotMotor.getSelectedSensorPosition() + WristConstants.encoderOffset) / 4000.0);
     }
 
-    public void setVoltage() {
-        m_pivotMotor.set(ControlMode.PercentOutput, m_voltage / 12);
+    @Override
+    public void setVoltage(double voltage) {
+        m_pivotMotor.set(ControlMode.PercentOutput, voltage / 12);
     }
 
+    @Override
     protected TrapezoidProfile.State getState() {
         return new TrapezoidProfile.State(getAngle().getRadians(), m_velocity.get().getRadians());
     }
 
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        //TODO: Actually do sim support
+        // TODO: Actually do sim support
         m_pivotMotor.set(TalonSRXControlMode.Velocity, matrix.get(0, 0));
-        
+
     }
 
+    @Override
     protected double calculateVoltage(double velocity) {
         double voltage = WristConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
-        voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(getAngle().getRadians() + m_pivotAngle.get().getRadians() + 90, velocity);
+        voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
+                getAngle().getRadians() - 90 + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - 90 : 0),
+                velocity);
         return voltage;
-    }
-
-    protected void setVoltage(double voltage) {
-        m_pivotMotor.set(ControlMode.PercentOutput, voltage / 12);
     }
 }

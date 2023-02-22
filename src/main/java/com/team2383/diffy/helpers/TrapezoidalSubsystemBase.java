@@ -6,6 +6,7 @@ package com.team2383.diffy.helpers;
 
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
@@ -15,10 +16,13 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
- * A subsystem that generates and runs trapezoidal motion profiles automatically. The user specifies
- * how to use the current state of the motion profile by overriding the `useState` method.
+ * A subsystem that generates and runs trapezoidal motion profiles
+ * automatically. The user specifies
+ * how to use the current state of the motion profile by overriding the
+ * `useState` method.
  *
- * <p>This class is provided by the NewCommands VendorDep
+ * <p>
+ * This class is provided by the NewCommands VendorDep
  */
 public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   private final TrapezoidProfile.Constraints m_constraints;
@@ -37,14 +41,17 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   /**
    * Creates a new TrapezoidProfileSubsystem.
    *
-   * @param constraints The constraints (maximum velocity and acceleration) for the profiles.
-   * @param initialPosition The initial position of the controlled mechanism when the subsystem is
-   *     constructed.
-   * @param period The period of the main robot loop, in seconds.
+   * @param constraints     The constraints (maximum velocity and acceleration)
+   *                        for the profiles.
+   * @param initialPosition The initial position of the controlled mechanism when
+   *                        the subsystem is
+   *                        constructed.
+   * @param period          The period of the main robot loop, in seconds.
    */
   protected TrapezoidalSubsystemBase(
-      String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem, double initialPosition) {
-        
+      String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem,
+      double initialPosition) {
+
     m_constraints = requireNonNullParam(constraints, "constraints", "TrapezoidProfileSubsystemBase");
     m_state = new TrapezoidProfile.State(initialPosition, 0);
     setGoal(new TrapezoidProfile.State(initialPosition, 0));
@@ -56,9 +63,11 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   /**
    * Creates a new TrapezoidProfileSubsystem.
    *
-   * @param constraints The constraints (maximum velocity and acceleration) for the profiles.
+   * @param constraints The constraints (maximum velocity and acceleration) for
+   *                    the profiles.
    */
-  protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem) {
+  protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints,
+      LinearSystem<N1, N1, N1> simSubsystem) {
     this(name, constraints, simSubsystem, 0);
   }
 
@@ -77,14 +86,17 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     }
 
     // Calculate voltage to send to motors
-    setVoltage(calculateVoltage(m_desiredVelocity));
+    m_voltage = calculateVoltage(m_desiredVelocity);
+    m_voltage = MathUtil.clamp(m_voltage, -12, 12);
+    setVoltage(m_voltage);
   }
 
   @Override
-    public void simulationPeriodic() {
-        Matrix<N1, N1> newX = m_simSubsystem.calculateX(VecBuilder.fill(getState().velocity), VecBuilder.fill(m_voltage), 0.02);
-        setSimulatedMotors(newX);
-    }
+  public void simulationPeriodic() {
+    Matrix<N1, N1> newX = m_simSubsystem.calculateX(VecBuilder.fill(getState().velocity), VecBuilder.fill(m_voltage),
+        0.02);
+    setSimulatedMotors(newX);
+  }
 
   /**
    * Sets the goal state for the subsystem.
@@ -106,16 +118,18 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     m_enabled = false;
   }
 
-  /** 
+  /**
    * Return state of subsystem for trapezoidal motion
+   * 
    * @return state of subsystem
    */
   protected abstract TrapezoidProfile.State getState();
 
   protected abstract void setSimulatedMotors(Matrix<N1, N1> matrix);
-  
+
   /**
    * Set velocity of subsystem
+   * 
    * @param velocity
    */
   protected void setVelocity(double velocity) {
@@ -125,40 +139,44 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
 
   protected abstract double calculateVoltage(double velocity);
 
-  /** Set voltage of motors 
+  /**
+   * Set voltage of motors
+   * 
    * @param voltage to be passed to motors
-  */
+   */
   protected abstract void setVoltage(double voltage);
 
-  /** Returns if the subsystem is 0.02 seconds away from target
-   *  @return boolean isFinished
+  /**
+   * Returns if the subsystem is 0.02 seconds away from target
+   * 
+   * @return boolean isFinished
    */
   public boolean isAtPosition() {
     return m_isFinished;
   }
 
   @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType(m_name);
-        
-        builder.addDoubleProperty("Position",  () -> {
-            return getState().position;
-        }, null);
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType(m_name);
 
-        builder.addDoubleProperty("Desired Position", () -> {
-            return m_goal.position;
-        }, null);
+    builder.addDoubleProperty("Position", () -> {
+      return getState().position;
+    }, null);
 
-        builder.addDoubleProperty("Velocity", () -> {
-            return getState().velocity;
-        }, null);
+    builder.addDoubleProperty("Desired Position", () -> {
+      return m_goal.position;
+    }, null);
 
-        builder.addDoubleProperty("Desired Velocity", () -> {
-          return m_desiredVelocity;
-        }, null);
+    builder.addDoubleProperty("Velocity", () -> {
+      return getState().velocity;
+    }, null);
 
-        builder.addDoubleProperty("Voltage (Volts)", () -> {
-            return m_voltage;
-        }, null);
-    }
+    builder.addDoubleProperty("Desired Velocity", () -> {
+      return m_desiredVelocity;
+    }, null);
+
+    builder.addDoubleProperty("Voltage (Volts)", () -> {
+      return m_voltage;
+    }, null);
+  }
 }

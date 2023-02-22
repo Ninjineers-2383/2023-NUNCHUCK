@@ -2,6 +2,7 @@ package com.team2383.diffy.subsystems.pinkArm.pivot;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
@@ -22,11 +23,13 @@ public  final class PivotConstants {
     public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(30);
     public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-30);
 
+    public static final double kG = 0.01;
+
 
     public static final PIDController PID_CONTROLLER
-        = new PIDController(0.005, 0, 0.01);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER
-        = new ArmFeedforward(0.48118, 0.5, 0.232, 0.01);
+        = new PIDController(0, 0, 0.01);
+    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER
+        = new SimpleMotorFeedforward(0.48118, 0.232, 0.01);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);
 
