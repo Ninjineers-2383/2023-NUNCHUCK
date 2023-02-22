@@ -21,7 +21,7 @@ public class WristPositionCommand extends CommandBase {
     }
 
     public void execute() {
-        m_wrist.setGoal(Rotation2d.fromRadians(m_angle));
+        m_wrist.setGoal(m_angle);
     }
 
     @Override
