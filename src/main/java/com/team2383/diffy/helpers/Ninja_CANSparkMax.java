@@ -13,7 +13,8 @@ public class Ninja_CANSparkMax extends CANSparkMax {
     private SimDouble m_voltage;
 
     /**
-     * Takes in a device ID and a motor type and creates a CANSparkMax wrapper class. 
+     * Takes in a device ID and a motor type and creates a CANSparkMax wrapper
+     * class.
      * All the methods in this file are overriden for our convenience BRIAN.
      * 
      * @param deviceID
@@ -30,14 +31,14 @@ public class Ninja_CANSparkMax extends CANSparkMax {
             m_velocity = m_device.createDouble("Velocity", Direction.kOutput, 0.0);
 
             m_voltage = m_device.createDouble("Voltage", Direction.kInput, 0.0);
-            
+
         }
     }
-    
+
     public void setSimVelocity(double speed) {
         if (m_device != null) {
             m_velocity.set(speed);
-        } 
+        }
     }
 
     /**
@@ -63,8 +64,9 @@ public class Ninja_CANSparkMax extends CANSparkMax {
         }
     }
 
-   /**
-     * Set the conversion factor for velocity of the encoder. Multiplied by the native output units to
+    /**
+     * Set the conversion factor for velocity of the encoder. Multiplied by the
+     * native output units to
      * give you velocity
      *
      * @param factor The conversion factor to multiply the native units by
@@ -77,7 +79,8 @@ public class Ninja_CANSparkMax extends CANSparkMax {
     }
 
     /**
-     * Set the conversion factor for position of the encoder. Multiplied by the native output units to
+     * Set the conversion factor for position of the encoder. Multiplied by the
+     * native output units to
      * give you position.
      *
      * @param factor The conversion factor to multiply the native units by
@@ -88,9 +91,9 @@ public class Ninja_CANSparkMax extends CANSparkMax {
             super.getEncoder().setPositionConversionFactor(factor);
         }
     }
-    
+
     /**
-     * Sets the position of the simulated motor. 
+     * Sets the position of the simulated motor.
      * 
      * @param pos
      */

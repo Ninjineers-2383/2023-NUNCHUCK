@@ -20,8 +20,8 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
     public double m_telescopeExtension;
     public double m_wristAngle;
 
-    public PinkArmPresetCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist, 
-        Rotation2d desiredPivotAngle, double desiredTelescopeExtension, double desiredWristAngle) {
+    public PinkArmPresetCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist,
+            Rotation2d desiredPivotAngle, double desiredTelescopeExtension, Rotation2d desiredWristAngle) {
         m_pivot = pivot;
         m_telescope = telescope;
         m_wrist = wrist;
@@ -31,17 +31,17 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
         m_wristAngle = wrist.getAngle().getRadians();
         if (Math.signum(m_pivotAngle) != Math.signum(desiredPivotAngle.getRadians())) {
             addCommands(new ParallelCommandGroup(new TelescopePositionCommand(telescope, 0),
-                                                 new WristPositionCommand(wrist, 0)),
-                        new PivotPositionCommand(pivot, desiredPivotAngle),
-                        new ParallelCommandGroup(new TelescopePositionCommand(telescope, desiredTelescopeExtension),
-                                                 new WristPositionCommand(wrist, desiredWristAngle))
-                        );
-        } 
-        
+                    new WristPositionCommand(wrist, Rotation2d.fromDegrees(0))),
+                    new PivotPositionCommand(pivot, desiredPivotAngle),
+                    new ParallelCommandGroup(new TelescopePositionCommand(telescope, desiredTelescopeExtension),
+                            new WristPositionCommand(wrist, desiredWristAngle)));
+        }
+
         // else {
-        //     addCommands(new ParallelCommandGroup(new TelescopePositionCommand(telescope, desiredTelescopeExtension),
-        //                                          new WristPositionCommand(wrist, desiredWristAngle),
-        //                                          new PivotPositionCommand(pivot, desiredPivotAngle)));
+        // addCommands(new ParallelCommandGroup(new TelescopePositionCommand(telescope,
+        // desiredTelescopeExtension),
+        // new WristPositionCommand(wrist, desiredWristAngle),
+        // new PivotPositionCommand(pivot, desiredPivotAngle)));
         // }
 
     }

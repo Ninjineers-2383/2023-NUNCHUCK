@@ -8,9 +8,9 @@ import com.team2383.diffy.subsystems.pinkArm.wrist.*;
 public class WristPositionCommand extends CommandBase {
 
     private final WristSubsystem m_wrist;
-    private final double m_angle;
+    private final Rotation2d m_angle;
 
-    public WristPositionCommand(WristSubsystem wrist, double desiredAngle) {
+    public WristPositionCommand(WristSubsystem wrist, Rotation2d desiredAngle) {
         this.m_wrist = wrist;
         this.m_angle = desiredAngle;
         addRequirements(m_wrist);
