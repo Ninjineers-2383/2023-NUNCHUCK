@@ -1,5 +1,6 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.team2383.diffy.subsystems.pinkArm.wrist.*;
@@ -20,7 +21,7 @@ public class WristPositionCommand extends CommandBase {
     }
 
     public void execute() {
-        m_wrist.setGoal(m_angle);
+        m_wrist.setGoal(Rotation2d.fromRadians(m_angle));
     }
 
     @Override

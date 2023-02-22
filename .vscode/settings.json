@@ -57,5 +57,6 @@
     "simgui.json": "*.wpilog"
   },
   "explorer.fileNesting.enabled": true,
-  "latex.linter.config": ""
+  "latex.linter.config": "",
+  "python.analysis.typeCheckingMode": "off"
 }
