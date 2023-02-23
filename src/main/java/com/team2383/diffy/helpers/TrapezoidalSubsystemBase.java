@@ -36,6 +36,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   private boolean m_isFinished = true;
   private double m_voltage;
   private double m_desiredVelocity = 0;
+  private double m_desiredPosition = 0;
   private String m_name;
 
   /**
@@ -74,7 +75,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
   @Override
   public void periodic() {
     // Generate new profile based on current state and goal state
-    var profile = new TrapezoidProfile(m_constraints, m_goal, getState());
+    var profile = new TrapezoidProfile(m_constraints, m_goal, m_state);
     // Gather current command
     m_state = profile.calculate(0.02);
 
@@ -83,10 +84,11 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     // Override desired velocity if enabled
     if (m_enabled) {
       m_desiredVelocity = m_isFinished ? 0 : m_state.velocity;
+      m_desiredPosition = m_isFinished ? m_goal.position : m_state.position;
     }
 
     // Calculate voltage to send to motors
-    m_voltage = calculateVoltage(m_desiredVelocity);
+    m_voltage = calculateVoltage(m_desiredVelocity, m_desiredPosition);
     m_voltage = MathUtil.clamp(m_voltage, -12, 12);
     setVoltage(m_voltage);
   }
@@ -137,7 +139,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     disable();
   }
 
-  protected abstract double calculateVoltage(double velocity);
+  protected abstract double calculateVoltage(double velocity, double position);
 
   /**
    * Set voltage of motors

@@ -3,6 +3,7 @@ package com.team2383.diffy.subsystems.pinkArm.telescope;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
@@ -102,16 +103,20 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         m_leftMotor.setSimPosition(m_leftMotor.getPosition() + simVelocity * 0.02);
     }
 
+    private double getCosGravityAngle() {
+        return m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI / 2 : 0;
+    }
+
     /**
      * PIDF calculations used by trapezoidal motion profiling
      * 
      * @param velocity in radians per second
      */
     @Override
-    protected double calculateVoltage(double velocity) {
+    protected double calculateVoltage(double velocity, double position) {
         double voltage = TelescopeConstants.PID_CONTROLLER.calculate(getVelocity(), velocity);
         voltage += TelescopeConstants.FEEDFORWARD_CONTROLLER
-                .calculate(m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI / 2 : 0, velocity);
+                .calculate(Robot.isReal() ? getCosGravityAngle() : -Math.PI / 2, velocity);
         voltage += velocity < 0 ? TelescopeConstants.kEXTENSION_BIAS : 0;
         return voltage;
     }

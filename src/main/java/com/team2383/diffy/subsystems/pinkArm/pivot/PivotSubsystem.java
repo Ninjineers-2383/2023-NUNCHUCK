@@ -7,9 +7,9 @@ import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.Ninja_CANSparkMax;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
+import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
@@ -128,12 +128,14 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * @param velocity in radians per second
      */
     @Override
-    protected double calculateVoltage(double velocity) {
+    protected double calculateVoltage(double velocity, double position) {
         double voltage = PivotConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
         voltage += PivotConstants.FEEDFORWARD_CONTROLLER.calculate(velocity);
-        voltage += Math.sin(getAngle().getRadians()) * PivotConstants.kG
-                * ((m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0) + PivotConstants.kGOFFSET)
-                / (PivotConstants.kGOFFSET + 20);
+        if (Robot.isReal()) { // Am I on a planet with gravity
+            voltage += Math.sin(getAngle().getRadians()) * PivotConstants.kG
+                    * ((m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0) + PivotConstants.kGOFFSET)
+                    / (PivotConstants.kGOFFSET + 20);
+        }
         return voltage;
     }
 

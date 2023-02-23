@@ -13,18 +13,25 @@
           "incKey": 83
         },
         {
-          "decKey": 65,
+          "decKey": 264,
           "decayRate": 0.10000000149011612,
-          "incKey": 68
+          "incKey": 265
         },
         {
-          "decKey": 69,
           "decayRate": 0.10000000149011612,
-          "incKey": 82,
+          "incKey": 75,
           "keyRate": 0.009999999776482582
+        },
+        {
+          "incKey": 76
+        },
+        {},
+        {
+          "decKey": 263,
+          "incKey": 262
         }
       ],
-      "axisCount": 3,
+      "axisCount": 6,
       "buttonCount": 4,
       "buttonKeys": [
         90,
@@ -55,14 +62,6 @@
         46,
         47
       ],
-      "povConfig": [
-        {
-          "key0": 265,
-          "key180": 264,
-          "key270": 263,
-          "key90": 262
-        }
-      ],
       "povCount": 1
     },
     {
@@ -70,11 +69,8 @@
         {
           "decKey": 73
         },
+        {},
         {
-          "incKey": 76
-        },
-        {
-          "decKey": 75,
           "incKey": 74
         },
         {

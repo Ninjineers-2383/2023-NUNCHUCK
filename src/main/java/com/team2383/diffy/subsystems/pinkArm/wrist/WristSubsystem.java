@@ -3,9 +3,9 @@ package com.team2383.diffy.subsystems.pinkArm.wrist;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
@@ -14,6 +14,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class WristSubsystem extends TrapezoidalSubsystemBase {
@@ -73,17 +74,21 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        // TODO: Actually do sim support
-        m_pivotMotor.set(TalonSRXControlMode.Velocity, matrix.get(0, 0));
+        m_pivotMotor.getSimCollection().setPulseWidthPosition((int) (m_pivotMotor.getSelectedSensorPosition()
+                + Units.radiansToRotations(matrix.get(0, 0) * 0.02) * 4096));
 
     }
 
+    private double getAbsoluteAngleRadians() {
+        return getAngle().getRadians() - Math.PI / 2
+                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0);
+    }
+
     @Override
-    protected double calculateVoltage(double velocity) {
-        double voltage = WristConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
+    protected double calculateVoltage(double velocity, double position) {
+        double voltage = WristConstants.PID_CONTROLLER.calculate(getAbsoluteAngleRadians(), position);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
-                getAngle().getRadians() - Math.PI / 2
-                        + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0),
+                Robot.isReal() ? getAbsoluteAngleRadians() : -Math.PI / 2,
                 velocity);
         return voltage;
     }
@@ -96,9 +101,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
             return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;
         }, null);
 
-        builder.addDoubleProperty("Combined Angle", () -> {
-            return getAngle().getRadians() - Math.PI / 2
-                    + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0);
+        builder.addDoubleProperty("Absolute Angle", () -> {
+            return getAbsoluteAngleRadians();
         }, null);
     }
 }

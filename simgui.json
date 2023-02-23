@@ -185,6 +185,9 @@
         "PivotSubsystem": {
           "open": true
         },
+        "TelescopeSubsystem": {
+          "open": true
+        },
         "WristSubsystem": {
           "open": true
         },
@@ -208,7 +211,8 @@
             "open": true
           },
           "open": true
-        }
+        },
+        "open": true
       }
     }
   },

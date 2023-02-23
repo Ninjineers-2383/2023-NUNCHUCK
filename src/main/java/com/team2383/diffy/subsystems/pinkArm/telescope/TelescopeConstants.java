@@ -23,7 +23,7 @@ public final class TelescopeConstants {
 
         public static final double kEXTENSION_BIAS = -0.15;
 
-        public static final PIDController PID_CONTROLLER = new PIDController(0.25, 1, 0);
+        public static final PIDController PID_CONTROLLER = new PIDController(0.25, 0, 0);
         public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.15, 0.00, 0.25, 0.01);
         public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(1,
                         1);
