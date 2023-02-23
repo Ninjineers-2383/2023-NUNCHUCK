@@ -1,4 +1,4 @@
-package com.team2383.diffy.commands.pinkArm.position;
+package com.team2383.diffy.commands.pinkArm.position.AutomatedCommands;
 
 public class PositionConstants {
     
@@ -12,7 +12,7 @@ public class PositionConstants {
 
     }
 
-    public class ExtensionPositionConstants {
+    public class TelescopePositionConstants {
         // TODO: ADD EXTENSION POSITIONS
         public static final int kRetracted = 0;
         public static final int kExtended = 0;
