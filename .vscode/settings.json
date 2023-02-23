@@ -59,5 +59,6 @@
   },
   "explorer.fileNesting.enabled": true,
   "latex.linter.config": "",
-  "python.analysis.typeCheckingMode": "off"
+  "python.analysis.typeCheckingMode": "off",
+  "editor.detectIndentation": false
 }

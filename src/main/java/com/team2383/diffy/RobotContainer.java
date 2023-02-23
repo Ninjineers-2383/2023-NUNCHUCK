@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommand;
+import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
@@ -22,7 +23,7 @@ import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
-import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
+// import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
@@ -30,7 +31,6 @@ import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -65,7 +65,7 @@ public class RobotContainer {
     private final DoubleSupplier m_driveOmega = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
 
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(5));
 
     private final IntSupplier m_povSupplier = () -> -1;
 
@@ -87,10 +87,9 @@ public class RobotContainer {
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
     private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
+    private final JoystickButton m_resetHeading = new JoystickButton(m_driverController, 8);
 
-    private final DoubleSupplier m_dickControl = () -> 0.3 *
-            (m_operatorController.getLeftTriggerAxis()
-                    - m_operatorController.getRightTriggerAxis());
+    private final JoystickButton m_paddlePreset = new JoystickButton(m_driverController, 6);
 
     // The robot's subsystems and commands are defined here...
 
@@ -102,16 +101,15 @@ public class RobotContainer {
     private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
     private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_telescopeSubsystem::getExtensionInches);
 
-    private final PinkArmSimSubsystem m_pinkArmSimSubsystem = new PinkArmSimSubsystem(m_pivotSubsystem,
-            m_telescopeSubsystem, m_wristSubsystem);
+    // private final PinkArmSimSubsystem m_pinkArmSimSubsystem = new
+    // PinkArmSimSubsystem(m_pivotSubsystem,
+    // m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
 
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
             m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
-    private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
-            m_dickControl);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -167,12 +165,15 @@ public class RobotContainer {
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         Rotation2d.fromDegrees(90), 1, Rotation2d.fromDegrees(60)));
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
+
+        m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
+        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(0)))
+                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90)));
     }
 
     private void configureDefaultCommands() {
         m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
-        m_dickSubsystem.setDefaultCommand(m_dickCommand);
         m_telescopeSubsystem.setDefaultCommand(new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension));
         m_pivotSubsystem.setDefaultCommand(new PivotVelocityCommand(m_pivotSubsystem, m_pivot));
         m_wristSubsystem.setDefaultCommand(new WristVelocityCommand(m_wristSubsystem, m_wrist));
