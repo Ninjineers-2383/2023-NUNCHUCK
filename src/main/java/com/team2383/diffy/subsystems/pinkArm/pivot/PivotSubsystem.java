@@ -129,7 +129,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      */
     @Override
     protected double calculateVoltage(double velocity, double position) {
-        double voltage = PivotConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
+        double voltage = PivotConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), position);
         voltage += PivotConstants.FEEDFORWARD_CONTROLLER.calculate(velocity);
         if (Robot.isReal()) { // Am I on a planet with gravity
             voltage += Math.sin(getAngle().getRadians()) * PivotConstants.kG

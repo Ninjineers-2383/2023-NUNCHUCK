@@ -86,7 +86,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     @Override
     protected double calculateVoltage(double velocity, double position) {
-        double voltage = WristConstants.PID_CONTROLLER.calculate(getAbsoluteAngleRadians(), position);
+        double voltage = WristConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), position);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
                 Robot.isReal() ? getAbsoluteAngleRadians() : -Math.PI / 2,
                 velocity);

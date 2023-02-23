@@ -114,7 +114,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      */
     @Override
     protected double calculateVoltage(double velocity, double position) {
-        double voltage = TelescopeConstants.PID_CONTROLLER.calculate(getVelocity(), velocity);
+        double voltage = TelescopeConstants.PID_CONTROLLER.calculate(getExtensionInches(), position);
         voltage += TelescopeConstants.FEEDFORWARD_CONTROLLER
                 .calculate(Robot.isReal() ? getCosGravityAngle() : -Math.PI / 2, velocity);
         voltage += velocity < 0 ? TelescopeConstants.kEXTENSION_BIAS : 0;

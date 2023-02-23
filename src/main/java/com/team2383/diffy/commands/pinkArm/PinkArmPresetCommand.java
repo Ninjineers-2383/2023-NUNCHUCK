@@ -29,20 +29,14 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
         m_pivotAngle = pivot.getAngle().getRadians();
         m_telescopeExtension = telescope.getExtensionInches();
         m_wristAngle = wrist.getAngle().getRadians();
-        if (Math.signum(m_pivotAngle) != Math.signum(desiredPivotAngle.getRadians())) {
-            addCommands(new ParallelCommandGroup(new TelescopePositionCommand(telescope, 0),
-                    new WristPositionCommand(wrist, Rotation2d.fromDegrees(0))),
-                    new PivotPositionCommand(pivot, desiredPivotAngle),
-                    new ParallelCommandGroup(new TelescopePositionCommand(telescope, desiredTelescopeExtension),
-                            new WristPositionCommand(wrist, desiredWristAngle)));
-        }
-
-        // else {
-        // addCommands(new ParallelCommandGroup(new TelescopePositionCommand(telescope,
-        // desiredTelescopeExtension),
-        // new WristPositionCommand(wrist, desiredWristAngle),
-        // new PivotPositionCommand(pivot, desiredPivotAngle)));
-        // }
+        addCommands(
+                new ParallelCommandGroup(
+                        new TelescopePositionCommand(telescope, 0),
+                        new WristPositionCommand(wrist, Rotation2d.fromDegrees(0))),
+                new PivotPositionCommand(pivot, desiredPivotAngle),
+                new ParallelCommandGroup(
+                        new TelescopePositionCommand(telescope, desiredTelescopeExtension),
+                        new WristPositionCommand(wrist, desiredWristAngle)));
 
     }
 

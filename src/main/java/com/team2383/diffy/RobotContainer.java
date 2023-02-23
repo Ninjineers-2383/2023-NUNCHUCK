@@ -27,6 +27,7 @@ import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
+import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants.*;
 
 import edu.wpi.first.math.MathUtil;
@@ -52,158 +53,159 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-        private final GenericHID m_driverController = new GenericHID(0);
-        private final XboxController m_operatorController = new XboxController(2);
+    private final GenericHID m_driverController = new GenericHID(0);
+    private final XboxController m_operatorController = new XboxController(2);
 
-        // Power and suppliers are defined here
-        private final DoubleSupplier m_driveY = () -> MathUtil
-                        .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
+    // Power and suppliers are defined here
+    private final DoubleSupplier m_driveY = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
 
-        private final DoubleSupplier m_driveX = () -> MathUtil
-                        .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
+    private final DoubleSupplier m_driveX = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
 
-        private final DoubleSupplier m_driveOmega = () -> MathUtil
-                        .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
+    private final DoubleSupplier m_driveOmega = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
 
-        private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(1));
 
-        private final IntSupplier m_povSupplier = () -> -1;
+    private final IntSupplier m_povSupplier = () -> -1;
 
-        private final DoubleSupplier m_intake = () -> MathUtil
-                        .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(2), .1);
+    private final DoubleSupplier m_intake = () -> MathUtil
+            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(2), .1);
 
-        private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
-                        .fromDegrees(90 * m_operatorController.getRawAxis(5));
-        private final DoubleSupplier m_extension = () -> 7 * m_operatorController.getRawAxis(1);
-        private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
-                        .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
+    private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
+            .fromDegrees(90 * m_operatorController.getRawAxis(5));
+    private final DoubleSupplier m_extension = () -> 7 * m_operatorController.getRawAxis(1);
+    private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
+            .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
 
-        private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
-        private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
-        private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
-        private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
+    private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
+    private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
+    private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
+    private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
 
-        private final DoubleSupplier m_dickControl = () -> 0.3 *
-                        (m_operatorController.getLeftTriggerAxis()
-                                        - m_operatorController.getRightTriggerAxis());
+    private final DoubleSupplier m_dickControl = () -> 0.3 *
+            (m_operatorController.getLeftTriggerAxis()
+                    - m_operatorController.getRightTriggerAxis());
 
-        // The robot's subsystems and commands are defined here...
+    // The robot's subsystems and commands are defined here...
 
-        private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
-        private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
-        private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
-        private Supplier<Rotation2d> m_pivotSupplier;
-        private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
-        private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
-        private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_telescopeSubsystem::getExtensionInches);
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
+    private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
+    private Supplier<Rotation2d> m_pivotSupplier;
+    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
+    private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
+    private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(m_telescopeSubsystem::getExtensionInches);
 
-        private final PinkArmSimSubsystem pinkArmSim = new PinkArmSimSubsystem(m_pivotSubsystem,
-                        m_telescopeSubsystem, m_wristSubsystem);
+    private final PinkArmSimSubsystem pinkArmSim = new PinkArmSimSubsystem(m_pivotSubsystem,
+            m_telescopeSubsystem, m_wristSubsystem);
 
-        // Commands are defined here
+    // Commands are defined here
 
-        private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-                        m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
-        private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
-        private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
-                        m_dickControl);
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
+            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+    private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
+    private final PaddleCommand m_dickCommand = new PaddleCommand(m_dickSubsystem,
+            m_dickControl);
 
-        SendableChooser<Command> autoChooser = new SendableChooser<>();
+    SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-        // This is just an example event map. It would be better to have a constant,
-        // global event map
-        // in your code that will be used by all path following commands.
-        HashMap<String, Command> eventMap = new HashMap<>() {
-                {
-                        put("log", new PrintCommand("Event: log"));
-                        put("intakeDown", null);
-                }
-        };
-
-        SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
-                        m_drivetrainSubsystem::getPose,
-                        m_drivetrainSubsystem::forceOdometry,
-                        m_drivetrainSubsystem.m_kinematics,
-                        new PIDConstants(5, 0, 0),
-                        new PIDConstants(0.5, 0, 0),
-                        m_drivetrainSubsystem::setModuleStates,
-                        eventMap,
-                        true,
-                        m_drivetrainSubsystem);
-
-        /**
-         * The container for the robot. Contains subsystems, OI devices, and commands.
-         */
-        public RobotContainer() {
-                pinkArmSim.init();
-                // Configure the button bindings
-                m_telescopeSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
-                m_wristSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
-
-                configureButtonBindings();
-                configureDefaultCommands();
-
-                DataLogManager.start();
-                DataLogManager.logNetworkTables(true);
-                DriverStation.startDataLog(DataLogManager.getLog(), true);
-
-                LiveWindow.enableAllTelemetry();
-
-                setAutoCommands();
+    // This is just an example event map. It would be better to have a constant,
+    // global event map
+    // in your code that will be used by all path following commands.
+    HashMap<String, Command> eventMap = new HashMap<>() {
+        {
+            put("log", new PrintCommand("Event: log"));
+            put("intakeDown", null);
         }
+    };
 
-        private void configureButtonBindings() {
-                m_presetFeed.onTrue(
-                                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                                Rotation2d.fromDegrees(PivotPositionConstants.kFeedGroundPos), 
-                                                TelescopePositionConstants.kFeedGroundPos, 
-                                                Rotation2d.fromDegrees(WristPositionConstants.kFeedGroundPos)));
+    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
+            m_drivetrainSubsystem::getPose,
+            m_drivetrainSubsystem::forceOdometry,
+            m_drivetrainSubsystem.m_kinematics,
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(0.5, 0, 0),
+            m_drivetrainSubsystem::setModuleStates,
+            eventMap,
+            true,
+            m_drivetrainSubsystem);
 
-                m_presetShootLow.onTrue(
-                                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                                Rotation2d.fromDegrees(PivotPositionConstants.kLowScorePos), 
-                                                TelescopePositionConstants.kLowScorePos, 
-                                                Rotation2d.fromDegrees(WristPositionConstants.kLowScorePos)));
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        pinkArmSim.init();
+        // Configure the button bindings
+        m_telescopeSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
+        m_wristSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
 
-                m_presetShootHigh.onTrue(
-                                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                                Rotation2d.fromDegrees(PivotPositionConstants.kTopScorePos),
-                                                TelescopePositionConstants.kTopScorePos, 
-                                                Rotation2d.fromDegrees(WristPositionConstants.kTopScorePos)));
-                m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
-        }
+        configureButtonBindings();
+        configureDefaultCommands();
 
-        private void configureDefaultCommands() {
-                m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
-                m_feederSubsystem.setDefaultCommand(m_feederCommand);
-                m_dickSubsystem.setDefaultCommand(m_dickCommand);
-                m_telescopeSubsystem.setDefaultCommand(new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension));
-                m_pivotSubsystem.setDefaultCommand(new PivotVelocityCommand(m_pivotSubsystem, m_pivot));
-                m_wristSubsystem.setDefaultCommand(new WristVelocityCommand(m_wristSubsystem, m_wrist));
-        }
+        DataLogManager.start();
+        DataLogManager.logNetworkTables(true);
+        DriverStation.startDataLog(DataLogManager.getLog(), true);
 
-        /**
-         * Use this to pass the autonomous command to the main {@link Robot} class.
-         *
-         * @return the command to run in autonomous
-         */
-        public Command getAutonomousCommand() {
-                // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-                // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
-                // return autoChooser.getSelected();
-                return null;// m_pinkArmAutoCommand;
-        }
+        LiveWindow.enableAllTelemetry();
 
-        private void setAutoCommands() {
-                Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-                                m_autoBuilder);
-                Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-                                m_autoBuilder);
+        setAutoCommands();
+    }
 
-                Command nullAuto = null;
+    private void configureButtonBindings() {
+        m_presetFeed.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        Rotation2d.fromDegrees(PivotPositionConstants.kFeedGroundPos),
+                        TelescopePositionConstants.kFeedGroundPos,
+                        Rotation2d.fromDegrees(WristPositionConstants.kFeedGroundPos)));
 
-                autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
-                autoChooser.addOption("Forward Test Auto", forwardTest);
-                autoChooser.addOption("No Auto :(", nullAuto);
-        }
+        m_presetShootLow.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        Rotation2d.fromDegrees(PivotPositionConstants.kLowScorePos),
+                        TelescopePositionConstants.kLowScorePos,
+                        Rotation2d.fromDegrees(WristPositionConstants.kLowScorePos)));
+
+        m_presetShootHigh.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+                        m_wristSubsystem,
+                        Rotation2d.fromDegrees(PivotPositionConstants.kTopScorePos),
+                        TelescopePositionConstants.kTopScorePos,
+                        Rotation2d.fromDegrees(WristPositionConstants.kTopScorePos)));
+        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
+    }
+
+    private void configureDefaultCommands() {
+        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
+        m_feederSubsystem.setDefaultCommand(m_feederCommand);
+        m_dickSubsystem.setDefaultCommand(m_dickCommand);
+        m_telescopeSubsystem.setDefaultCommand(new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension));
+        m_pivotSubsystem.setDefaultCommand(new PivotVelocityCommand(m_pivotSubsystem, m_pivot));
+        m_wristSubsystem.setDefaultCommand(new WristVelocityCommand(m_wristSubsystem, m_wrist));
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
+        // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        // return autoChooser.getSelected();
+        return null;// m_pinkArmAutoCommand;
+    }
+
+    private void setAutoCommands() {
+        Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
+                m_autoBuilder);
+        Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
+                m_autoBuilder);
+
+        Command nullAuto = null;
+
+        autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        autoChooser.addOption("Forward Test Auto", forwardTest);
+        autoChooser.addOption("No Auto :(", nullAuto);
+    }
 }

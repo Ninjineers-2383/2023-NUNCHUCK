@@ -27,6 +27,7 @@
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
       "/LiveWindow/FeederSubsystem/Feeder": "Subsystem",
       "/LiveWindow/PaddleSubsystem": "Subsystem",
+      "/LiveWindow/PinkArmSimSubsystem": "Subsystem",
       "/LiveWindow/PinkArmSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DigitalInput[10]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",

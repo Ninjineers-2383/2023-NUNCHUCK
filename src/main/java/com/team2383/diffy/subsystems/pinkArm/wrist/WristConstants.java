@@ -22,7 +22,7 @@ public final class WristConstants {
     public static final Rotation2d feedAngle = Rotation2d.fromDegrees(0);
     public static final Rotation2d outFeedAngle = Rotation2d.fromDegrees(0);
 
-    public static final PIDController PID_CONTROLLER = new PIDController(0, 0, 0);
+    public static final PIDController PID_CONTROLLER = new PIDController(0.5, 0, 0);
     public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.21143, 1.4, 2.091, 0.10864);
     public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(1,
             1);
