@@ -22,9 +22,9 @@ public final class PivotConstants {
         public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(30);
         public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-30);
 
-        public static final double kG = 0.9;
+        public static final double kG = 0.95;
 
-        public static final double kGOFFSET = 30;
+        public static final double kGOFFSET = 25;
 
         public static final PIDController PID_CONTROLLER = new PIDController(0.01, 0, 0);
         public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.4, 1.9,

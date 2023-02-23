@@ -14,6 +14,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class WristSubsystem extends TrapezoidalSubsystemBase {
     private final TalonSRX m_pivotMotor;
@@ -22,7 +23,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     double m_simVelocity = 0;
 
-    private final Supplier<Rotation2d> m_pivotAngle;
+    private Supplier<Rotation2d> m_pivotAngle;
 
     public WristSubsystem(Supplier<Rotation2d> pivotAngle) {
         super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM);
@@ -30,7 +31,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         m_pivotMotor.configSelectedFeedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Absolute, 0, 200);
         m_pivotMotor.enableCurrentLimit(true);
         m_pivotAngle = pivotAngle;
-        m_pivotMotor.configPeakCurrentLimit(20, 500);
+        m_pivotMotor.configPeakCurrentLimit(WristConstants.kMaxCurrent, 500);
+        m_pivotMotor.setInverted(false);
         m_velocity = new AngularVelocityWrapper(getAngle());
     }
 
@@ -38,6 +40,10 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     public void periodic() {
         super.periodic();
         m_velocity.calculate(getAngle());
+    }
+
+    public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
+        m_pivotAngle = pivotAngle;
     }
 
     public void setGoal(Rotation2d desiredAngle) {
@@ -53,7 +59,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     public Rotation2d getAngle() {
         return Rotation2d
-                .fromRotations((m_pivotMotor.getSelectedSensorPosition() + WristConstants.encoderOffset) / 4000.0);
+                .fromRotations(m_pivotMotor.getSelectedSensorPosition() / 4096.0 + WristConstants.encoderOffset);
     }
 
     @Override
@@ -76,9 +82,23 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     protected double calculateVoltage(double velocity) {
         double voltage = WristConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
-                -Math.PI / 2, // getAngle().getRadians() - 90 + (m_pivotAngle != null ?
-                // m_pivotAngle.get().getRadians() - 90 : 0),
+                getAngle().getRadians() - Math.PI / 2
+                        + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0),
                 velocity);
         return voltage;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("Pivot Angle", () -> {
+            return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;
+        }, null);
+
+        builder.addDoubleProperty("Combined Angle", () -> {
+            return getAngle().getRadians() - Math.PI / 2
+                    + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0);
+        }, null);
     }
 }

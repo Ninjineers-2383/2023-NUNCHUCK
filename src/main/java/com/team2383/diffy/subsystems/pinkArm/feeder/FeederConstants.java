@@ -6,4 +6,6 @@ public final class FeederConstants {
 
         public static final int kTopMotorID = 6;
         public static final int kBottomMotorID = 7;
+
+        public static final int MAX_CURRENT = 15;
 }

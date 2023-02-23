@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private final Ninja_CANSparkMax m_rightMotor;
@@ -79,7 +80,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
 
     /* Velocity measured in inches per minute */
     public double getVelocity() {
-        return (m_rightMotor.get() + m_leftMotor.get()) * TelescopeConstants.ROTATION_CONVERSION / 2.0;
+        return (m_rightMotor.get() + m_leftMotor.get()) * TelescopeConstants.ROTATION_CONVERSION / 120.0;
     }
 
     public double getExtensionInches() {
@@ -110,7 +111,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     protected double calculateVoltage(double velocity) {
         double voltage = TelescopeConstants.PID_CONTROLLER.calculate(getVelocity(), velocity);
         voltage += TelescopeConstants.FEEDFORWARD_CONTROLLER
-                .calculate(m_pivotAngle != null ? m_pivotAngle.get().getRadians() - 90 : 0, velocity);
+                .calculate(m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI / 2 : 0, velocity);
+        voltage += velocity < 0 ? TelescopeConstants.kEXTENSION_BIAS : 0;
         return voltage;
     }
 
@@ -126,6 +128,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public void resetPosition() {
+        DataLogManager.log("Telescope reset");
         m_rightMotor.getEncoder().setPosition(0);
         m_leftMotor.getEncoder().setPosition(0);
     }

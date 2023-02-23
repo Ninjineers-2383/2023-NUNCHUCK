@@ -9,6 +9,7 @@ import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
@@ -38,15 +39,17 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
         super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS, PivotConstants.SIMULATION_SUBSYSTEM);
         m_leftMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_LEFT_ID, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_RIGHT_ID, MotorType.kBrushless);
-
+        m_rightMotor.restoreFactoryDefaults();
+        m_leftMotor.restoreFactoryDefaults();
         m_rightMotor.setVelocityConversionFactor(PivotConstants.VELOCITY_CONVERSION_FACTOR.getRadians());
         m_leftMotor.setVelocityConversionFactor(PivotConstants.VELOCITY_CONVERSION_FACTOR.getRadians());
+        m_leftMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
+        m_rightMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
+        m_leftMotor.setInverted(false);
+        m_rightMotor.setInverted(true);
 
         m_absEncoder = new DutyCycleEncoder(PivotConstants.ABS_ENCODER_ID);
         m_absEncoderSim = new DutyCycleEncoderSim(m_absEncoder);
-
-        m_leftMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
-        m_rightMotor.setSmartCurrentLimit(PivotConstants.MAX_CURRENT);
 
         m_absEncoder.setPositionOffset(PivotConstants.ENCODER_OFFSET);
 

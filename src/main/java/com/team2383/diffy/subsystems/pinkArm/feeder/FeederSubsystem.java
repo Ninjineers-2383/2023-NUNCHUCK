@@ -30,6 +30,15 @@ public class FeederSubsystem extends SubsystemBase {
         m_topMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
         m_bottomMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
 
+        m_topMotor.restoreFactoryDefaults();
+        m_bottomMotor.restoreFactoryDefaults();
+
+        m_topMotor.setInverted(true);
+        m_bottomMotor.setInverted(false);
+
+        m_topMotor.setSmartCurrentLimit(FeederConstants.MAX_CURRENT);
+        m_bottomMotor.setSmartCurrentLimit(FeederConstants.MAX_CURRENT);
+
         addChild("Feeder", this);
     }
 
