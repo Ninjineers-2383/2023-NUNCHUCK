@@ -27,6 +27,7 @@ import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
+import com.team2383.diffy.commands.pinkArm.position.PositionConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -152,16 +153,23 @@ public class RobotContainer {
         }
 
         private void configureButtonBindings() {
-                m_presetFeed.onTrue(new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                Rotation2d.fromDegrees(150), -1, Rotation2d.fromDegrees(120)));
+                m_presetFeed.onTrue(
+                                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                                                Rotation2d.fromDegrees(PivotPositionConstants.kFeedGroundPos), 
+                                                TelescopePositionConstants.kFeedGroundPos, 
+                                                Rotation2d.fromDegrees(WristPositionConstants.kFeedGroundPos)));
 
                 m_presetShootLow.onTrue(
                                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                                Rotation2d.fromDegrees(-60), 2, Rotation2d.fromDegrees(-90)));
+                                                Rotation2d.fromDegrees(PivotPositionConstants.kLowScorePos), 
+                                                TelescopePositionConstants.kLowScorePos, 
+                                                Rotation2d.fromDegrees(WristPositionConstants.kLowScorePos)));
 
                 m_presetShootHigh.onTrue(
                                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                                Rotation2d.fromDegrees(90), 1, Rotation2d.fromDegrees(60)));
+                                                Rotation2d.fromDegrees(PivotPositionConstants.kTopScorePos),
+                                                TelescopePositionConstants.kTopScorePos, 
+                                                Rotation2d.fromDegrees(WristPositionConstants.kTopScorePos)));
                 m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
         }
 
