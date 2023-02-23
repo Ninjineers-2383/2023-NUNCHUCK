@@ -9,7 +9,6 @@ import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;

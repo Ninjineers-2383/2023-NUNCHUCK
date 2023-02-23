@@ -69,7 +69,11 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     @Override
     protected TrapezoidProfile.State getState() {
-        return new TrapezoidProfile.State(getAngle().getRadians(), m_velocity.get().getRadians());
+        return new TrapezoidProfile.State(getAngle().getRadians(), getVelocity().getRadians());
+    }
+
+    public Rotation2d getVelocity() {
+        return m_velocity.get().times(-1);
     }
 
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
@@ -80,10 +84,10 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     @Override
     protected double calculateVoltage(double velocity) {
-        double voltage = WristConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
+        double voltage = WristConstants.PID_CONTROLLER.calculate(getVelocity().getRadians(), velocity);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
-                getAngle().getRadians() - Math.PI / 2
-                        + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0),
+                -(getAngle().getRadians() - Math.PI / 2
+                        + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() + Math.PI : 0)),
                 velocity);
         return voltage;
     }
@@ -97,8 +101,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         }, null);
 
         builder.addDoubleProperty("Combined Angle", () -> {
-            return getAngle().getRadians() - Math.PI / 2
-                    + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0);
+            return -(getAngle().getRadians() - Math.PI / 2
+                    + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0));
         }, null);
     }
 }
