@@ -9,22 +9,23 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public final class TelescopeConstants {
 
-    public static final int EXTENSION_LEFT_ID = 4;
-    public static final int EXTENSION_RIGHT_ID = 5;
+        public static final int EXTENSION_LEFT_ID = 4;
+        public static final int EXTENSION_RIGHT_ID = 5;
 
-    public static final int MAX_CURRENT = 30;
-    public static final double ROTATION_CONVERSION = 20.0 / 324.0;
+        public static final int MAX_CURRENT = 30;
+        public static final double ROTATION_CONVERSION = 0.36363636363636365;
 
-    public static final double CURRENT_THRESHOLD = 10;
+        public static final double CURRENT_THRESHOLD = 10;
 
-    public static final double UPPER_BOUND = 38;
-    public static final double LOWER_BOUND = 0.0;
-    public static final double SAFETY_BOUND = 1;
+        public static final double UPPER_BOUND = 38;
+        public static final double LOWER_BOUND = 0.0;
+        public static final double SAFETY_BOUND = 1;
 
-    public static final PIDController PID_CONTROLLER = new PIDController(0, 0, 0);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.55714, -0.1, 4, 0.1);
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(1, 1);
-    public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId
-            .identifyVelocitySystem(TelescopeConstants.FEEDFORWARD_CONTROLLER.kv,
-                    TelescopeConstants.FEEDFORWARD_CONTROLLER.ka);
+        public static final PIDController PID_CONTROLLER = new PIDController(0, 0, 0);
+        public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.55714, -0.1, 4, 0.1);
+        public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(1,
+                        1);
+        public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId
+                        .identifyVelocitySystem(TelescopeConstants.FEEDFORWARD_CONTROLLER.kv,
+                                        TelescopeConstants.FEEDFORWARD_CONTROLLER.ka);
 }

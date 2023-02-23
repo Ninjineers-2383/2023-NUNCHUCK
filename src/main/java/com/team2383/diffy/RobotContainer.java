@@ -72,10 +72,10 @@ public class RobotContainer {
                         .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(2), .1);
 
         private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
-                        .fromDegrees(360 * m_operatorController.getRawAxis(5));
-        private final DoubleSupplier m_extension = () -> m_operatorController.getRawAxis(1);
+                        .fromDegrees(90 * m_operatorController.getRawAxis(5));
+        private final DoubleSupplier m_extension = () -> 0.50 * m_operatorController.getRawAxis(1);
         private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
-                        .fromDegrees(360 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
+                        .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
 
         // private final DoubleSupplier m_extension = () -> MathUtil
         // .applyDeadband(m_operatorController.getRawAxis(1) -

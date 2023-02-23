@@ -76,7 +76,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     protected double calculateVoltage(double velocity) {
         double voltage = WristConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
-                getAngle().getRadians() - 90 + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - 90 : 0),
+                -Math.PI / 2, // getAngle().getRadians() - 90 + (m_pivotAngle != null ?
+                // m_pivotAngle.get().getRadians() - 90 : 0),
                 velocity);
         return voltage;
     }

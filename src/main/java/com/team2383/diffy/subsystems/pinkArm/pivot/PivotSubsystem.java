@@ -128,9 +128,9 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     protected double calculateVoltage(double velocity) {
         double voltage = PivotConstants.PID_CONTROLLER.calculate(m_velocity.get().getRadians(), velocity);
         voltage += PivotConstants.FEEDFORWARD_CONTROLLER.calculate(velocity);
-        // voltage += Math.sin(getAngle().getRadians()) * PivotConstants.kG
-        // * ((m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0) +
-        // 15);
+        voltage += Math.sin(getAngle().getRadians()) * PivotConstants.kG
+                * ((m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0) + PivotConstants.kGOFFSET)
+                / (PivotConstants.kGOFFSET + 20);
         return voltage;
     }
 
