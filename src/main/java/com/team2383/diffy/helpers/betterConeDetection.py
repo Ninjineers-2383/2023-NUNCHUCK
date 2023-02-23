@@ -9,7 +9,7 @@ NetworkTables.initialize()
 sd = NetworkTables.getTable("SmartDashboard")
 
 # image = cv2.imread('/Users/john/FRC 2023/2023-Diffy-Swerve/src/main/java/com/team2383/diffy/helpers/SampleImages/img1.png')
-cap = cv2.VideoCapture('ConeCamera') # TODO: RENAME TO CONE CAMERA NAME
+cap = cv2.VideoCapture('ConeCamera') # TODO: RENAME TO CONE CAMERA NAME OR WHATEVER INDEX IT NEEDS TO BE
 
 while cap.isOpened():
     
@@ -35,6 +35,9 @@ while cap.isOpened():
             
             sd.putNumber("Cone Center X: " + str(x + int(w/2)))
             sd.putNumber("Cone Center Y: " + str(y + int(h/2)))
+            
+cap.release()
+cv2.destroyAllWindows()
 
     # cv2.imshow('mask', mask)
     # cv2.imshow('Blurred', blur)
