@@ -1,27 +1,26 @@
 package com.team2383.diffy.commands;
 
-import java.util.function.DoubleSupplier;
-
 import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class PaddleCommand extends CommandBase {
+public class PaddleCommandPosition extends CommandBase {
 
     private final PaddleSubsystem m_dick;
-    private final DoubleSupplier m_erect;
+    private final Rotation2d m_angle;
 
-    public PaddleCommand(PaddleSubsystem dick, DoubleSupplier viagra) {
+    public PaddleCommandPosition(PaddleSubsystem dick, Rotation2d angle) {
 
         m_dick = dick;
-        m_erect = viagra;
+        m_angle = angle;
 
         addRequirements(dick);
     }
 
     @Override
     public void execute() {
-        m_dick.setVoltage(m_erect.getAsDouble());
+        m_dick.setPosition(m_angle);
     }
 
 }

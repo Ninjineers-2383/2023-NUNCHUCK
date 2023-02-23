@@ -70,7 +70,11 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     @Override
     protected TrapezoidProfile.State getState() {
-        return new TrapezoidProfile.State(getAngle().getRadians(), m_velocity.get().getRadians());
+        return new TrapezoidProfile.State(getAngle().getRadians(), getVelocity().getRadians());
+    }
+
+    public Rotation2d getVelocity() {
+        return m_velocity.get().times(-1);
     }
 
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
@@ -80,15 +84,15 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     private double getAbsoluteAngleRadians() {
-        return getAngle().getRadians() - Math.PI / 2
-                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI : 0);
+        return -(getAngle().getRadians() - Math.PI / 2
+                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() + Math.PI : 0));
     }
 
     @Override
     protected double calculateVoltage(double velocity, double position) {
         double voltage = WristConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), position);
         voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
-                Robot.isReal() ? getAbsoluteAngleRadians() : -Math.PI / 2,
+                getAbsoluteAngleRadians(),
                 velocity);
         return voltage;
     }
@@ -103,6 +107,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
         builder.addDoubleProperty("Absolute Angle", () -> {
             return getAbsoluteAngleRadians();
+
         }, null);
     }
 }
