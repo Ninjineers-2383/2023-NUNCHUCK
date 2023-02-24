@@ -104,7 +104,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     }
 
     private double getCosGravityAngle() {
-        return m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI / 2 : 0;
+        return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;
     }
 
     /**

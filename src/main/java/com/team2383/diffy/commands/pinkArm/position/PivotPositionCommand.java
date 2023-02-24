@@ -1,6 +1,7 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.team2383.diffy.subsystems.pinkArm.pivot.*;
@@ -32,6 +33,7 @@ public class PivotPositionCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        DataLogManager.log("Pivot Position Command Finished");
     }
 
     @Override
@@ -39,4 +41,3 @@ public class PivotPositionCommand extends CommandBase {
         return m_pivot.isAtPosition();
     }
 }
-

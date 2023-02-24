@@ -171,8 +171,8 @@ public class RobotContainer {
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
 
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
-        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(0)))
-                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90)));
+        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90)))
+                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(160)));
     }
 
     private void configureDefaultCommands() {

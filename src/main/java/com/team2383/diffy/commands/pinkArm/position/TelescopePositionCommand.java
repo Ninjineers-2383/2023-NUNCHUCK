@@ -1,5 +1,6 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.team2383.diffy.subsystems.pinkArm.telescope.*;
@@ -16,16 +17,13 @@ public class TelescopePositionCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-    }
-
-    @Override
     public void execute() {
         m_telescope.setGoal(m_extension);
     }
 
     @Override
     public void end(boolean interrupted) {
+        DataLogManager.log("Telescope Position Command Finished");
     }
 
     @Override

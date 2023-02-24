@@ -1,6 +1,7 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.team2383.diffy.subsystems.pinkArm.wrist.*;
@@ -16,20 +17,17 @@ public class WristPositionCommand extends CommandBase {
         addRequirements(m_wrist);
     }
 
-    @Override
-    public void initialize() {
-    }
-
     public void execute() {
         m_wrist.setGoal(m_angle);
     }
 
     @Override
-    public void end(boolean interrupted) {
+    public boolean isFinished() {
+        return m_wrist.isAtPosition();
     }
 
     @Override
-    public boolean isFinished() {
-        return m_wrist.isAtPosition();
+    public void end(boolean interrupted) {
+        DataLogManager.log("Wrist Position Command Finished");
     }
 }

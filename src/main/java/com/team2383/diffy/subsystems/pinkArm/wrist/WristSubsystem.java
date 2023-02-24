@@ -84,14 +84,14 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     private double getAbsoluteAngleRadians() {
-        return -(getAngle().getRadians() - Math.PI / 2
-                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() + Math.PI : 0));
+        return getAngle().getRadians() - Math.PI / 2
+                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() + Math.PI : 0);
     }
 
     @Override
     protected double calculateVoltage(double velocity, double position) {
-        double voltage = WristConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), position);
-        voltage += WristConstants.FEEDFORWARD_CONTROLLER.calculate(
+        double voltage = -WristConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), position);
+        voltage -= WristConstants.FEEDFORWARD_CONTROLLER.calculate(
                 getAbsoluteAngleRadians(),
                 velocity);
         return voltage;
