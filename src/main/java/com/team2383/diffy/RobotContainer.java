@@ -125,10 +125,53 @@ public class RobotContainer {
     // This is just an example event map. It would be better to have a constant,
     // global event map
     // in your code that will be used by all path following commands.
-    HashMap<String, Command> eventMap = new HashMap<>() {
+
+    HashMap<String, Command> autoEventMap = new HashMap<>() {
         {
-            put("log", new PrintCommand("Event: log"));
-            put("intakeDown", null);
+            put("Auto Log", new PrintCommand("Auto Event: log"));
+
+            put("Feed Cone", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.FEED_UPRIGHT_CONE))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> 1))
+                    .withTimeout(0.7);
+            put("Feed Cube", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.FEED_GROUND_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> 1))
+                    .withTimeout(0.7);
+
+            put("Score Cone Low", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.LOW_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
+                    .withTimeout(0.7);
+            put("Score Cone Mid", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.MID_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
+                    .withTimeout(0.7);
+            put("Score Cone High", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.HIGH_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
+                    .withTimeout(0.7);
+
+            put("Score Cube Low", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.LOW_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
+                    .withTimeout(0.7);
+            put("Score Cube Mid", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.MID_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
+                    .withTimeout(0.7);
+            put("Score Cube High", new PinkArmPresetCommand(
+                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.HIGH_SCORE_POS))
+                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
+                    .withTimeout(0.7);
         }
     };
 
@@ -139,7 +182,7 @@ public class RobotContainer {
             new PIDConstants(5, 0, 0),
             new PIDConstants(0.5, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
-            eventMap,
+            autoEventMap,
             true,
             m_drivetrainSubsystem);
 
