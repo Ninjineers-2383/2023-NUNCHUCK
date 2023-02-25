@@ -16,6 +16,7 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
@@ -66,8 +67,9 @@ public class RobotContainer {
     private final DoubleSupplier m_driveOmega = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
 
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(5));
-
+    // private final BooleanSupplier m_fieldCentric = () ->
+    // !(m_driverController.getRawButton(5));
+    private final JoystickButton m_paddleFeed = new JoystickButton(m_driverController, 5);
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
@@ -103,8 +105,10 @@ public class RobotContainer {
     // Commands are defined here
 
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-            m_driveY, m_driveOmega, m_fieldCentric, m_povSupplier);
+            m_driveY, m_driveOmega, () -> true, m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
+
+    private double ballAndCockTorture = 0;
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -151,6 +155,9 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        m_paddleFeed.toggleOnTrue(new InstantCommand(() -> ballAndCockTorture = 1))
+                .toggleOnFalse(new InstantCommand(() -> ballAndCockTorture = 0));
+
         m_presetFeed.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         Rotation2d.fromDegrees(PivotPositionConstants.kFeedGroundPos),
@@ -172,8 +179,11 @@ public class RobotContainer {
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
 
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
-        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90), 0))
-                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(160), 1));
+        m_paddlePreset
+                .toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(60),
+                        () -> ballAndCockTorture))
+                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(150),
+                        () -> ballAndCockTorture));
     }
 
     private void configureDefaultCommands() {
