@@ -42,7 +42,8 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> SmartDashboard.putNumber("Stage", 3)),
                 new ParallelCommandGroup(
                         new TelescopePositionCommand(telescope, desiredTelescopeExtension),
-                        new WristPositionCommand(wrist, desiredWristAngle)));
+                        new WristPositionCommand(wrist, desiredWristAngle)),
+                new InstantCommand(() -> SmartDashboard.putNumber("Stage", 4)));
 
     }
 

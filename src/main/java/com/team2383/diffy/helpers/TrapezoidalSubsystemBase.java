@@ -157,7 +157,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      * @return boolean isFinished
      */
     public boolean isAtPosition() {
-        return m_isFinished && Math.abs(m_goal.position - getState().position) < 0.8;
+        return m_isFinished && Math.abs(m_goal.position - getState().position) < 0.2;
     }
 
     @Override

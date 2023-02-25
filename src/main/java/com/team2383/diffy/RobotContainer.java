@@ -34,6 +34,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -171,8 +172,8 @@ public class RobotContainer {
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
 
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
-        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90)))
-                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(160)));
+        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(90), 0))
+                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(160), 1));
     }
 
     private void configureDefaultCommands() {

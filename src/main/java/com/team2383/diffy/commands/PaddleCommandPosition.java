@@ -9,11 +9,13 @@ public class PaddleCommandPosition extends CommandBase {
 
     private final PaddleSubsystem m_dick;
     private final Rotation2d m_angle;
+    private final double m_ballsDutyCycle;
 
-    public PaddleCommandPosition(PaddleSubsystem dick, Rotation2d angle) {
+    public PaddleCommandPosition(PaddleSubsystem dick, Rotation2d angle, double ballsDutyCycle) {
 
         m_dick = dick;
         m_angle = angle;
+        m_ballsDutyCycle = ballsDutyCycle;
 
         addRequirements(dick);
     }
@@ -21,6 +23,7 @@ public class PaddleCommandPosition extends CommandBase {
     @Override
     public void execute() {
         m_dick.setPosition(m_angle);
+        m_dick.setBallsDutyCycle(m_ballsDutyCycle);
     }
 
 }

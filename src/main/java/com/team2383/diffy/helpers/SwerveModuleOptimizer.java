@@ -20,9 +20,9 @@ public class SwerveModuleOptimizer {
             SwerveModuleState desiredState, Rotation2d currentAngle,
             Rotation2d staticAngle) {
 
-        if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-            desiredState = new SwerveModuleState(0, staticAngle);
-        }
+        // if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
+        // desiredState = new SwerveModuleState(0, staticAngle);
+        // }
         return SwerveModuleState.optimize(desiredState, currentAngle);
     }
 }
