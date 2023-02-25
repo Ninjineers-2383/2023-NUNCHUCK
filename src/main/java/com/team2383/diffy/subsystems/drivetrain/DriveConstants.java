@@ -1,5 +1,6 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -15,8 +16,10 @@ public final class DriveConstants {
 
     public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
 
-    public final static double kMaxAngularVelocity = Math.PI * 4;
+    public final static double kMaxAngularVelocity = Math.PI * 20;
     public final static double kMaxAngularAcceleration = Math.PI * 2 * 100;
+
+    public final static PIDController HEADING_CONTROLLER = new PIDController(2, 0, 0);
 
     public static final class ModuleConstants {
         public final double kS;

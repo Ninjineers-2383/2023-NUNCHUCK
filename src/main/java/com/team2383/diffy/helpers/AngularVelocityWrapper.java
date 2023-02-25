@@ -11,7 +11,6 @@ public class AngularVelocityWrapper {
     private Rotation2d lastDisplacement;
     private double lastTime;
     private Rotation2d velocity = Rotation2d.fromDegrees(0);
-    private MedianFilter filter = new MedianFilter(3);
 
     public AngularVelocityWrapper() {
         this(Rotation2d.fromDegrees(0));
@@ -32,8 +31,7 @@ public class AngularVelocityWrapper {
     public Rotation2d calculate(Rotation2d displacement) {
         double time = Timer.getFPGATimestamp();
         velocity = Rotation2d
-                .fromRadians(filter
-                        .calculate((displacement.getRadians() - lastDisplacement.getRadians()) / (time - lastTime)));
+                .fromRadians((displacement.getRadians() - lastDisplacement.getRadians()) / (time - lastTime));
         lastDisplacement = displacement;
         lastTime = time;
         return velocity;

@@ -26,8 +26,9 @@ public final class PivotConstants {
 
     public static final double kGOFFSET = 25;
 
-    public static final PIDController PID_CONTROLLER = new PIDController(2, 0, 0);
-    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.4, 1.65,
+    public static final PIDController PID_CONTROLLER = new PIDController(13, 0, 0);
+    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(.5, 1.65, // kv:
+                                                                                                             // 1.65
             0.001);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);

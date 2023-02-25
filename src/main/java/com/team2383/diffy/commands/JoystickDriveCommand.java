@@ -1,12 +1,13 @@
 package com.team2383.diffy.commands;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.helpers.ThrottleSoftener;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
@@ -15,9 +16,8 @@ import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 public class JoystickDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrain;
 
-    private final DoubleSupplier m_x;
-    private final DoubleSupplier m_y;
-    private final DoubleSupplier m_omega;
+    private final Supplier<Rotation2d> m_rotSupply;
+    private final Supplier<Translation2d> m_moveSupply;
     private final BooleanSupplier m_fieldRelative;
     private final IntSupplier m_hatSupplier;
 
@@ -25,13 +25,14 @@ public class JoystickDriveCommand extends CommandBase {
     private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(50);
     private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(100);
 
-    public JoystickDriveCommand(DrivetrainSubsystem drivetrain, DoubleSupplier xInput, DoubleSupplier yInput,
-            DoubleSupplier rotationInput, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {
+    private final double THRESHOLD = 0.8;
+
+    public JoystickDriveCommand(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
+            Supplier<Rotation2d> rotation, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {
         m_drivetrain = drivetrain;
 
-        m_x = xInput;
-        m_y = yInput;
-        m_omega = rotationInput;
+        m_moveSupply = moveSupplier;
+        m_rotSupply = rotation;
         m_fieldRelative = fieldRelative;
         m_hatSupplier = hatSupplier;
 
@@ -40,19 +41,24 @@ public class JoystickDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double x = -ThrottleSoftener.soften(m_x.getAsDouble())
+        Translation2d move = m_moveSupply.get();
+        double x = -ThrottleSoftener.soften(move.getX())
                 * DriveConstants.kMaxVelocity;
-        double y = -ThrottleSoftener.soften(m_y.getAsDouble())
+        double y = -ThrottleSoftener.soften(move.getY())
                 * DriveConstants.kMaxVelocity;
-        double omega = -ThrottleSoftener.soften(m_omega.getAsDouble())
-                * DriveConstants.kMaxAngularVelocity;
+        double omega = -ThrottleSoftener.soften(m_rotSupply.get().getRadians());
 
         int hatPosition = m_hatSupplier.getAsInt();
 
+        Rotation2d rotVelocity = Rotation2d.fromRadians(
+                m_oRateLimiter.calculate(
+                        DriveConstants.HEADING_CONTROLLER.calculate(m_drivetrain.getTurnRate() * 2 * Math.PI / 360,
+                                omega)));
         m_drivetrain.drive(
-                m_xRateLimiter.calculate(y),
-                m_yRateLimiter.calculate(x),
-                m_oRateLimiter.calculate(omega),
+                new Translation2d(
+                        m_xRateLimiter.calculate(x),
+                        m_yRateLimiter.calculate(y)),
+                rotVelocity,
                 m_fieldRelative.getAsBoolean(),
                 getCenterOfRotation(hatPosition));
     }

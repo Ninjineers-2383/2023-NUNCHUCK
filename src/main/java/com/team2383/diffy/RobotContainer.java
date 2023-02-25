@@ -10,6 +10,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
+import javax.swing.text.Position;
+
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.FullAutoCommand;
@@ -28,10 +30,14 @@ import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
+import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
+import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
+import com.team2383.diffy.commands.pinkArm.position.WristPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -40,9 +46,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -58,14 +66,15 @@ public class RobotContainer {
     private final XboxController m_operatorController = new XboxController(2);
 
     // Power and suppliers are defined here
-    private final DoubleSupplier m_driveY = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1);
+    private final Supplier<Translation2d> m_drive = () -> new Translation2d(
+            MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1),
+            MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
-    private final DoubleSupplier m_driveX = () -> MathUtil
+    private final DoubleSupplier m_omega = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
 
-    private final DoubleSupplier m_driveOmega = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, .1);
+    private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
+            .fromDegrees(90 * m_driverController.getRawAxis(0));
 
     // private final BooleanSupplier m_fieldCentric = () ->
     // !(m_driverController.getRawButton(5));
@@ -104,8 +113,9 @@ public class RobotContainer {
 
     // Commands are defined here
 
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem, m_driveX,
-            m_driveY, m_driveOmega, () -> true, m_povSupplier);
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem,
+            m_drive,
+            m_driveOmega, () -> true, m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
     private double ballAndCockTorture = 0;
@@ -155,28 +165,26 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+
         m_paddleFeed.toggleOnTrue(new InstantCommand(() -> ballAndCockTorture = 1))
                 .toggleOnFalse(new InstantCommand(() -> ballAndCockTorture = 0));
 
         m_presetFeed.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        Rotation2d.fromDegrees(PivotPositionConstants.kFeedGroundPos),
-                        TelescopePositionConstants.kFeedGroundPos,
-                        Rotation2d.fromDegrees(WristPositionConstants.kFeedGroundPos)));
+                        PositionConstants.FEED_GROUND_POS));
 
         m_presetShootLow.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        Rotation2d.fromDegrees(PivotPositionConstants.kLowScorePos),
-                        TelescopePositionConstants.kLowScorePos,
-                        Rotation2d.fromDegrees(WristPositionConstants.kLowScorePos)));
+                        PositionConstants.LOW_SCORE_POS));
 
         m_presetShootHigh.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
                         m_wristSubsystem,
-                        Rotation2d.fromDegrees(PivotPositionConstants.kTopScorePos),
-                        TelescopePositionConstants.kTopScorePos,
-                        Rotation2d.fromDegrees(WristPositionConstants.kTopScorePos)));
-        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
+                        PositionConstants.HIGH_SCORE_POS));
+
+        m_resetPosition.onTrue(new ParallelCommandGroup(
+                new InstantCommand(m_telescopeSubsystem::resetPosition),
+                new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromRadians(0))));
 
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
         m_paddlePreset

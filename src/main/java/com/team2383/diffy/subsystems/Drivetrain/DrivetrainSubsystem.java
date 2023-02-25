@@ -150,17 +150,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * Drive the robot using field or robot relative velocity
      * 
-     * @param xSpeed        The speed in the x (forward+) direction (m/s)
-     * @param ySpeed        The speed in the y (left+) direction (m/s)
-     * @param rotSpeed      The rotation rate (rad/s) CCW+
-     * @param fieldRelative Whether the speeds are relative to the field or the
-     *                      robot
+     * @param drive            The speed for driving
+     * @param angle            The set angular speed
+     * @param fieldRelative    Whether the speeds are relative to the field or the
+     *                         robot
+     * @param centerOfRotation Its the center of rotation duh
      */
-    public void drive(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative,
+    public void drive(Translation2d drive, Rotation2d angle, boolean fieldRelative,
             Translation2d centerOfRotation) {
         SwerveModuleState[] swerveModuleStates = m_kinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, getHeading())
-                        : new ChassisSpeeds(xSpeed, ySpeed, rotSpeed),
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(drive.getX(), drive.getY(), angle.getRadians(),
+                                getHeading())
+                        : new ChassisSpeeds(drive.getX(), drive.getY(), angle.getRadians()),
                 centerOfRotation);
 
         setModuleStates(swerveModuleStates);

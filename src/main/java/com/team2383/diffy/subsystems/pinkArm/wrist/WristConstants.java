@@ -13,7 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class WristConstants {
 
     public static final int kMotorID = 8;
-    public static final double encoderOffset = -2.502 / (2 * Math.PI);
+    public static final Rotation2d encoderOffset = Rotation2d.fromRadians(-2.78); // -2.502
 
     public static final int kMaxCurrent = 20;
 
@@ -23,7 +23,7 @@ public final class WristConstants {
     public static final Rotation2d outFeedAngle = Rotation2d.fromDegrees(0);
 
     public static final PIDController PID_CONTROLLER = new PIDController(15, 0.1, 0);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.4, -1.15, 4, 0.10864); // ks:
+    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.3, -1.15, 4, 0.10864); // ks:
                                                                                                             // 0.21143
     // public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new
     // ArmFeedforward(0, 0, 0, 0);
