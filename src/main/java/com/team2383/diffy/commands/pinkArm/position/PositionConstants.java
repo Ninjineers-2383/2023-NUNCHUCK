@@ -21,7 +21,12 @@ public class PositionConstants {
             Rotation2d.fromDegrees(-92));
 
     public static final PinkPositions FEED_PADDLE_POS = new PinkPositions(
-            Rotation2d.fromDegrees(-70),
+            Rotation2d.fromDegrees(70),
+            2,
+            Rotation2d.fromDegrees(108));
+
+    public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
+            Rotation2d.fromDegrees(60),
             2,
             Rotation2d.fromDegrees(108));
 
