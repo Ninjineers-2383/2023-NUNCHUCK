@@ -5,12 +5,9 @@
 package com.team2383.diffy;
 
 import java.util.HashMap;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
-
-import javax.swing.text.Position;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -18,7 +15,6 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
-import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
@@ -32,8 +28,6 @@ import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
-import com.team2383.diffy.commands.pinkArm.position.WristPositionCommand;
-import com.team2383.diffy.commands.pinkArm.position.PositionConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,16 +35,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -69,9 +62,6 @@ public class RobotContainer {
     private final Supplier<Translation2d> m_drive = () -> new Translation2d(
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX), .1),
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
-
-    private final DoubleSupplier m_omega = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1);
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
             .fromDegrees(90 * m_driverController.getRawAxis(0));
@@ -94,6 +84,7 @@ public class RobotContainer {
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
     private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
+    private final JoystickButton m_zeroArm = new JoystickButton(m_operatorController, 7);
     private final JoystickButton m_resetHeading = new JoystickButton(m_driverController, 8);
 
     private final JoystickButton m_paddlePreset = new JoystickButton(m_driverController, 6);
@@ -130,48 +121,55 @@ public class RobotContainer {
         {
             put("Auto Log", new PrintCommand("Auto Event: log"));
 
-            put("Feed Cone", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.FEED_UPRIGHT_CONE))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> 1))
-                    .withTimeout(0.7);
-            put("Feed Cube", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.FEED_GROUND_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> 1))
-                    .withTimeout(0.7);
+            put("Feed Cone", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.FEED_UPRIGHT_CONE),
+                    new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+            put("Feed Cube", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.FEED_GROUND_POS),
+                    new FeederCommand(m_feederSubsystem, () -> 1)
+                            .withTimeout(0.7)));
 
-            put("Score Cone Low", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.LOW_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
-                    .withTimeout(0.7);
-            put("Score Cone Mid", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.MID_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
-                    .withTimeout(0.7);
-            put("Score Cone High", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.HIGH_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -1))
-                    .withTimeout(0.7);
+            put("Score Cone Low", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.LOW_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -1)
+                            .withTimeout(0.7)));
+            put("Score Cone Mid", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.MID_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -1)
+                            .withTimeout(0.7)));
+            put("Score Cone High", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.HIGH_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -1)
+                            .withTimeout(0.7)));
 
-            put("Score Cube Low", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.LOW_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
-                    .withTimeout(0.7);
-            put("Score Cube Mid", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.MID_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
-                    .withTimeout(0.7);
-            put("Score Cube High", new PinkArmPresetCommand(
-                    m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                    PositionConstants.HIGH_SCORE_POS))
-                    .andThen(new FeederCommand(m_feederSubsystem, () -> -0.6))
-                    .withTimeout(0.7);
+            put("Score Cube Low", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.LOW_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -0.6)
+                            .withTimeout(0.7)));
+            put("Score Cube Mid", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.MID_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -0.6)
+                            .withTimeout(0.7)));
+            put("Score Cube High", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(
+                            m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                            PositionConstants.HIGH_SCORE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> -0.6)
+                            .withTimeout(0.7)));
         }
     };
 
@@ -225,16 +223,13 @@ public class RobotContainer {
                         m_wristSubsystem,
                         PositionConstants.HIGH_SCORE_POS));
 
-        m_resetPosition.onTrue(new ParallelCommandGroup(
-                new InstantCommand(m_telescopeSubsystem::resetPosition),
-                new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromRadians(0))));
+        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
 
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
-        m_paddlePreset
-                .toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(60),
-                        () -> ballAndCockTorture))
-                .toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(150),
-                        () -> ballAndCockTorture));
+
+        m_zeroArm.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.ZERO_POS));
     }
 
     private void configureDefaultCommands() {
