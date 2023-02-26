@@ -84,18 +84,22 @@ public class RobotContainer {
     private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
             .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
 
-    private final Trigger m_presetFeedCube = new Trigger(() -> SmartDashboard.putBoolean("Feed Cube", false));
-    private final Trigger m_presetFeedCone = new Trigger(() -> SmartDashboard.putBoolean("Feed Cone", false));
-    private final Trigger m_presetShootLow = new Trigger(() -> SmartDashboard.putBoolean("Shoot Low", false));
-    private final Trigger m_presetShootHigh = new Trigger(() -> SmartDashboard.putBoolean("Shoot High", false));
-    private final Trigger m_presetShootMid = new Trigger(() -> SmartDashboard.putBoolean("Shoot Mid", false));
+    private final Trigger m_presetFeedCube = new Trigger(() -> SmartDashboard.getBoolean("Feed Cube", false));
+    private final Trigger m_presetFeedCone = new Trigger(() -> SmartDashboard.getBoolean("Feed Cone", false));
+    private final Trigger m_presetShootLow = new Trigger(() -> SmartDashboard.getBoolean("Shoot Low", false));
+    private final Trigger m_presetShootHigh = new Trigger(() -> SmartDashboard.getBoolean("Shoot High", false));
+    private final Trigger m_presetShootMid = new Trigger(() -> SmartDashboard.getBoolean("Shoot Mid", false));
 
-    private final Trigger m_resetPosition = new Trigger(() -> SmartDashboard.putBoolean("Reset Position", false));
+    private final Trigger m_resetPosition = new Trigger(() -> SmartDashboard.getBoolean("Reset Position", false));
+
+    private final Trigger m_zeroArm = new Trigger(() -> SmartDashboard.getBoolean("Zero Arm", false));
+
+    private final Trigger m_travel = new Trigger(() -> SmartDashboard.getBoolean("Travel Pos", false));
+    private final Trigger m_resetHeading = new Trigger(() -> SmartDashboard.getBoolean("Reset Heading", false));
+
+    private final Trigger m_paddlePreset = new Trigger(() -> SmartDashboard.getBoolean("Paddle Preset", false));
+
     
-    private final Trigger m_zeroArm = new Trigger(() -> SmartDashboard.putBoolean("Zero Arm", false));
-    private final Trigger m_resetHeading = new Trigger(() -> SmartDashboard.putBoolean("Reset Heading", false));
-
-    private final Trigger m_paddlePreset = new Trigger(() -> SmartDashboard.putBoolean("Paddle Preset", false));
 
     // The robot's subsystems and commands are defined here...
 
@@ -199,6 +203,7 @@ public class RobotContainer {
         m_telescopeSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
         m_wristSubsystem.setPivotAngle(m_pivotSubsystem::getAngle);
 
+        publishDashboard("");
         configureButtonBindings();
         configureDefaultCommands();
 
@@ -211,37 +216,55 @@ public class RobotContainer {
         setAutoCommands();
     }
 
+    private void publishDashboard(String key) {
+        String[] keys = new String[] { "Feed Cube", "Feed Cone", "Shoot Low", "Shoot High", "Shoot Mid",
+                "Reset Position", "Zero Arm", "Reset Heading", "Travel Pos"};
+        for (String keyz : keys) {
+            if (!key.equals(keyz)) {
+                SmartDashboard.putBoolean(keyz, false);
+            }
+        }
+    }
+
     private void configureButtonBindings() {
         m_presetFeedCube.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.FEED_CUBE_POS));
+                        PositionConstants.FEED_CUBE_POS).andThen(() -> publishDashboard("Feed Cube")));
 
         m_presetFeedCone.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.FEED_CONE_POS));
+                        PositionConstants.FEED_CONE_POS).andThen(() -> publishDashboard("Feed Cone")));
 
         m_presetShootLow.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.LOW_SCORE_POS));
+                        PositionConstants.LOW_SCORE_POS).andThen(() -> publishDashboard("Shoot Low")));
 
         m_presetShootMid.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.MID_SCORE_POS));
+                        PositionConstants.MID_SCORE_POS).andThen(() -> publishDashboard("Shoot High")));
 
         m_presetShootHigh.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
                         m_wristSubsystem,
-                        PositionConstants.HIGH_SCORE_POS));
+                        PositionConstants.HIGH_SCORE_POS).andThen(() -> publishDashboard("Shoot Mid")));
 
-        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
+        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition)
+                .andThen(() -> publishDashboard("Reset Position")));
 
-        m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
+        m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading)
+                .andThen(() -> publishDashboard("Reset Heading")));
 
         m_zeroArm.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.ZERO_POS));
-        
-        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(180))).toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(0)));
+                        PositionConstants.ZERO_POS).andThen(() -> publishDashboard("Zero Arm")));
+
+        m_paddlePreset.onTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(180)))
+                .onFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(0)));
+
+        m_travel.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                        PositionConstants.TRAVEL_POS).andThen(() -> publishDashboard("Travel Pos")));
+
     }
 
     private void configureDefaultCommands() {

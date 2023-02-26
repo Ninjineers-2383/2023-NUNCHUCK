@@ -11,6 +11,7 @@ import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -26,6 +27,8 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     private final DutyCycleEncoderSim m_absEncoderSim;
 
     private final AngularVelocityWrapper m_velocity;
+
+    private final MedianFilter m_Filter = new MedianFilter(3);
 
     private final DoubleSupplier m_extensionSupplier;
 

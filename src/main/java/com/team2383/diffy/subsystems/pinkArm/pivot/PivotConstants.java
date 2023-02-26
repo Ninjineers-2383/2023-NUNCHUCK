@@ -27,15 +27,15 @@ public final class PivotConstants {
     public static final double kGOFFSET = 25;
 
     public static final PIDController PID_CONTROLLER = new PIDController(13, 0, 0);
-    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(.5, 1.65, // kv:
+    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.5, 1.65, // kv:
                                                                                                              // 1.65
             0.001);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);
 
     // Values will be in radians and seconds
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(6,
-            4);
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(9,
+            6);
 
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId.identifyVelocitySystem(
             PivotConstants.FEEDFORWARD_CONTROLLER.kv,

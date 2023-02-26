@@ -36,6 +36,11 @@ public class PositionConstants {
             0,
             Rotation2d.fromRadians(-0.26));
 
+    public static final PinkPositions TRAVEL_POS = new PinkPositions(
+            Rotation2d.fromDegrees(-18),
+            0,
+            Rotation2d.fromDegrees(0));
+
     public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
             Rotation2d.fromDegrees(60),
             2,

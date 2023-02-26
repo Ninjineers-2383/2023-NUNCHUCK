@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team2383.diffy.helpers.AngularVelocityWrapper;
 import com.team2383.diffy.helpers.Clip;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 // import com.revrobotics.PowerDistribution.voltage;
@@ -18,8 +17,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class WristSubsystem extends TrapezoidalSubsystemBase {
     private final TalonSRX m_pivotMotor;
-
-    private AngularVelocityWrapper m_velocity;
 
     double m_simVelocity = 0;
 
@@ -40,7 +37,6 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         m_pivotAngle = pivotAngle;
 
         m_pivotMotor.setInverted(false);
-        m_velocity = new AngularVelocityWrapper(getAngle());
         m_startRotation = Rotation2d.fromRotations(
                 (m_pivotMotor.getSensorCollection().getPulseWidthPosition()
                         - m_pivotMotor.getSensorCollection().getQuadraturePosition()) / 4096.0
@@ -50,7 +46,6 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
-        m_velocity.calculate(getAngle());
     }
 
     public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
@@ -85,7 +80,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public Rotation2d getVelocity() {
-        return Rotation2d.fromRotations(m_pivotMotor.getSensorCollection().getQuadratureVelocity() / 4096.0);
+        return Rotation2d.fromRotations(m_pivotMotor.getSensorCollection().getQuadratureVelocity() / 4096.0 * 10);
     }
 
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
