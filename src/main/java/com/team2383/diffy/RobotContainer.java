@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
@@ -80,9 +81,11 @@ public class RobotContainer {
     private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
             .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
 
-    private final JoystickButton m_presetFeed = new JoystickButton(m_operatorController, 1);
+    private final JoystickButton m_presetFeedCube = new JoystickButton(m_operatorController, 1);
+    private final POVButton m_presetFeedCone = new POVButton(m_operatorController, 180);
     private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
     private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
+    private final JoystickButton m_presetShootMid = new JoystickButton(m_operatorController, 4);
     private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
     private final JoystickButton m_zeroArm = new JoystickButton(m_operatorController, 7);
     private final JoystickButton m_resetHeading = new JoystickButton(m_driverController, 8);
@@ -129,7 +132,7 @@ public class RobotContainer {
             put("Feed Cube", new SequentialCommandGroup(
                     new PinkArmPresetCommand(
                             m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                            PositionConstants.FEED_GROUND_POS),
+                            PositionConstants.FEED_CONE_POS),
                     new FeederCommand(m_feederSubsystem, () -> 1)
                             .withTimeout(0.7)));
 
@@ -210,13 +213,21 @@ public class RobotContainer {
         m_paddleFeed.toggleOnTrue(new InstantCommand(() -> ballAndCockTorture = 1))
                 .toggleOnFalse(new InstantCommand(() -> ballAndCockTorture = 0));
 
-        m_presetFeed.onTrue(
+        m_presetFeedCube.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.FEED_GROUND_POS));
+                        PositionConstants.FEED_CUBE_POS));
+
+        m_presetFeedCone.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.FEED_CONE_POS));
 
         m_presetShootLow.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.LOW_SCORE_POS));
+
+        m_presetShootMid.onTrue(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.MID_SCORE_POS));
 
         m_presetShootHigh.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,

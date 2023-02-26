@@ -21,7 +21,12 @@ public class PositionConstants {
             0,
             Rotation2d.fromDegrees(0));
 
-    public static final PinkPositions FEED_GROUND_POS = new PinkPositions(
+    public static final PinkPositions FEED_CUBE_POS = new PinkPositions(
+            new Rotation2d(0.415),
+            1,
+            new Rotation2d(-2.375029));
+
+    public static final PinkPositions FEED_CONE_POS = new PinkPositions(
             Rotation2d.fromDegrees(35),
             15,
             Rotation2d.fromDegrees(-122));
@@ -42,12 +47,12 @@ public class PositionConstants {
             Rotation2d.fromDegrees(-100));
 
     public static final PinkPositions MID_SCORE_POS = new PinkPositions(
-            Rotation2d.fromDegrees(-118),
-            2,
-            Rotation2d.fromDegrees(-70));
+            Rotation2d.fromRadians(-2.12),
+            0,
+            Rotation2d.fromRadians(-1.42));
 
     public static final PinkPositions HIGH_SCORE_POS = new PinkPositions(
             Rotation2d.fromDegrees(-125),
-            19,
-            Rotation2d.fromDegrees(-90));
+            20,
+            Rotation2d.fromDegrees(-80));
 }

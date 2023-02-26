@@ -62,8 +62,10 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void setVoltage() {
-        m_bottomMotor.setVoltage(m_bottomVoltage);
-        m_topMotor.setVoltage(m_topVoltage);
+        // m_bottomMotor.setVoltage(m_bottomVoltage);
+        // m_topMotor.setVoltage(m_topVoltage);
+        m_bottomMotor.set(m_bottomVoltage);
+        m_topMotor.set(m_topVoltage);
     }
 
     @Override
