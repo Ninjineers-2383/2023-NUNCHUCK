@@ -15,6 +15,7 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.commands.PaddleCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
@@ -44,7 +45,9 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -81,16 +84,18 @@ public class RobotContainer {
     private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
             .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
 
-    private final JoystickButton m_presetFeedCube = new JoystickButton(m_operatorController, 1);
-    private final POVButton m_presetFeedCone = new POVButton(m_operatorController, 180);
-    private final JoystickButton m_presetShootLow = new JoystickButton(m_operatorController, 2);
-    private final JoystickButton m_presetShootHigh = new JoystickButton(m_operatorController, 3);
-    private final JoystickButton m_presetShootMid = new JoystickButton(m_operatorController, 4);
-    private final JoystickButton m_resetPosition = new JoystickButton(m_operatorController, 8);
-    private final JoystickButton m_zeroArm = new JoystickButton(m_operatorController, 7);
-    private final JoystickButton m_resetHeading = new JoystickButton(m_driverController, 8);
+    private final Trigger m_presetFeedCube = new Trigger(() -> SmartDashboard.putBoolean("Feed Cube", false));
+    private final Trigger m_presetFeedCone = new Trigger(() -> SmartDashboard.putBoolean("Feed Cone", false));
+    private final Trigger m_presetShootLow = new Trigger(() -> SmartDashboard.putBoolean("Shoot Low", false));
+    private final Trigger m_presetShootHigh = new Trigger(() -> SmartDashboard.putBoolean("Shoot High", false));
+    private final Trigger m_presetShootMid = new Trigger(() -> SmartDashboard.putBoolean("Shoot Mid", false));
 
-    private final JoystickButton m_paddlePreset = new JoystickButton(m_driverController, 6);
+    private final Trigger m_resetPosition = new Trigger(() -> SmartDashboard.putBoolean("Reset Position", false));
+    
+    private final Trigger m_zeroArm = new Trigger(() -> SmartDashboard.putBoolean("Zero Arm", false));
+    private final Trigger m_resetHeading = new Trigger(() -> SmartDashboard.putBoolean("Reset Heading", false));
+
+    private final Trigger m_paddlePreset = new Trigger(() -> SmartDashboard.putBoolean("Paddle Preset", false));
 
     // The robot's subsystems and commands are defined here...
 
@@ -111,8 +116,6 @@ public class RobotContainer {
             m_drive,
             m_driveOmega, () -> true, m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
-
-    private double ballAndCockTorture = 0;
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -209,10 +212,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-
-        m_paddleFeed.toggleOnTrue(new InstantCommand(() -> ballAndCockTorture = 1))
-                .toggleOnFalse(new InstantCommand(() -> ballAndCockTorture = 0));
-
         m_presetFeedCube.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.FEED_CUBE_POS));
@@ -241,6 +240,8 @@ public class RobotContainer {
         m_zeroArm.onTrue(
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.ZERO_POS));
+        
+        m_paddlePreset.toggleOnTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(180))).toggleOnFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(0)));
     }
 
     private void configureDefaultCommands() {

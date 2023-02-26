@@ -32,9 +32,9 @@ public class PositionConstants {
             Rotation2d.fromDegrees(-122));
 
     public static final PinkPositions FEED_PADDLE_POS = new PinkPositions(
-            Rotation2d.fromDegrees(70),
-            2,
-            Rotation2d.fromDegrees(108));
+            Rotation2d.fromRadians(-0.29),
+            0,
+            Rotation2d.fromRadians(-0.26));
 
     public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
             Rotation2d.fromDegrees(60),
@@ -44,15 +44,15 @@ public class PositionConstants {
     public static final PinkPositions LOW_SCORE_POS = new PinkPositions(
             Rotation2d.fromDegrees(-60),
             2,
-            Rotation2d.fromDegrees(-100));
+            Rotation2d.fromDegrees(-120));
 
     public static final PinkPositions MID_SCORE_POS = new PinkPositions(
-            Rotation2d.fromRadians(-2.12),
+            Rotation2d.fromDegrees(-128),
             0,
-            Rotation2d.fromRadians(-1.42));
+            Rotation2d.fromDegrees(-95));
 
     public static final PinkPositions HIGH_SCORE_POS = new PinkPositions(
             Rotation2d.fromDegrees(-125),
             20,
-            Rotation2d.fromDegrees(-80));
+            Rotation2d.fromDegrees(-90));
 }

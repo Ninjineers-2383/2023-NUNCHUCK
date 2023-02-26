@@ -60,5 +60,6 @@
   "explorer.fileNesting.enabled": true,
   "latex.linter.config": "",
   "python.analysis.typeCheckingMode": "off",
-  "editor.detectIndentation": false
+"editor.detectIndentation": false,
+"wpilib.autoSaveOnDeploy": false
 }
