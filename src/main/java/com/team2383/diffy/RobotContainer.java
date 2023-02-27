@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team2383.diffy.autos.AutoSettings;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
@@ -28,6 +29,7 @@ import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
+import com.team2383.diffy.autos.AutoSettings;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -112,66 +114,6 @@ public class RobotContainer {
     // global event map
     // in your code that will be used by all path following commands.
 
-    HashMap<String, Command> autoEventMap = new HashMap<>() {
-        {
-            put("Auto Log", new PrintCommand("Auto Event: log"));
-
-            put("Feed Cone",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_UPRIGHT_CONE),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
-            put("Feed Cube",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_CONE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
-
-            put("Score Cone Low",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Cone Mid",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Cone High",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-
-            put("Score Cube Low",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
-            put("Score Cube Mid",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
-            put("Score Cube High",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
-        }
-    };
-
-    SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
-            m_drivetrainSubsystem::getPose,
-            m_drivetrainSubsystem::forceOdometry,
-            m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(5, 0, 0),
-            new PIDConstants(0.5, 0, 0),
-            m_drivetrainSubsystem::setModuleStates,
-            autoEventMap,
-            true,
-            m_drivetrainSubsystem);
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -225,9 +167,9 @@ public class RobotContainer {
 
     private void setAutoCommands() {
         Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-                m_autoBuilder);
+                AutoSettings.autoBuilder);
         Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-                m_autoBuilder);
+                AutoSettings.autoBuilder);
 
         Command nullAuto = null;
 
