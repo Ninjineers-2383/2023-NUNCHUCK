@@ -13,7 +13,7 @@ public final class TelescopeConstants {
     public static final int EXTENSION_RIGHT_ID = 5;
 
     public static final int MAX_CURRENT = 20;
-    public static final double ROTATION_CONVERSION = 0.36363636363636365 * 12 / 20; // TODO: Recalcuate conversion
+    public static final double ROTATION_CONVERSION = 0.21818181818181817;
 
     public static final double CURRENT_THRESHOLD = 10;
 
