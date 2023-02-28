@@ -49,11 +49,17 @@ public class PositionConstants {
             0,
             Rotation2d.fromDegrees(0));
 
+    public static final PinkPositions FEED_CONE_UPRIGHT = new PinkPositions(
+            "Feed Cone Upright",
+            Rotation2d.fromRadians(0.8),
+            1,
+            Rotation2d.fromRadians(-2.5));
+
     // public static final PinkPositions TRANSFER_POS = new PinkPositions(
-    //         "Transfer Position",
-    //         Rotation2d.fromDegrees(-41),
-    //         0,
-    //         Rotation2d.fromDegrees(0));
+    // "Transfer Position",
+    // Rotation2d.fromDegrees(-41),
+    // 0,
+    // Rotation2d.fromDegrees(0));
 
     public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
             "Feed Upright",

@@ -9,7 +9,7 @@ public final class PaddleConstants {
 
     public static final double kP = 1.5; // Radians per second
 
-    public static final Rotation2d maxVelocityOut = Rotation2d.fromDegrees(60);
+    public static final Rotation2d maxVelocityOut = Rotation2d.fromDegrees(40);
     public static final Rotation2d maxVelocityIn = Rotation2d.fromDegrees(20);
     public static final PIDController PID_CONTROLLER = new PIDController(0.5, 0.01, 0);
     public static int kMaxCurrent = 20;

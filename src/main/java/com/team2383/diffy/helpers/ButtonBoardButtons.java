@@ -2,6 +2,8 @@ package com.team2383.diffy.helpers;
 
 import java.util.ArrayList;
 
+import javax.swing.text.Position;
+
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
@@ -21,6 +23,7 @@ public class ButtonBoardButtons {
             PositionConstants.FEED_UPRIGHT_CONE,
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
+            PositionConstants.FEED_CONE_UPRIGHT,
             PositionConstants.LOW_SCORE_POS,
             PositionConstants.MID_SCORE_POS,
             PositionConstants.HIGH_SCORE_POS };
