@@ -16,6 +16,8 @@ public final class PivotConstants {
     public static final int MAX_CURRENT = 40;
     public static final double ENCODER_OFFSET = 13.0 / 360;
 
+    public static final Rotation2d POSITION_THRESHOLD = Rotation2d.fromDegrees(10);
+
     public static final Rotation2d UPPER_BOUND = Rotation2d.fromDegrees(170);
     public static final Rotation2d LOWER_BOUND = Rotation2d.fromDegrees(-170);
 
@@ -28,7 +30,7 @@ public final class PivotConstants {
 
     public static final PIDController PID_CONTROLLER = new PIDController(13, 0, 0);
     public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.5, 1.65, // kv:
-                                                                                                             // 1.65
+                                                                                                              // 1.65
             0.001);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);

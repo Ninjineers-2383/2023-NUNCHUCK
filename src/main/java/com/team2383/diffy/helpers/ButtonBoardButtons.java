@@ -1,5 +1,7 @@
 package com.team2383.diffy.helpers;
 
+import java.util.ArrayList;
+
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
@@ -16,10 +18,12 @@ public class ButtonBoardButtons {
             PositionConstants.ZERO_POS,
             PositionConstants.TRAVEL_POS,
             PositionConstants.FEED_CUBE_POS,
-            PositionConstants.FEED_CUBE_POS,
+            PositionConstants.FEED_CONE_POS,
             PositionConstants.LOW_SCORE_POS,
             PositionConstants.MID_SCORE_POS,
             PositionConstants.HIGH_SCORE_POS };
+
+    private static ArrayList<String> names = new ArrayList<String>();
 
     private static void publishDashboard(String key) {
         for (PositionConstants.PinkPositions position : positions) {
@@ -29,10 +33,18 @@ public class ButtonBoardButtons {
         }
     }
 
+    public static void setAllFalse() {
+        for (String name : names) {
+            SmartDashboard.setDefaultBoolean(name, false);
+        }
+    }
+
     public static Trigger makeNormieButton(String name) {
+        SmartDashboard.putBoolean(name, false);
         Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(name, false));
         smartTrigger
-                .onTrue(new WaitCommand(.5).andThen(new InstantCommand(() -> SmartDashboard.putBoolean(name, false))));
+                .onTrue(new WaitCommand(.01).andThen(new InstantCommand(() -> SmartDashboard.putBoolean(name, false))));
+        names.add(name);
         return smartTrigger;
     }
 
@@ -40,6 +52,7 @@ public class ButtonBoardButtons {
             TelescopeSubsystem telescopeSubsystem,
             WristSubsystem wristSubsystem,
             PositionConstants.PinkPositions constant) {
+        SmartDashboard.putBoolean(constant.name, false);
         Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(constant.name, false));
         smartTrigger.onTrue(new InstantCommand(() -> publishDashboard(constant.name))
                 .andThen(new PinkArmPresetCommand(pivotSubsystem, telescopeSubsystem, wristSubsystem, constant)));
@@ -52,6 +65,7 @@ public class ButtonBoardButtons {
 
         for (PositionConstants.PinkPositions position : positions) {
             makePositionButton(pivotSubsystem, telescopeSubsystem, wristSubsystem, position);
+            names.add(position.name);
         }
     }
 }

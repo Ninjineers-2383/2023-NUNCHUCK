@@ -13,9 +13,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class WristConstants {
 
     public static final int kMotorID = 8;
-    public static final Rotation2d encoderOffset = Rotation2d.fromRadians(-2.1); // -2.502
+    public static final int encoderOffset = 1010; // -2.502
 
     public static final int kMaxCurrent = 20;
+
+    public static final Rotation2d POSITON_THRESHOLD = Rotation2d.fromDegrees(10);
 
     public static final Rotation2d kUpperBound = Rotation2d.fromDegrees(180);
     public static final Rotation2d kLowerBound = Rotation2d.fromDegrees(-180);

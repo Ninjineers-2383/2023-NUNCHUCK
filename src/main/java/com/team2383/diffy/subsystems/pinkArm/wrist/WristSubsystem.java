@@ -21,10 +21,10 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     double m_simVelocity = 0;
 
     private Supplier<Rotation2d> m_pivotAngle;
-    private Rotation2d m_startRotation = new Rotation2d();
 
     public WristSubsystem(Supplier<Rotation2d> pivotAngle) {
-        super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM);
+        super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM,
+                WristConstants.POSITON_THRESHOLD.getRadians());
         m_pivotMotor = new TalonSRX(WristConstants.kMotorID);
         m_pivotMotor.configFactoryDefault();
         // Set postional offset
@@ -35,12 +35,10 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         m_pivotMotor.enableVoltageCompensation(true);
         m_pivotMotor.configVoltageMeasurementFilter(1);
         m_pivotAngle = pivotAngle;
+        m_pivotMotor.getSensorCollection()
+                .setQuadraturePosition(m_pivotMotor.getSensorCollection().getPulseWidthPosition(), 200);
 
         m_pivotMotor.setInverted(false);
-        m_startRotation = Rotation2d.fromRotations(
-                (m_pivotMotor.getSensorCollection().getPulseWidthPosition()
-                        - m_pivotMotor.getSensorCollection().getQuadraturePosition()) / 4096.0
-                        + WristConstants.encoderOffset.getRotations());
     }
 
     @Override
@@ -65,8 +63,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     public Rotation2d getAngle() {
         return Rotation2d
-                .fromRotations(m_pivotMotor.getSensorCollection().getQuadraturePosition() / 4096.0
-                        + m_startRotation.getRotations());
+                .fromRotations((m_pivotMotor.getSensorCollection().getQuadraturePosition()
+                        - WristConstants.encoderOffset) / 4096.0);
     }
 
     @Override
@@ -115,5 +113,10 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
             return getAbsoluteAngleRadians();
 
         }, null);
+
+        builder.addDoubleProperty("ABS Raw", m_pivotMotor.getSensorCollection()::getPulseWidthPosition, null);
+
+        builder.addDoubleProperty("Quad Raw", m_pivotMotor.getSensorCollection()::getQuadraturePosition, null);
+
     }
 }

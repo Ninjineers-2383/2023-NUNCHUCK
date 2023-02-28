@@ -40,6 +40,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
 
     private boolean m_initialized = true;
 
+    private final double m_positionThreshold;
+
     /**
      * Creates a new TrapezoidProfileSubsystem.
      *
@@ -52,7 +54,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      */
     protected TrapezoidalSubsystemBase(
             String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem,
-            double initialPosition) {
+            double positionaThreshold, double initialPosition) {
 
         m_constraints = requireNonNullParam(constraints, "constraints", "TrapezoidProfileSubsystemBase");
         m_state = new TrapezoidProfile.State(initialPosition, 0);
@@ -60,6 +62,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
 
         m_simSubsystem = simSubsystem;
         m_name = name;
+        m_positionThreshold = positionaThreshold;
     }
 
     /**
@@ -69,8 +72,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      *                    the profiles.
      */
     protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints,
-            LinearSystem<N1, N1, N1> simSubsystem) {
-        this(name, constraints, simSubsystem, 0);
+            LinearSystem<N1, N1, N1> simSubsystem, double positionThreshold) {
+        this(name, constraints, simSubsystem, positionThreshold, 0);
     }
 
     @Override
@@ -157,7 +160,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      * @return boolean isFinished
      */
     public boolean isAtPosition() {
-        return m_isFinished && Math.abs(m_goal.position - getState().position) < 0.3;
+        return m_isFinished && Math.abs(m_goal.position - getState().position) < m_positionThreshold;
     }
 
     @Override

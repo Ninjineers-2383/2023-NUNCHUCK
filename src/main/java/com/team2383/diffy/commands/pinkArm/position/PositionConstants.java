@@ -1,6 +1,7 @@
 package com.team2383.diffy.commands.pinkArm.position;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class PositionConstants {
 
@@ -36,15 +37,27 @@ public class PositionConstants {
             15,
             Rotation2d.fromDegrees(-122));
 
-    public static final PinkPositions FEED_PADDLE_POS = new PinkPositions(
+    public static final PinkPositions FEED_PADDLE_POS_INIT = new PinkPositions(
             "Feed Paddle",
-            Rotation2d.fromRadians(-0.29),
-            0,
-            Rotation2d.fromRadians(-0.26));
+            Rotation2d.fromDegrees(10),
+            0.31,
+            Rotation2d.fromDegrees(-31));
+
+    public static final PinkPositions FEED_PADDLE_POS_END = new PinkPositions(
+            "Feed Paddle",
+            Rotation2d.fromDegrees(0),
+            0.31,
+            Rotation2d.fromDegrees(-31));
 
     public static final PinkPositions TRAVEL_POS = new PinkPositions(
             "Travel Position",
             Rotation2d.fromDegrees(-18),
+            0,
+            Rotation2d.fromDegrees(0));
+
+    public static final PinkPositions TRANSFER_POS = new PinkPositions(
+            "Transfer Position",
+            Rotation2d.fromDegrees(-40),
             0,
             Rotation2d.fromDegrees(0));
 
@@ -70,5 +83,5 @@ public class PositionConstants {
             "High Score",
             Rotation2d.fromDegrees(-125),
             20,
-            Rotation2d.fromDegrees(-90));
+            Rotation2d.fromDegrees(-95));
 }

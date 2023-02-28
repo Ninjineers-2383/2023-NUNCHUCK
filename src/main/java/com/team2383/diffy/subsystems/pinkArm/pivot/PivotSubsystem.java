@@ -11,7 +11,6 @@ import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.AngularVelocityWrapper;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -28,8 +27,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
 
     private final AngularVelocityWrapper m_velocity;
 
-    private final MedianFilter m_Filter = new MedianFilter(3);
-
     private final DoubleSupplier m_extensionSupplier;
 
     /**
@@ -39,7 +36,8 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * @param extension for safety; checks extension to make sure it's not too long
      */
     public PivotSubsystem(DoubleSupplier extension) {
-        super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS, PivotConstants.SIMULATION_SUBSYSTEM);
+        super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS, PivotConstants.SIMULATION_SUBSYSTEM,
+                PivotConstants.POSITION_THRESHOLD.getRadians());
         m_leftMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_LEFT_ID, MotorType.kBrushless);
         m_rightMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_RIGHT_ID, MotorType.kBrushless);
         m_rightMotor.restoreFactoryDefaults();

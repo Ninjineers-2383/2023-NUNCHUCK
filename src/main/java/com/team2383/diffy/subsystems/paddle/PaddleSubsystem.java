@@ -1,10 +1,9 @@
 package com.team2383.diffy.subsystems.paddle;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,26 +12,26 @@ public class PaddleSubsystem extends SubsystemBase {
 
     private final TalonSRX m_dick;
 
-    private final VictorSPX m_balls;
+    private Rotation2d m_setAngle = new Rotation2d();
 
-    private Rotation2d m_angle = new Rotation2d();
+    private Rotation2d m_setVelocity = new Rotation2d();
 
     public PaddleSubsystem() {
         m_dick = new TalonSRX(PaddleConstants.DICK_ID);
-        m_balls = new VictorSPX(PaddleConstants.BALLS_ID);
         m_dick.configFactoryDefault();
-        m_balls.configFactoryDefault();
         m_dick.setInverted(false);
-        m_balls.setInverted(false);
-        m_dick.configSelectedFeedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+        m_dick.getSensorCollection().setQuadraturePosition(0, 200);
         m_dick.enableCurrentLimit(true);
         m_dick.configPeakCurrentLimit(PaddleConstants.kMaxCurrent, 500);
-        m_dick.setSelectedSensorPosition(0);
     }
 
     @Override
     public void periodic() {
-        setVoltage(calculateVoltage(m_angle));
+        m_setVelocity = Rotation2d.fromRadians(
+                MathUtil.clamp(PaddleConstants.kP * (m_setAngle.getRadians() - getAngle().getRadians()),
+                        -PaddleConstants.maxVelocity.getRadians(), PaddleConstants.maxVelocity.getRadians()));
+        setVoltage(
+                calculateVoltage(m_setVelocity));
     }
 
     public void setVoltage(double dutyCycle) {
@@ -40,20 +39,21 @@ public class PaddleSubsystem extends SubsystemBase {
     }
 
     public void setPosition(Rotation2d angle) {
-        m_angle = angle;
+        m_setAngle = angle;
     }
 
-    public double calculateVoltage(Rotation2d angle) {
-        double voltage = PaddleConstants.PID_CONTROLLER.calculate(getAngle().getRadians(), angle.getRadians());
+    public double calculateVoltage(Rotation2d velocity) {
+        double voltage = PaddleConstants.PID_CONTROLLER.calculate(getVelocity().getRadians(), velocity.getRadians());
         return voltage;
     }
 
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(m_dick.getSelectedSensorPosition() / 4096.0);
+        return Rotation2d.fromRotations(
+                (m_dick.getSensorCollection().getQuadraturePosition() - PaddleConstants.encoderOffset) / 4096.0);
     }
 
-    public void setBallsDutyCycle(double dutyCycle) {
-        m_balls.set(ControlMode.PercentOutput, dutyCycle);
+    public Rotation2d getVelocity() {
+        return Rotation2d.fromRotations(m_dick.getSensorCollection().getQuadratureVelocity() / 4096.0);
     }
 
     @Override
@@ -63,5 +63,21 @@ public class PaddleSubsystem extends SubsystemBase {
         builder.addDoubleProperty("Angle", () -> {
             return getAngle().getRadians();
         }, null);
+
+        builder.addDoubleProperty("Set Angle", () -> {
+            return m_setAngle.getRadians();
+        }, null);
+
+        builder.addDoubleProperty("Velocity", () -> {
+            return getVelocity().getRadians();
+        }, null);
+
+        builder.addDoubleProperty("Set Velocity", () -> {
+            return m_setVelocity.getRadians();
+        }, null);
+
+        builder.addDoubleProperty("ABS Raw", m_dick.getSensorCollection()::getPulseWidthPosition, null);
+
+        builder.addDoubleProperty("Quad Raw", m_dick.getSensorCollection()::getQuadraturePosition, null);
     }
 }

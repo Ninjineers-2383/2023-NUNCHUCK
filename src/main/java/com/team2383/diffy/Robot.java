@@ -4,6 +4,8 @@
 
 package com.team2383.diffy;
 
+import com.team2383.diffy.helpers.ButtonBoardButtons;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -76,6 +78,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledPeriodic() {
         SmartDashboard.putNumber("Robot on for: (Seconds)", Timer.getFPGATimestamp() - m_startTime);
+        ButtonBoardButtons.setAllFalse();
     }
 
     /**

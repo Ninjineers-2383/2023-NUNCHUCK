@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.helpers.ThrottleSoftener;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
@@ -21,11 +20,9 @@ public class JoystickDriveCommand extends CommandBase {
     private final BooleanSupplier m_fieldRelative;
     private final IntSupplier m_hatSupplier;
 
-    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(50);
-    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(50);
-    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(100);
-
-    private final double THRESHOLD = 0.8;
+    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(5);
+    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(5);
+    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(10);
 
     public JoystickDriveCommand(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
             Supplier<Rotation2d> rotation, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {

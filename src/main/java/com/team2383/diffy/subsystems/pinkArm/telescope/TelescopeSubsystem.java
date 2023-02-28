@@ -23,7 +23,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private Supplier<Rotation2d> m_pivotAngle;
 
     public TelescopeSubsystem(Supplier<Rotation2d> pivotAngle) {
-        super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS, TelescopeConstants.SIMULATION_SUBSYSTEM);
+        super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS, TelescopeConstants.SIMULATION_SUBSYSTEM,
+                TelescopeConstants.POSITION_THRESHOLD);
         m_pivotAngle = pivotAngle;
 
         m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.EXTENSION_RIGHT_ID, MotorType.kBrushless);
