@@ -38,16 +38,10 @@ public class PositionConstants {
             Rotation2d.fromDegrees(-122));
 
     public static final PinkPositions FEED_PADDLE_POS_INIT = new PinkPositions(
-            "Feed Paddle",
-            Rotation2d.fromDegrees(10),
+            "Transfer",
+            Rotation2d.fromDegrees(-41),
             0.31,
-            Rotation2d.fromDegrees(-31));
-
-    public static final PinkPositions FEED_PADDLE_POS_END = new PinkPositions(
-            "Feed Paddle",
-            Rotation2d.fromDegrees(0),
-            0.31,
-            Rotation2d.fromDegrees(-31));
+            Rotation2d.fromDegrees(-45));
 
     public static final PinkPositions TRAVEL_POS = new PinkPositions(
             "Travel Position",
@@ -55,11 +49,11 @@ public class PositionConstants {
             0,
             Rotation2d.fromDegrees(0));
 
-    public static final PinkPositions TRANSFER_POS = new PinkPositions(
-            "Transfer Position",
-            Rotation2d.fromDegrees(-40),
-            0,
-            Rotation2d.fromDegrees(0));
+    // public static final PinkPositions TRANSFER_POS = new PinkPositions(
+    //         "Transfer Position",
+    //         Rotation2d.fromDegrees(-41),
+    //         0,
+    //         Rotation2d.fromDegrees(0));
 
     public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
             "Feed Upright",

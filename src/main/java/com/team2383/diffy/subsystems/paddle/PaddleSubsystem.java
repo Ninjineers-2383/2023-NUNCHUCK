@@ -29,7 +29,7 @@ public class PaddleSubsystem extends SubsystemBase {
     public void periodic() {
         m_setVelocity = Rotation2d.fromRadians(
                 MathUtil.clamp(PaddleConstants.kP * (m_setAngle.getRadians() - getAngle().getRadians()),
-                        -PaddleConstants.maxVelocity.getRadians(), PaddleConstants.maxVelocity.getRadians()));
+                        -PaddleConstants.maxVelocityIn.getRadians(), PaddleConstants.maxVelocityOut.getRadians()));
         setVoltage(
                 calculateVoltage(m_setVelocity));
     }

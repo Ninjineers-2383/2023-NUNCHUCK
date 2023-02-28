@@ -18,7 +18,7 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
-import com.team2383.diffy.commands.pinkArm.PinkArmPaddleCommand;
+import com.team2383.diffy.commands.pinkArm.TravelCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
@@ -32,6 +32,7 @@ import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
+import com.team2383.diffy.commands.pinkArm.TravelCommand;
 import com.team2383.diffy.autos.AutoSettings;
 
 import edu.wpi.first.math.MathUtil;
@@ -95,7 +96,6 @@ public class RobotContainer {
     private final Trigger m_paddleRetrieve = ButtonBoardButtons.makeNormieButton("Retrive From Paddle");
 
     // The robot's subsystems and commands are defined here...
-
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
@@ -108,7 +108,6 @@ public class RobotContainer {
             m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
-
     private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem,
             m_drive,
             m_driveOmega, () -> true, m_povSupplier);
@@ -209,7 +208,7 @@ public class RobotContainer {
                 .onFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(70)));
         m_paddleHome.onTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(-5)));
 
-        m_paddleRetrieve.onTrue(new PinkArmPaddleCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+        m_paddleRetrieve.onTrue(new TravelCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                 m_dickSubsystem, m_feederSubsystem));
 
     }

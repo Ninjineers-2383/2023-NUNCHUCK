@@ -17,6 +17,8 @@ public class ButtonBoardButtons {
     private static PositionConstants.PinkPositions[] positions = new PositionConstants.PinkPositions[] {
             PositionConstants.ZERO_POS,
             PositionConstants.TRAVEL_POS,
+            PositionConstants.FEED_PADDLE_POS_INIT,
+            PositionConstants.FEED_UPRIGHT_CONE,
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
             PositionConstants.LOW_SCORE_POS,
@@ -35,12 +37,12 @@ public class ButtonBoardButtons {
 
     public static void setAllFalse() {
         for (String name : names) {
-            SmartDashboard.setDefaultBoolean(name, false);
+            SmartDashboard.putBoolean(name, false);
         }
     }
 
     public static Trigger makeNormieButton(String name) {
-        SmartDashboard.putBoolean(name, false);
+        SmartDashboard.setDefaultBoolean(name, false);
         Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(name, false));
         smartTrigger
                 .onTrue(new WaitCommand(.01).andThen(new InstantCommand(() -> SmartDashboard.putBoolean(name, false))));
@@ -52,10 +54,11 @@ public class ButtonBoardButtons {
             TelescopeSubsystem telescopeSubsystem,
             WristSubsystem wristSubsystem,
             PositionConstants.PinkPositions constant) {
-        SmartDashboard.putBoolean(constant.name, false);
+        SmartDashboard.setDefaultBoolean(constant.name, false);
         Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(constant.name, false));
         smartTrigger.onTrue(new InstantCommand(() -> publishDashboard(constant.name))
                 .andThen(new PinkArmPresetCommand(pivotSubsystem, telescopeSubsystem, wristSubsystem, constant)));
+        names.add(constant.name);
         return smartTrigger;
     }
 
@@ -65,7 +68,6 @@ public class ButtonBoardButtons {
 
         for (PositionConstants.PinkPositions position : positions) {
             makePositionButton(pivotSubsystem, telescopeSubsystem, wristSubsystem, position);
-            names.add(position.name);
         }
     }
 }
