@@ -28,7 +28,7 @@ public final class PivotConstants {
 
     public static final double kGOFFSET = 25;
 
-    public static final PIDController PID_CONTROLLER = new PIDController(13, 0, 0);
+    public static final PIDController PID_CONTROLLER = new PIDController(14, 0, 0);
     public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.5, 1.65, // kv:
                                                                                                               // 1.65
             0.001);

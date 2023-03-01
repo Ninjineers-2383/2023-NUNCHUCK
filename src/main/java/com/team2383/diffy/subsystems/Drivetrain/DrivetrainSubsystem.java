@@ -1,6 +1,8 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenixpro.hardware.Pigeon2;
 import com.ctre.phoenixpro.sim.Pigeon2SimState;
@@ -39,6 +41,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
     private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
+
+    private final PhotonCamera m_coneCamera = new PhotonCamera("Cone Camera");
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             DriveConstants.frontLeftConstants.translation,
@@ -158,11 +162,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void drive(Translation2d drive, Rotation2d angle, boolean fieldRelative,
             Translation2d centerOfRotation) {
+        ChassisSpeeds speeds;
+
+        if (fieldRelative) {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(drive.getX(), drive.getY(), angle.getRadians(),
+                    getHeading());
+        } else {
+            speeds = new ChassisSpeeds(drive.getX(), drive.getY(), angle.getRadians());
+        }
+
         SwerveModuleState[] swerveModuleStates = m_kinematics.toSwerveModuleStates(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(drive.getX(), drive.getY(), angle.getRadians(),
-                                getHeading())
-                        : new ChassisSpeeds(drive.getX(), drive.getY(), angle.getRadians()),
+                speeds,
                 centerOfRotation);
 
         setModuleStates(swerveModuleStates);

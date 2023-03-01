@@ -5,16 +5,13 @@
 package com.team2383.diffy;
 
 import java.util.HashMap;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import javax.swing.text.Position;
-import javax.xml.namespace.QName;
-
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.AutoSettings;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
@@ -33,9 +30,6 @@ import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
-import com.team2383.diffy.commands.pinkArm.position.PositionConstants.PinkPositions;
-import com.team2383.diffy.commands.pinkArm.TravelCommand;
-import com.team2383.diffy.autos.AutoSettings;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -72,10 +66,10 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(75 * m_driverController.getRawAxis(0));
+            .fromDegrees(140 * m_driverController.getRawAxis(0));
 
-    // private final BooleanSupplier m_fieldCentric = () ->
-    // !(m_driverController.getRawButton(5));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(10)
+            || m_driverController.getRawButton(9));
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
@@ -92,10 +86,10 @@ public class RobotContainer {
             .or(() -> m_driverController.getRawButton(8));
     private final Trigger m_paddlePreset = ButtonBoardButtons.makeNormieButton("Paddle Preset")
             .or(new JoystickButton(m_driverController, 6));
-    private final Trigger m_paddleHome = ButtonBoardButtons.makeNormieButton("Paddle Preset")
+    private final Trigger m_paddleHome = ButtonBoardButtons.makeNormieButton("Paddle Home")
             .or(new JoystickButton(m_driverController, 5));
 
-    private final Trigger m_paddleRetrieve = ButtonBoardButtons.makeNormieButton("Retrive From Paddle");
+    private final Trigger m_paddleRetrieve = ButtonBoardButtons.makeNormieButton("Retrieve From Paddle");
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
@@ -110,9 +104,12 @@ public class RobotContainer {
             m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(m_drivetrainSubsystem,
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(
+            m_drivetrainSubsystem,
             m_drive,
-            m_driveOmega, () -> true, m_povSupplier);
+            m_driveOmega,
+            m_fieldCentric,
+            m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();

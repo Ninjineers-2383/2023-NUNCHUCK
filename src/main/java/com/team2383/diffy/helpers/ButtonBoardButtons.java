@@ -2,8 +2,6 @@ package com.team2383.diffy.helpers;
 
 import java.util.ArrayList;
 
-import javax.swing.text.Position;
-
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;

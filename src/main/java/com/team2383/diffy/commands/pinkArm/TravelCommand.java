@@ -27,7 +27,7 @@ public class TravelCommand extends SequentialCommandGroup {
                         .withTimeout(2),
                 // Stage 2: Moves paddle down to position
                 new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 2)),
-                new FeederCommand(feeder, () -> 0.5)
+                new FeederCommand(feeder, () -> 1)
                         .withTimeout(0.1),
                 // Stage 3: Turns feeder on
                 new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 3)),
@@ -36,26 +36,32 @@ public class TravelCommand extends SequentialCommandGroup {
                 // Stage 4: Moves pivot in to feed cone
                 new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 4)),
                 new ParallelDeadlineGroup(
-                    new PivotPositionCommand(pivot, Rotation2d.fromDegrees(-12))
-                        .withTimeout(2.5),
-                    new WristPositionCommand(wrist, Rotation2d.fromDegrees(-52))),
-                    
-                // Stage 5: Turns feeder off
-                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 5)),
-                new FeederCommand(feeder, () -> 0)
-                        .withTimeout(0.1),
+                        new PivotPositionCommand(pivot, Rotation2d.fromDegrees(-12))
+                                .withTimeout(2.5),
+                        new WristPositionCommand(wrist, Rotation2d.fromDegrees(-52))),
 
-                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 6)),
+                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 5)),
                 new PivotPositionCommand(pivot, Rotation2d.fromDegrees(-41))
                         .withTimeout(1.5),
 
-                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 7)),
+                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 6)),
                 new PaddleCommandPosition(paddle, Rotation2d.fromDegrees(70))
                         .withTimeout(1),
 
+                // Stage 7: Turns feeder off
+                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 7)),
+                new FeederCommand(feeder, () -> 0)
+                        .withTimeout(0.1),
+
+                // Stage 8: Move arm back to travel position
                 new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 8)),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.TRAVEL_POS)
-                        .withTimeout(2));
+                        .withTimeout(2),
+
+                // Stage 9: Move paddle to zero position
+                new InstantCommand(() -> SmartDashboard.putNumber("Travel Command Stage", 9)),
+                new PaddleCommandPosition(paddle, Rotation2d.fromDegrees(0))
+                        .withTimeout(1));
 
     }
 }

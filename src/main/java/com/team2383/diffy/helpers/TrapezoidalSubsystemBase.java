@@ -38,6 +38,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     private double m_desiredPosition = 0;
     private String m_name;
 
+    private boolean m_enabled = true;
+
     private boolean m_initialized = true;
 
     private final double m_positionThreshold;
@@ -86,7 +88,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
         m_isFinished = profile.isFinished(0.02);
 
         // Override desired velocity if enabled
-        if (true) {
+        if (m_enabled) {
             m_desiredVelocity = m_isFinished ? 0 : m_state.velocity;
             m_desiredPosition = m_isFinished ? m_goal.position : m_state.position;
         }
@@ -118,12 +120,12 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
 
     /** Enable the TrapezoidProfileSubsystem's output. */
     public void enable() {
-        // m_enabled = true;
+        m_enabled = true;
     }
 
     /** Disable the TrapezoidProfileSubsystem's output. */
     public void disable() {
-        // m_enabled = false;
+        m_enabled = false;
     }
 
     /**

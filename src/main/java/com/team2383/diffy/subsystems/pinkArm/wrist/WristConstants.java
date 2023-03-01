@@ -24,7 +24,7 @@ public final class WristConstants {
     public static final Rotation2d feedAngle = Rotation2d.fromDegrees(0);
     public static final Rotation2d outFeedAngle = Rotation2d.fromDegrees(0);
 
-    public static final PIDController PID_CONTROLLER = new PIDController(13.5, 0, 0);
+    public static final PIDController PID_CONTROLLER = new PIDController(15, 0, 0);
     public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.3, -1.15, 4, 0.10864); // ks:
                                                                                                             // 0.21143
     // public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new
