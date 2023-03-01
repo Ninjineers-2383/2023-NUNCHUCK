@@ -15,17 +15,20 @@ while (cap.isOpened()):
         hsv_img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # define HSV range of purple
-        lower_purple = np.array([131, 100, 100])
-        upper_purple = np.array([151, 255, 255])
+        lower_purple = np.array([110, 100, 100])
+        upper_purple = np.array([150, 255, 255])
 
-        # threshold the HSV image for purple 
+        # threshold the HSV image for purple
         threshed_img = cv2.inRange(hsv_img, lower_purple, upper_purple)
+        converted = cv2.cvtColor(threshed_img, cv2.COLOR_BGR2RGB)
+
 
         # smooth image with erosion, dilation, and smooth gaussian
         # 5x5 pixel kernel
-        kernel = np.ones((5, 5), np.uint8)
 
-        # erode and dilate 
+        kernel = np.ones((11, 11), np.uint8)
+
+        # erode and dilate
         threshed_img_smooth = cv2.erode(threshed_img, kernel, iterations=3)
         threshed_img_smooth = cv2.dilate(threshed_img_smooth, kernel, iterations=2)
 
@@ -43,13 +46,14 @@ while (cap.isOpened()):
         fontColor = (0, 0, 255)
         lineType = 2
 
-        # determine if triangle
+        # determine if cube
         for cnt in contours:
             boundingRect = cv2.boundingRect(cnt)
             approx = cv2.approxPolyDP(cnt, 0.06 * cv2.arcLength(cnt, True), True)
             # if contour is rectangle, draw bounding box
 
-            if len(approx) == 4:
+            print(len(approx))
+            if 3 < len(approx) < 6:
                 x, y, w, h = cv2.boundingRect(approx)
                 rect = (x, y, w, h)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)

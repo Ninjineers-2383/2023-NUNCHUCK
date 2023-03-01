@@ -14,11 +14,13 @@ while (cap.isOpened()):
         hsv_img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # define yellow HSV range
-        lower_yellow = np.array([25, 50, 70])
-        upper_yellow = np.array([35, 255, 255])
+        lower_yellow = np.array([20, 100, 100])
+        upper_yellow = np.array([40, 255, 255])
 
         # threshold the image to get only yellow pixels
         threshed_img = cv2.inRange(hsv_img, lower_yellow, upper_yellow)
+        converted = cv2.cvtColor(threshed_img, cv2.COLOR_BGR2RGB)
+
 
         # smooth image with erosion, dilation, and smooth gaussian
         kernel = np.ones((5, 5), np.uint8)
