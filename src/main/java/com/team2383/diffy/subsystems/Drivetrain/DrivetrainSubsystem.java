@@ -1,8 +1,6 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenixpro.hardware.Pigeon2;
 import com.ctre.phoenixpro.sim.Pigeon2SimState;
@@ -41,8 +39,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
     private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
-
-    private final PhotonCamera m_coneCamera = new PhotonCamera("Cone Camera");
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             DriveConstants.frontLeftConstants.translation,

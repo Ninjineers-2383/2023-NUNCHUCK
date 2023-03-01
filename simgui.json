@@ -71,6 +71,7 @@
       "/LiveWindow/Ungrouped/frontRight/Drive PID": "PIDController",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
+      "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": "Field2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
@@ -81,6 +82,14 @@
       "/SmartDashboard/rear/Drive PID": "PIDController"
     },
     "windows": {
+      "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": {
+        "Arducam_OV9281_Front_Left Camera": {
+          "style": "Box/Image"
+        },
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "COR": {
           "arrowSize": 0,
