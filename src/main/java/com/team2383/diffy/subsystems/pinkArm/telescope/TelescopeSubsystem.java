@@ -69,6 +69,10 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         return adjustedExtension == extension;
     }
 
+    public void forceGoal(double extension) {
+        super.setGoal(new TrapezoidProfile.State(extension, 0));
+    }
+
     /**
      * Set velocity of the extension using PID and feedforward control
      * If used externally, call disable() before using this method
@@ -88,6 +92,10 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     public double getExtensionInches() {
         return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) * TelescopeConstants.ROTATION_CONVERSION
                 / 2.0;
+    }
+
+    public double getCurrent() {
+        return (m_rightMotor.getOutputCurrent() + m_leftMotor.getOutputCurrent()) / 2;
     }
 
     protected TrapezoidProfile.State getState() {

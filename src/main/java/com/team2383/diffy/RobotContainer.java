@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.autos.ScorePreload;
 import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -226,10 +227,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
-        // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
-        // return autoChooser.getSelected();
-        return null;// m_pinkArmAutoCommand;
+        return autoChooser.getSelected();
     }
 
     private void setAutoCommands() {
@@ -238,10 +236,16 @@ public class RobotContainer {
         // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
         // autoBuilder);
 
+        Command score_preload_high = new ScorePreload(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+                m_wristSubsystem, m_feederSubsystem);
+
         Command nullAuto = null;
 
         // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
         // autoChooser.addOption("Forward Test Auto", forwardTest);
-        autoChooser.addOption("No Auto :(", nullAuto);
+        autoChooser.setDefaultOption("No Auto :(", nullAuto);
+        autoChooser.addOption("Score Preload High", score_preload_high);
+
+        SmartDashboard.putData("Auto", autoChooser);
     }
 }
