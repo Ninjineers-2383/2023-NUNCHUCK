@@ -177,6 +177,10 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
             return m_goal.position;
         }, null);
 
+        builder.addDoubleProperty("Current Desired", () -> {
+            return m_desiredPosition;
+        }, null);
+
         builder.addDoubleProperty("Set Velocity", () -> {
             return m_state.velocity;
         }, null);

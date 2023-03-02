@@ -19,6 +19,7 @@ public class ButtonBoardButtons {
             PositionConstants.TRAVEL_POS,
             PositionConstants.FEED_PADDLE_POS_INIT,
             PositionConstants.FEED_UPRIGHT_CONE,
+            PositionConstants.FEED_CONE_CHUTE,
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
             PositionConstants.FEED_CONE_UPRIGHT,

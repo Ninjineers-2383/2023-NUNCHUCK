@@ -19,16 +19,16 @@ public final class TelescopeConstants {
 
     public static final double UPPER_BOUND = 38;
     public static final double LOWER_BOUND = 0.0;
-    public static final double SAFETY_BOUND = 1;
+    public static final double SAFETY_BOUND = 2;
 
     public static final double kEXTENSION_BIAS = -0.15;
 
     public static final double POSITION_THRESHOLD = 1.25;
 
     public static final PIDController PID_CONTROLLER = new PIDController(7, 0, 0);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.90, -2, 3.0, 0.01);
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(15,
-            12);
+    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(1.5, -1.4, 2.5, 0.01);
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(40,
+            17);
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId
             .identifyVelocitySystem(TelescopeConstants.FEEDFORWARD_CONTROLLER.kv,
                     TelescopeConstants.FEEDFORWARD_CONTROLLER.ka);

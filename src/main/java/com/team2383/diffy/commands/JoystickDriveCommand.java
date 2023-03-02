@@ -44,7 +44,7 @@ public class JoystickDriveCommand extends CommandBase {
                 * DriveConstants.kMaxVelocity;
         double y = -ThrottleSoftener.soften(move.getY())
                 * DriveConstants.kMaxVelocity;
-        double omega = -ThrottleSoftener.soften(m_rotSupply.get().getRadians());
+        double omega = -ThrottleSoftener.soften(m_rotSupply.get().getRadians()) * 0.75;
         int hatPosition = m_hatSupplier.getAsInt();
 
         Rotation2d rotVelocity = new Rotation2d(m_oRateLimiter.calculate(omega));
