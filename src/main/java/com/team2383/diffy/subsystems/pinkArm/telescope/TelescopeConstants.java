@@ -27,8 +27,8 @@ public final class TelescopeConstants {
 
     public static final PIDController PID_CONTROLLER = new PIDController(7, 0, 0);
     public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.90, -2, 3.0, 0.01);
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(12,
-            6);
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(15,
+            12);
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId
             .identifyVelocitySystem(TelescopeConstants.FEEDFORWARD_CONTROLLER.kv,
                     TelescopeConstants.FEEDFORWARD_CONTROLLER.ka);

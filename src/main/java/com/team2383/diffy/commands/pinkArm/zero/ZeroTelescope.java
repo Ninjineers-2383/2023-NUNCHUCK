@@ -31,11 +31,11 @@ public class ZeroTelescope extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (m_telescope.getCurrent() > 17) {
+        if (m_telescope.getCurrent() > 18) {
             count++;
         } else {
             count = 0;
         }
-        return count > 5;
+        return count > 7;
     }
 }
