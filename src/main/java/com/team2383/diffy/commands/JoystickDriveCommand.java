@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.helpers.ThrottleSoftener;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
@@ -20,12 +19,10 @@ public class JoystickDriveCommand extends CommandBase {
     private final Supplier<Translation2d> m_moveSupply;
     private final BooleanSupplier m_fieldRelative;
     private final IntSupplier m_hatSupplier;
-    private Rotation2d m_integralStuff = Rotation2d.fromDegrees(0);
 
     private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(10);
-    private final double lastTime;
 
     public JoystickDriveCommand(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
             Supplier<Rotation2d> rotation, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {
@@ -38,7 +35,6 @@ public class JoystickDriveCommand extends CommandBase {
 
         addRequirements(m_drivetrain);
 
-        lastTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -48,16 +44,10 @@ public class JoystickDriveCommand extends CommandBase {
                 * DriveConstants.kMaxVelocity;
         double y = -ThrottleSoftener.soften(move.getY())
                 * DriveConstants.kMaxVelocity;
-        double deltaTime = Timer.getFPGATimestamp() - lastTime;
-        m_integralStuff = m_integralStuff.plus(
-                Rotation2d.fromRadians(-ThrottleSoftener.soften(m_rotSupply.get().getRadians())).times(1 / deltaTime));
-
+        double omega = -ThrottleSoftener.soften(m_rotSupply.get().getRadians());
         int hatPosition = m_hatSupplier.getAsInt();
 
-        Rotation2d rotVelocity = Rotation2d.fromRadians(
-                m_oRateLimiter.calculate(
-                        DriveConstants.HEADING_CONTROLLER.calculate(m_drivetrain.getHeading().getRadians(),
-                                m_integralStuff.getRadians())));
+        Rotation2d rotVelocity = new Rotation2d(m_oRateLimiter.calculate(omega));
 
         m_drivetrain.drive(
                 new Translation2d(

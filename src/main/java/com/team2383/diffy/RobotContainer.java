@@ -92,7 +92,7 @@ public class RobotContainer {
     private final Trigger m_paddleRetrieve = ButtonBoardButtons.makeNormieButton("Retrieve From Paddle");
 
     // The robot's subsystems and commands are defined here...
-    // private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
     private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
     private Supplier<Rotation2d> m_pivotSupplier;
@@ -104,12 +104,12 @@ public class RobotContainer {
             m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
-    // private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(
-    //         m_drivetrainSubsystem,
-    //         m_drive,
-    //         m_driveOmega,
-    //         m_fieldCentric,
-    //         m_povSupplier);
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(
+            m_drivetrainSubsystem,
+            m_drive,
+            m_driveOmega,
+            m_fieldCentric,
+            m_povSupplier);
     private final FeederCommand m_feederCommand = new FeederCommand(m_feederSubsystem, m_intake);
 
     SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -166,16 +166,16 @@ public class RobotContainer {
         }
     };
 
-    // public SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-    //         m_drivetrainSubsystem::getPose,
-    //         m_drivetrainSubsystem::forceOdometry,
-    //         m_drivetrainSubsystem.m_kinematics,
-    //         new PIDConstants(5, 0, 0),
-    //         new PIDConstants(0.5, 0, 0),
-    //         m_drivetrainSubsystem::setModuleStates,
-    //         autoHashMap,
-    //         true,
-    //         m_drivetrainSubsystem);
+    public SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+            m_drivetrainSubsystem::getPose,
+            m_drivetrainSubsystem::forceOdometry,
+            m_drivetrainSubsystem.m_kinematics,
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(0.5, 0, 0),
+            m_drivetrainSubsystem::setModuleStates,
+            autoHashMap,
+            true,
+            m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -201,7 +201,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         ButtonBoardButtons.instantiatePositionalButtons(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
-        // m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
+        m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
 
         m_paddlePreset.onTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(165)))
                 .onFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(70)));
@@ -213,7 +213,7 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        // m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
+        m_drivetrainSubsystem.setDefaultCommand(m_driveCommand);
         m_feederSubsystem.setDefaultCommand(m_feederCommand);
         m_telescopeSubsystem.setDefaultCommand(new TelescopeVelocityCommand(m_telescopeSubsystem, m_extension));
         m_pivotSubsystem.setDefaultCommand(new PivotVelocityCommand(m_pivotSubsystem, m_pivot));
@@ -234,9 +234,9 @@ public class RobotContainer {
 
     private void setAutoCommands() {
         // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-        //         autoBuilder);
+        // autoBuilder);
         // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-        //         autoBuilder);
+        // autoBuilder);
 
         Command nullAuto = null;
 
