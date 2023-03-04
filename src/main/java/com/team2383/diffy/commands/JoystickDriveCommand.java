@@ -20,9 +20,9 @@ public class JoystickDriveCommand extends CommandBase {
     private final BooleanSupplier m_fieldRelative;
     private final IntSupplier m_hatSupplier;
 
-    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(5);
-    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(5);
-    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(10);
+    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(10);
+    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(10);
+    private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(15);
 
     public JoystickDriveCommand(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
             Supplier<Rotation2d> rotation, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {

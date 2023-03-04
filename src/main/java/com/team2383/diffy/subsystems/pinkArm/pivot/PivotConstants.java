@@ -21,8 +21,8 @@ public final class PivotConstants {
     public static final Rotation2d UPPER_BOUND = Rotation2d.fromDegrees(170);
     public static final Rotation2d LOWER_BOUND = Rotation2d.fromDegrees(-170);
 
-    public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(30);
-    public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-30);
+    public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(0);
+    public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-0);
 
     public static final double kG = 0.98;
 

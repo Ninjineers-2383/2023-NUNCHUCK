@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public final class DriveConstants {
-    public static final double kMaxVelocity = 4; // meters per second
+    public static final double kMaxVelocity = 4.2; // meters per second
 
     public final static double kTrackWidthMeters = 0.6173724;
     public final static double kDriveMaxVoltage = 10.0;

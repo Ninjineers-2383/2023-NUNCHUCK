@@ -36,6 +36,12 @@ public class PositionConstants {
             15,
             Rotation2d.fromDegrees(-122));
 
+    public static final PinkPositions FEED_CONE_CHUTE = new PinkPositions(
+            "Feed Chute",
+            new Rotation2d(0.352),
+            0,
+            new Rotation2d(-0.8145));
+
     public static final PinkPositions FEED_PADDLE_POS_INIT = new PinkPositions(
             "Transfer",
             Rotation2d.fromDegrees(-41),
@@ -82,5 +88,11 @@ public class PositionConstants {
             "High Score",
             Rotation2d.fromDegrees(-125),
             20,
-            Rotation2d.fromDegrees(-95));
+            Rotation2d.fromDegrees(-110));
+
+    public static final PinkPositions FEED_INTERNAL = new PinkPositions(
+            "Feed Internal",
+            Rotation2d.fromRadians(0.32),
+            4.8,
+            Rotation2d.fromRadians(-2.05));
 }
