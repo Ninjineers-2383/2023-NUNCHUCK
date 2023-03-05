@@ -65,8 +65,7 @@ public class RobotContainer {
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
             .fromDegrees(140 * m_driverController.getRawAxis(0));
 
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(10)
-            || m_driverController.getRawButton(9));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(6));
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
