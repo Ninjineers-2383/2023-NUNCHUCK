@@ -4,7 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.helpers.Clip;
-import com.team2383.diffy.helpers.Ninja_CANSparkMax;
+import com.team2383.diffy.helpers.SparkMaxSimWrapper;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeConstants;
 import com.team2383.diffy.Robot;
@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 
 public class PivotSubsystem extends TrapezoidalSubsystemBase {
-    private final Ninja_CANSparkMax m_rightMotor;
-    private final Ninja_CANSparkMax m_leftMotor;
+    private final SparkMaxSimWrapper m_rightMotor;
+    private final SparkMaxSimWrapper m_leftMotor;
 
     private final DutyCycleEncoder m_absEncoder;
     private final DutyCycleEncoderSim m_absEncoderSim;
@@ -38,8 +38,8 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     public PivotSubsystem(DoubleSupplier extension) {
         super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS, PivotConstants.SIMULATION_SUBSYSTEM,
                 PivotConstants.POSITION_THRESHOLD.getRadians());
-        m_leftMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_LEFT_ID, MotorType.kBrushless);
-        m_rightMotor = new Ninja_CANSparkMax(PivotConstants.BOTTOM_MOTOR_RIGHT_ID, MotorType.kBrushless);
+        m_leftMotor = new SparkMaxSimWrapper(PivotConstants.BOTTOM_MOTOR_LEFT_ID, MotorType.kBrushless);
+        m_rightMotor = new SparkMaxSimWrapper(PivotConstants.BOTTOM_MOTOR_RIGHT_ID, MotorType.kBrushless);
         m_rightMotor.restoreFactoryDefaults();
         m_leftMotor.restoreFactoryDefaults();
         m_rightMotor.setVelocityConversionFactor(PivotConstants.VELOCITY_CONVERSION_FACTOR.getRadians());

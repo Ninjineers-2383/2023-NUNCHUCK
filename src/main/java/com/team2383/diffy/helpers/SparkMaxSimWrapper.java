@@ -6,7 +6,7 @@ import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.SimDevice.Direction;
 
-public class Ninja_CANSparkMax extends CANSparkMax {
+public class SparkMaxSimWrapper extends CANSparkMax {
     private SimDevice m_device;
     private SimDouble m_velocity;
     private SimDouble m_position;
@@ -20,7 +20,7 @@ public class Ninja_CANSparkMax extends CANSparkMax {
      * @param deviceID
      * @param type
      */
-    public Ninja_CANSparkMax(int deviceID, MotorType motorType) {
+    public SparkMaxSimWrapper(int deviceID, MotorType motorType) {
         super(deviceID, motorType);
 
         m_device = SimDevice.create("Spark Max", this.getDeviceId());

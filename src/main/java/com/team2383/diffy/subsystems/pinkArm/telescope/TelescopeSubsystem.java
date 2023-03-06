@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.diffy.Robot;
 import com.team2383.diffy.helpers.Clip;
-import com.team2383.diffy.helpers.Ninja_CANSparkMax;
+import com.team2383.diffy.helpers.SparkMaxSimWrapper;
 import com.team2383.diffy.helpers.TrapezoidalSubsystemBase;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotConstants;
 
@@ -17,8 +17,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
-    private final Ninja_CANSparkMax m_rightMotor;
-    private final Ninja_CANSparkMax m_leftMotor;
+    private final SparkMaxSimWrapper m_rightMotor;
+    private final SparkMaxSimWrapper m_leftMotor;
 
     private Supplier<Rotation2d> m_pivotAngle;
 
@@ -27,8 +27,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
                 TelescopeConstants.POSITION_THRESHOLD);
         m_pivotAngle = pivotAngle;
 
-        m_rightMotor = new Ninja_CANSparkMax(TelescopeConstants.EXTENSION_RIGHT_ID, MotorType.kBrushless);
-        m_leftMotor = new Ninja_CANSparkMax(TelescopeConstants.EXTENSION_LEFT_ID, MotorType.kBrushless);
+        m_rightMotor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_RIGHT_ID, MotorType.kBrushless);
+        m_leftMotor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_LEFT_ID, MotorType.kBrushless);
 
         m_rightMotor.restoreFactoryDefaults();
         m_leftMotor.restoreFactoryDefaults();

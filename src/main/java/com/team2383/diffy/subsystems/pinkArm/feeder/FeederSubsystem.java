@@ -1,7 +1,7 @@
 package com.team2383.diffy.subsystems.pinkArm.feeder;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.helpers.Ninja_CANSparkMax;
+import com.team2383.diffy.helpers.SparkMaxSimWrapper;
 
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -9,8 +9,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FeederSubsystem extends SubsystemBase {
-    private final Ninja_CANSparkMax m_topMotor;
-    private final Ninja_CANSparkMax m_bottomMotor;
+    private final SparkMaxSimWrapper m_topMotor;
+    private final SparkMaxSimWrapper m_bottomMotor;
 
     private double m_bottomVoltage;
     private double m_topVoltage;
@@ -22,8 +22,8 @@ public class FeederSubsystem extends SubsystemBase {
 
     public FeederSubsystem(DataLog log) {
         // Declare motor instances
-        m_topMotor = new Ninja_CANSparkMax(FeederConstants.kTopMotorID, MotorType.kBrushless);
-        m_bottomMotor = new Ninja_CANSparkMax(FeederConstants.kBottomMotorID, MotorType.kBrushless);
+        m_topMotor = new SparkMaxSimWrapper(FeederConstants.kTopMotorID, MotorType.kBrushless);
+        m_bottomMotor = new SparkMaxSimWrapper(FeederConstants.kBottomMotorID, MotorType.kBrushless);
 
         m_log = log;
 
