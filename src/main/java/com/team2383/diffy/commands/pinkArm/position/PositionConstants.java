@@ -74,7 +74,7 @@ public class PositionConstants {
 
     public static final PinkPositions LOW_SCORE_POS = new PinkPositions(
             "Low Score",
-            Rotation2d.fromDegrees(-60),
+            Rotation2d.fromDegrees(-62),
             2,
             Rotation2d.fromDegrees(-120));
 
