@@ -11,8 +11,8 @@ public final class DriveConstants {
     public final static double kDriveMaxVoltage = 10.0;
     public final static double kMaxCurrent = 40.0;
 
-    public final static double kDriveGearRatio = (9 / 60.0) * (20 / 84.0) * (64 / 16.0); // 1/7
-    public final static double kTurnGearRatio = 1 / 28.0;
+    public final static double kTurnGearRatio = (12 / 58.0) * (20 / 84.0);
+    public final static double kDriveGearRatio = kTurnGearRatio * (64 / 16.0); // 1/7
 
     public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
 
