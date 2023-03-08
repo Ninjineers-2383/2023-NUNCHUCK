@@ -63,7 +63,9 @@ public final class DriveConstants {
     }
 
     public final static ModuleConstants frontLeftConstants = new ModuleConstants(
-            0.19054, 0.017289, 0.00041192,
+            0.12042,
+            0.018865,
+            0.00092008,
             20, 21,
             0, 1, 2,
             "frontLeft",
@@ -74,7 +76,9 @@ public final class DriveConstants {
             Rotation2d.fromDegrees(60));
 
     public final static ModuleConstants frontRightConstants = new ModuleConstants(
-            0.19054, 0.017289, 0.00041192,
+            0.2029,
+            0.018601,
+            0.00038568,
             22, 23,
             3, 4, 5,
             "frontRight",
@@ -85,7 +89,9 @@ public final class DriveConstants {
             Rotation2d.fromDegrees(-60));
 
     public final static ModuleConstants rearConstants = new ModuleConstants(
-            0.19054, 0.017289, 0.00041192,
+            0.23873,
+            0.018696,
+            0.00033035,
             24, 25,
             7, 8, 9,
             "rear",
