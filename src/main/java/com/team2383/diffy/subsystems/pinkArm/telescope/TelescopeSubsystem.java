@@ -17,8 +17,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
-    private final SparkMaxSimWrapper m_rightMotor;
-    private final SparkMaxSimWrapper m_leftMotor;
+    private final SparkMaxSimWrapper m_motor;
 
     private Supplier<Rotation2d> m_pivotAngle;
 
@@ -27,19 +26,15 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
                 TelescopeConstants.POSITION_THRESHOLD);
         m_pivotAngle = pivotAngle;
 
-        m_rightMotor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_RIGHT_ID, MotorType.kBrushless);
-        m_leftMotor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_LEFT_ID, MotorType.kBrushless);
+        m_motor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_ID, MotorType.kBrushless);
 
-        m_rightMotor.restoreFactoryDefaults();
-        m_leftMotor.restoreFactoryDefaults();
+        m_motor.restoreFactoryDefaults();
 
         resetPosition();
 
-        m_rightMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
-        m_leftMotor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
+        m_motor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
 
-        m_leftMotor.setInverted(true);
-        m_rightMotor.setInverted(false);
+        m_motor.setInverted(true);
     }
 
     public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
@@ -86,16 +81,12 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
 
     /* Velocity measured in inches per minute */
     public double getVelocity() {
-        return (m_rightMotor.get() + m_leftMotor.get()) * TelescopeConstants.ROTATION_CONVERSION / 120.0;
+        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION / 120.0;
     }
 
     public double getExtensionInches() {
-        return ((m_rightMotor.getPosition()) + (m_leftMotor.getPosition())) * TelescopeConstants.ROTATION_CONVERSION
+        return m_motor.getPosition() * TelescopeConstants.ROTATION_CONVERSION
                 / 2.0;
-    }
-
-    public double getCurrent() {
-        return (m_rightMotor.getOutputCurrent() + m_leftMotor.getOutputCurrent()) / 2;
     }
 
     protected TrapezoidProfile.State getState() {
@@ -105,11 +96,9 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     /** Handles simulation */
     protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
         double simVelocity = matrix.get(0, 0);
-        m_leftMotor.setSimVelocity(simVelocity);
-        m_rightMotor.setSimVelocity(simVelocity);
+        m_motor.setSimVelocity(simVelocity);
 
-        m_rightMotor.setSimPosition(m_rightMotor.getPosition() + simVelocity * 0.02);
-        m_leftMotor.setSimPosition(m_leftMotor.getPosition() + simVelocity * 0.02);
+        m_motor.setSimPosition(m_motor.getPosition() + simVelocity * 0.02);
     }
 
     private double getCosGravityAngle() {
@@ -137,22 +126,20 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      */
     @Override
     protected void setVoltage(double voltage) {
-        m_rightMotor.setVoltage(voltage);
-        m_leftMotor.setVoltage(voltage);
+        m_motor.setVoltage(voltage);
     }
 
     public void resetPosition() {
         DataLogManager.log("Telescope reset");
-        m_rightMotor.getEncoder().setPosition(0);
-        m_leftMotor.getEncoder().setPosition(0);
+        m_motor.getEncoder().setPosition(0);
     }
 
-    private double getAmpDraw() {
-        return (m_rightMotor.getOutputCurrent() + m_leftMotor.getOutputCurrent()) / 2;
+    public double getCurrent() {
+        return m_motor.getOutputCurrent();
     }
 
     public boolean getZeroState() {
-        return getAmpDraw() > TelescopeConstants.CURRENT_THRESHOLD;
+        return getCurrent() > TelescopeConstants.CURRENT_THRESHOLD;
     }
 
     @Override
@@ -164,7 +151,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         builder.addDoubleProperty("Pivot Angle", () -> m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0,
                 null);
 
-        builder.addDoubleProperty("Current", this::getAmpDraw,
+        builder.addDoubleProperty("Current", this::getCurrent,
                 null);
 
     }

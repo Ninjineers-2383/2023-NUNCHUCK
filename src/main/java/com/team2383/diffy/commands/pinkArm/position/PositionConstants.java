@@ -88,7 +88,7 @@ public class PositionConstants {
             "High Score",
             Rotation2d.fromDegrees(-125),
             20,
-            Rotation2d.fromDegrees(-110));
+            Rotation2d.fromDegrees(-120));
 
     public static final PinkPositions FEED_INTERNAL = new PinkPositions(
             "Feed Internal",

@@ -9,11 +9,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public final class TelescopeConstants {
 
-    public static final int EXTENSION_LEFT_ID = 4;
-    public static final int EXTENSION_RIGHT_ID = 5;
+    public static final int EXTENSION_ID = 5;
 
-    public static final int MAX_CURRENT = 20;
-    public static final double ROTATION_CONVERSION = 0.21818181818181817;
+    public static final int MAX_CURRENT = 40;
+    public static final double ROTATION_CONVERSION = 0.460829;
 
     public static final double CURRENT_THRESHOLD = 10;
 
@@ -26,7 +25,7 @@ public final class TelescopeConstants {
     public static final double POSITION_THRESHOLD = 1.25;
 
     public static final PIDController PID_CONTROLLER = new PIDController(7, 0, 0);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(1.5, -1.4, 2.5, 0.01);
+    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.25, -1.4, 1, 0.01);
     public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(40,
             17);
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId

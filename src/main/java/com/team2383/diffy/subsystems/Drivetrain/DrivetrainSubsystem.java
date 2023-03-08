@@ -5,6 +5,7 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenixpro.hardware.Pigeon2;
 import com.ctre.phoenixpro.sim.Pigeon2SimState;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -105,7 +106,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
         if (cam_pose != null) {
-            m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds);
+            var estimate = cam_pose.estimatedPose.toPose2d();
+            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 16 && estimate.getY() < 9) {
+                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds,
+                        VecBuilder.fill(1, 1, 1));
+            }
         }
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
