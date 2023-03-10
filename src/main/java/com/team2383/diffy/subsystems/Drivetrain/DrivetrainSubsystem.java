@@ -103,15 +103,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(getHeading(), getModulePositions());
 
-        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+        // EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
-        if (cam_pose != null) {
-            var estimate = cam_pose.estimatedPose.toPose2d();
-            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 16 && estimate.getY() < 9) {
-                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(), cam_pose.timestampSeconds,
-                        VecBuilder.fill(1, 1, 1));
-            }
-        }
+        // if (cam_pose != null) {
+        // var estimate = cam_pose.estimatedPose.toPose2d();
+        // if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 16 &&
+        // estimate.getY() < 9) {
+        // m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
+        // cam_pose.timestampSeconds,
+        // VecBuilder.fill(1, 1, 1));
+        // }
+        // }
 
         m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
@@ -190,9 +192,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        for (DiffSwerveModule module : m_modules) {
-            module.resetEncoders();
-        }
+        // for (DiffSwerveModule module : m_modules) {
+        // module.resetEncoders();
+        // }
     }
 
     /**

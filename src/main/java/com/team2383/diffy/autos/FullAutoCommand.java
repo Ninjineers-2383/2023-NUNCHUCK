@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class FullAutoCommand extends SequentialCommandGroup {
@@ -20,7 +19,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         // of 4 m/s and a max acceleration of 3 m/s^2
         // for every path in the group
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName,
-                new PathConstraints(DriveConstants.kMaxVelocity - 0.5, 2));
+                new PathConstraints(1, 1));
 
         addCommands(
                 autoBuilder.fullAuto(pathGroup),

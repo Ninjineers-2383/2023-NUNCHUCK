@@ -20,7 +20,7 @@ public class ScorePreload extends SequentialCommandGroup {
                 new InstantCommand(() -> m_drivetrain.resetHeading()),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.ZERO_POS),
                 new ZeroTelescope(telescope),
-                new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.HIGH_SCORE_POS),
+                new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.HIGH_SCORE_BACK),
                 new FeederCommand(feeder, () -> -1).withTimeout(0.4),
                 new FeederCommand(feeder, () -> 0).withTimeout(0.01),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.TRAVEL_POS));

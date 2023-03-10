@@ -106,6 +106,8 @@ public class DiffSwerveModule implements Sendable {
      */
     private double m_desiredAngle;
 
+    private SwerveModuleState m_desiredState;
+
     /**
      * Counter used for the timing of resetting the module angle
      */
@@ -196,13 +198,13 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+                VecBuilder.fill(0.1, 0.1, 0.00001), VecBuilder.fill(9, 9), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
         m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
-                m_observer, 12.0, 0.02);
+                m_observer, 9.0, 0.02);
     }
 
     public void periodic() {
@@ -228,6 +230,10 @@ public class DiffSwerveModule implements Sendable {
                 m_systemLoop.setXHat(VecBuilder.fill(0, 0, Math.toRadians(getModuleAngle())));
             }
             reset_counter++;
+        }
+
+        if (m_desiredState != null) {
+            calculateVoltage();
         }
     }
 
@@ -277,9 +283,9 @@ public class DiffSwerveModule implements Sendable {
         double speed = (topMotorSpeed - bottomMotorSpeed) / 2 /* Average motor speed (rps) */ *
                 DriveConstants.kDriveGearRatio /* Output revolutions per second */ *
                 (DriveConstants.kDriveWheelDiameterMeters * Math.PI) /*
-                                                                                       * Circumference in meters
-                                                                                       * (meters/second)
-                                                                                       */;
+                                                                      * Circumference in meters
+                                                                      * (meters/second)
+                                                                      */;
 
         return speed;
     }
@@ -325,11 +331,16 @@ public class DiffSwerveModule implements Sendable {
      * @return the max voltage of the motors
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-        SwerveModuleState state = SwerveModuleOptimizer.customOptimize(desiredState,
+        m_desiredState = SwerveModuleOptimizer.customOptimize(desiredState,
                 Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
 
-        m_desiredSpeed = state.speedMetersPerSecond;
-        m_desiredAngle = state.angle.getDegrees();
+        // SwerveModuleState state = desiredState;
+
+    }
+
+    private void calculateVoltage() {
+        m_desiredSpeed = m_desiredState.speedMetersPerSecond;
+        m_desiredAngle = m_desiredState.angle.getDegrees();
 
         m_expectedSpeed.append(m_desiredSpeed);
         m_expectedAngle.append(m_desiredAngle);

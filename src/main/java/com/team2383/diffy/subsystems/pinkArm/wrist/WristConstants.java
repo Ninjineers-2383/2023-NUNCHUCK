@@ -29,7 +29,7 @@ public final class WristConstants {
                                                                                                             // 0.21143
     // public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new
     // ArmFeedforward(0, 0, 0, 0);
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(8,
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(4,
             4);
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId
             .identifyVelocitySystem(TelescopeConstants.FEEDFORWARD_CONTROLLER.kv,

@@ -1,0 +1,98 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.7048335851057668,
+        "y": 5.069114875071856
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.664171905896059,
+        "y": 5.069114875071856
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.082313989189382,
+        "y": 4.579428632541476
+      },
+      "prevControl": {
+        "x": 8.156252705486512,
+        "y": 4.579428632541476
+      },
+      "nextControl": {
+        "x": 6.607202735429158,
+        "y": 4.579428632541476
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.7048335851057668,
+        "y": 4.370858566278536
+      },
+      "prevControl": {
+        "x": 2.2418029432543296,
+        "y": 4.38446096190438
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Score High"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": 3.5,
+  "maxAcceleration": 1.0,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "Score High"
+      ]
+    },
+    {
+      "position": 0.3272727272727288,
+      "names": [
+        "Feed Cube"
+      ]
+    },
+    {
+      "position": 1.2727272727272716,
+      "names": [
+        "Travel"
+      ]
+    }
+  ]
+}

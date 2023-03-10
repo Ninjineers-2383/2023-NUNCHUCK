@@ -23,9 +23,11 @@ public class ButtonBoardButtons {
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
             PositionConstants.FEED_CONE_UPRIGHT,
-            PositionConstants.LOW_SCORE_POS,
-            PositionConstants.MID_SCORE_POS,
-            PositionConstants.HIGH_SCORE_POS,
+            PositionConstants.LOW_SCORE_BACK,
+            PositionConstants.MID_SCORE_BACK,
+            PositionConstants.HIGH_SCORE_BACK,
+            PositionConstants.MID_SCORE_FRONT,
+            PositionConstants.HIGH_SCORE_FRONT,
             PositionConstants.FEED_INTERNAL };
 
     private static ArrayList<String> names = new ArrayList<String>();

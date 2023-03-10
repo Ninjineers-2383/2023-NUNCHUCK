@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreload;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
@@ -131,37 +132,27 @@ public class RobotContainer {
                                     PositionConstants.FEED_CONE_POS),
                             new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
 
-            put("Score Cone Low",
+            put("Travel",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Cone Mid",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Cone High",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+                                    PositionConstants.TRAVEL_POS),
+                            new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0.7)));
 
-            put("Score Cube Low",
+            put("Score Low",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
-            put("Score Cube Mid",
+                                    PositionConstants.LOW_SCORE_BACK),
+                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+            put("Score Mid",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
-            put("Score Cube High",
+                                    PositionConstants.MID_SCORE_BACK),
+                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+            put("Score High",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
+                                    PositionConstants.HIGH_SCORE_BACK),
+                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
         }
     };
 
@@ -235,15 +226,15 @@ public class RobotContainer {
     private void setAutoCommands() {
         // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
         // autoBuilder);
-        // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
-        // autoBuilder);
+        Command coneCube = new FullAutoCommand(m_drivetrainSubsystem, "ConeCube",
+                autoBuilder);
 
         Command score_preload_high = new ScorePreload(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
 
         Command nullAuto = null;
 
-        // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
         // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.setDefaultOption("No Auto :(", nullAuto);
         autoChooser.addOption("Score Preload High", score_preload_high);

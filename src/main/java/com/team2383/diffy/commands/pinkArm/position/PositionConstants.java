@@ -72,23 +72,35 @@ public class PositionConstants {
             2,
             Rotation2d.fromDegrees(108));
 
-    public static final PinkPositions LOW_SCORE_POS = new PinkPositions(
+    public static final PinkPositions LOW_SCORE_BACK = new PinkPositions(
             "Low Score",
             Rotation2d.fromDegrees(-62),
-            2,
-            Rotation2d.fromDegrees(-120));
+            3,
+            Rotation2d.fromDegrees(-125));
 
-    public static final PinkPositions MID_SCORE_POS = new PinkPositions(
-            "Mid Score",
+    public static final PinkPositions MID_SCORE_BACK = new PinkPositions(
+            "Mid Score Back",
             Rotation2d.fromDegrees(-128),
-            0,
-            Rotation2d.fromDegrees(-95));
+            2,
+            Rotation2d.fromDegrees(-100));
 
-    public static final PinkPositions HIGH_SCORE_POS = new PinkPositions(
-            "High Score",
+    public static final PinkPositions HIGH_SCORE_BACK = new PinkPositions(
+            "High Score Back",
             Rotation2d.fromDegrees(-125),
             20,
             Rotation2d.fromDegrees(-120));
+
+    public static final PinkPositions MID_SCORE_FRONT = new PinkPositions(
+            "Mid Score Front",
+            new Rotation2d(1.95),
+            14.8,
+            new Rotation2d(1.64));
+
+    public static final PinkPositions HIGH_SCORE_FRONT = new PinkPositions(
+            "High Score Front",
+            new Rotation2d(2.11),
+            22,
+            new Rotation2d(2.2));
 
     public static final PinkPositions FEED_INTERNAL = new PinkPositions(
             "Feed Internal",
