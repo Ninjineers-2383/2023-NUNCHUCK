@@ -1,0 +1,825 @@
+{
+  "NetworkTables": {
+    "DS:joystick0": {
+      "open": true
+    },
+    "DS:joystick4": {
+      "open": true
+    },
+    "DS:joystick5": {
+      "open": true
+    },
+    "FMSInfo": {
+      "open": true
+    },
+    "LiveWindow": {
+      "DrivetrainSubsystem": {
+        "frontLeft": {
+          "open": true
+        },
+        "frontRight": {
+          "open": true
+        },
+        "open": true,
+        "rear": {
+          "open": true
+        }
+      },
+      "Ungrouped": {
+        "open": true
+      },
+      "open": true
+    },
+    "NT:": {
+      "open": true
+    },
+    "Persistent Values": {
+      "open": false
+    },
+    "SmartDashboard": {
+      "frontLeft": {
+        "Drive FF": {
+          "open": true
+        },
+        "Drive PID": {
+          "open": true
+        },
+        "Turn PID": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "transitory": {
+      "LiveWindow": {
+        "DrivetrainSubsystem": {
+          "frontLeft": {
+            "open": true
+          },
+          "frontRight": {
+            "open": true
+          },
+          "open": true,
+          "rear": {
+            "open": true
+          }
+        },
+        "PivotSubsystem": {
+          "open": true
+        },
+        "TelescopeSubsystem": {
+          "open": true
+        },
+        "Ungrouped": {
+          "PowerDistribution[1]": {
+            "open": true
+          },
+          "open": true
+        },
+        "WristSubsystem": {
+          "open": true
+        },
+        "open": true
+      },
+      "photonvision": {
+        "Arducam_OV9281_Front_Left": {
+          "open": true
+        },
+        "Arducam_OV9281_Front_Right": {
+          "open": true
+        },
+        "Arducam_OV9281_Rear_Left": {
+          "open": true
+        },
+        "Arducam_OV9281_Rear_Right": {
+          "open": true
+        },
+        "Front Left": {
+          "open": true
+        },
+        "Microsoft_LifeCam_HD-3000": {
+          "open": true
+        },
+        "Rear Left": {
+          "open": true
+        },
+        "Rear Right": {
+          "open": true
+        }
+      }
+    },
+    "types": {
+      "": "FMSInfo",
+      "/FMSInfo": "FMSInfo",
+      "/FMSInfo/": "FMSInfo",
+      "/LiveWindow/DrivetrainSubsystem": "Subsystem",
+      "/LiveWindow/PaddleSubsystem": "Subsystem",
+      "/LiveWindow/PinkArmSimSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/": "Motor Controller",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]/": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[5]/": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[6]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[9]/": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[1]/": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]/": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]/": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/Pigeon 2 (Pro) [0]": "Gyro",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Scheduler/": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [20]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [21]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [22]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [23]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [24]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX (Pro) [25]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [20]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [20]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [21]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [21]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [22]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [22]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [23]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [23]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [24]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [24]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [25]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [25]/": "Motor Controller",
+      "/LiveWindow/Ungrouped/frontLeft/Drive PID": "PIDController",
+      "/LiveWindow/Ungrouped/frontRight/Drive PID": "PIDController",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]/": "Gyro",
+      "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
+      "/NT:/": "FMSInfo",
+      "/NT:/LiveWindow/Ungrouped/": "Motor Controller",
+      "/NT:/SmartDashboard/": "Field2d",
+      "/SmartDashboard/": "Field2d",
+      "/SmartDashboard/Auto": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Field/": "Field2d",
+      "/SmartDashboard/Pink Arm": "Mechanism2d",
+      "/SmartDashboard/frontLeft/Drive PID": "PIDController",
+      "/SmartDashboard/frontRight/Drive PID": "PIDController",
+      "/SmartDashboard/rear/Drive PID": "PIDController"
+    }
+  },
+  "NetworkTables Settings": {
+    "clientName": "glass-henry",
+    "dsClient": false,
+    "mode": "Client (NT3)",
+    "serverTeam": "127.0.0.1"
+  },
+  "Plots": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 4.3,
+              "min": -4.3
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Speed"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Drive Speed"
+            }
+          ],
+          "viewTime": 13.000011444091797
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 4.3,
+              "min": -4.3
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Desired Speed"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Drive Speed"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 4.3,
+              "min": -4.3
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Desired Speed"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Drive Speed"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Velocity"
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Desired Angle (Degrees"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Module Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Desired Angle (Degrees"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Module Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 292,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Desired Angle (Degrees"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Module Angle (Degrees)"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Rotation"
+      }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 165,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Estimated Module Angle (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Module Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 165,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Estimated Module Angle (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Module Angle (Degrees)"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 180.0,
+              "min": -180.0
+            }
+          ],
+          "height": 165,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Estimated Module Angle (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Module Angle (Degrees)"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Kalman Estimation"
+      }
+    },
+    "Plot <3>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 443,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Estimated Top Velocity (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Motor Velocity"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Motor Velocity Error"
+            }
+          ]
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 443,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Estimated Bottom Velocity (x hat)"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Motor Velocity"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Motor Velocity Error"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <4>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "lockMax": true,
+              "lockMin": true,
+              "max": 12.0,
+              "min": -12.0
+            }
+          ],
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Voltage"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Voltage"
+            }
+          ],
+          "viewTime": 12.0
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <5>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 338
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <6>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": -4,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/WristSubsystem/Desired Velocity"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/WristSubsystem/Velocity"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/WristSubsystem/Desired Position"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/WristSubsystem/Position"
+            }
+          ],
+          "yaxis2": true
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true
+            },
+            {
+              "autoFit": true
+            }
+          ],
+          "height": -4,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Desired Velocity"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Velocity"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Desired Position"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/TelescopeSubsystem/Position"
+            }
+          ],
+          "yaxis2": true
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <7>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true
+            }
+          ],
+          "height": 322,
+          "legend": false,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/Ungrouped/PowerDistribution[1]/Voltage"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Battery Voltage"
+      }
+    },
+    "Plot <8>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "lockMax": true,
+              "lockMin": true
+            }
+          ],
+          "height": 325,
+          "legend": false,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Top Voltage"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontLeft/Bottom Voltage"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Top Voltage"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/frontRight/Bottom Voltage"
+            },
+            {
+              "color": [
+                0.5058823823928833,
+                0.44705885648727417,
+                0.7019608020782471,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Top Voltage"
+            },
+            {
+              "color": [
+                0.5764706134796143,
+                0.4705882668495178,
+                0.3764706254005432,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/DrivetrainSubsystem/rear/Bottom Voltage"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Motor Voltages"
+      }
+    }
+  }
+}
