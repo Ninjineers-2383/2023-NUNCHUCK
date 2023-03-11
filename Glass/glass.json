@@ -59,16 +59,9 @@
           "frontRight": {
             "open": true
           },
-          "open": true,
           "rear": {
             "open": true
           }
-        },
-        "PivotSubsystem": {
-          "open": true
-        },
-        "TelescopeSubsystem": {
-          "open": true
         },
         "Ungrouped": {
           "PowerDistribution[1]": {
@@ -163,6 +156,7 @@
       "/NT:/LiveWindow/Ungrouped/": "Motor Controller",
       "/NT:/SmartDashboard/": "Field2d",
       "/SmartDashboard/": "Field2d",
+      "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": "Field2d",
       "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Field/": "Field2d",
@@ -175,8 +169,8 @@
   "NetworkTables Settings": {
     "clientName": "glass-henry",
     "dsClient": false,
-    "mode": "Client (NT3)",
-    "serverTeam": "127.0.0.1"
+    "mode": "Client (NT4)",
+    "serverTeam": "10.23.83.2"
   },
   "Plots": {
     "Plot <0>": {
@@ -190,7 +184,7 @@
               "min": -4.3
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -222,7 +216,7 @@
               "min": -4.3
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -253,7 +247,7 @@
               "min": -4.3
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -291,7 +285,7 @@
               "min": -180.0
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -322,7 +316,7 @@
               "min": -180.0
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -353,7 +347,7 @@
               "min": -180.0
             }
           ],
-          "height": 292,
+          "height": 260,
           "series": [
             {
               "color": [
@@ -726,7 +720,13 @@
           "axis": [
             {
               "lockMax": true,
-              "lockMin": true
+              "lockMin": true,
+              "max": 13.0
+            },
+            {
+              "lockMax": true,
+              "lockMin": true,
+              "max": 120.0
             }
           ],
           "height": 322,
@@ -740,12 +740,23 @@
                 1.0
               ],
               "id": "NT:/LiveWindow/Ungrouped/PowerDistribution[1]/Voltage"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/LiveWindow/Ungrouped/PowerDistribution[1]/TotalCurrent",
+              "yAxis": 1
             }
-          ]
+          ],
+          "yaxis2": true
         }
       ],
       "window": {
-        "name": "Battery Voltage"
+        "name": "Battery"
       }
     },
     "Plot <8>": {
@@ -754,7 +765,9 @@
           "axis": [
             {
               "lockMax": true,
-              "lockMin": true
+              "lockMin": true,
+              "max": 13.0,
+              "min": -13.0
             }
           ],
           "height": 325,

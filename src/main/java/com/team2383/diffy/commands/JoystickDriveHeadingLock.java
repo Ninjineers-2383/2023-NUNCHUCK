@@ -8,12 +8,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team2383.diffy.helpers.ThrottleSoftener;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
-public class JoystickDriveFixed extends CommandBase {
+public class JoystickDriveHeadingLock extends CommandBase {
     private final DrivetrainSubsystem m_drivetrain;
 
     private final Supplier<Rotation2d> m_rotSupply;
@@ -22,12 +23,14 @@ public class JoystickDriveFixed extends CommandBase {
     private final IntSupplier m_hatSupplier;
     private Rotation2d m_storedRotation = new Rotation2d();
 
-    private final PIDController m_Controller = new PIDController(2, 0, 0);
+    private final PIDController m_Controller = new PIDController(4, 0, 0);
     private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(10);
     private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(10);
     private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(15);
 
-    public JoystickDriveFixed(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
+    private boolean prev_zero = false;
+
+    public JoystickDriveHeadingLock(DrivetrainSubsystem drivetrain, Supplier<Translation2d> moveSupplier,
             Supplier<Rotation2d> rotation, BooleanSupplier fieldRelative, IntSupplier hatSupplier) {
         m_drivetrain = drivetrain;
 
@@ -41,6 +44,11 @@ public class JoystickDriveFixed extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        m_storedRotation = m_drivetrain.getHeading();
+    }
+
+    @Override
     public void execute() {
         Translation2d move = m_moveSupply.get();
         double x = -ThrottleSoftener.soften(move.getX())
@@ -48,13 +56,28 @@ public class JoystickDriveFixed extends CommandBase {
         double y = -ThrottleSoftener.soften(move.getY())
                 * DriveConstants.kMaxVelocity;
         Rotation2d omega = Rotation2d
-                .fromRadians(m_oRateLimiter.calculate(-ThrottleSoftener.soften(m_rotSupply.get().getRadians()) * 0.75));
-        m_storedRotation = m_storedRotation.plus(omega);
+                .fromRadians(m_oRateLimiter.calculate(-ThrottleSoftener.soften(m_rotSupply.get().getRadians())));
+
+        Rotation2d rotVelocity;
+
+        if (omega.getRadians() == 0 && prev_zero == false) {
+            m_storedRotation = m_drivetrain.getHeading();
+        }
+
+        if (omega.getRadians() == 0 && move.getX() + move.getY() != 0) {
+            rotVelocity = new Rotation2d(
+                    m_Controller.calculate(m_drivetrain.getHeading().getRadians(), m_storedRotation.getRadians()));
+            prev_zero = true;
+        } else {
+            rotVelocity = omega;
+            prev_zero = false;
+        }
 
         int hatPosition = m_hatSupplier.getAsInt();
 
-        Rotation2d rotVelocity = new Rotation2d(
-                m_Controller.calculate(m_drivetrain.getHeading().getRadians(), m_storedRotation.getRadians()));
+        SmartDashboard.putNumber("Omega", omega.getDegrees());
+        SmartDashboard.putNumber("Stored Rot", m_storedRotation.getDegrees());
+        SmartDashboard.putNumber("Rot Velocity", rotVelocity.getDegrees());
 
         m_drivetrain.drive(
                 new Translation2d(

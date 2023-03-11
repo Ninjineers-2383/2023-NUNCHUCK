@@ -1,5 +1,8 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot2Configs;
@@ -12,14 +15,16 @@ import com.ctre.phoenixpro.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -30,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2383.diffy.Robot;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants.ModuleConstants;
+import com.team2383.diffy.helpers.AngleWrapLinearSystemLoop;
 import com.team2383.diffy.helpers.DoubleEncoder;
 import com.team2383.diffy.helpers.SwerveModuleOptimizer;
 
@@ -44,7 +50,7 @@ public class DiffSwerveModule implements Sendable {
     private final VoltageOut m_voltageOut = new VoltageOut(0, true, false);
 
     // New fancy state space controller
-    private final LinearSystemLoop<N3, N2, N3> m_systemLoop;
+    private final AngleWrapLinearSystemLoop<N3, N2, N3> m_systemLoop;
 
     // Encoder class that allows for the use of abs and quadrature encoders
     private final DoubleEncoder m_encoder;
@@ -134,6 +140,13 @@ public class DiffSwerveModule implements Sendable {
         m_bottomMotor = new TalonFX(moduleConstants.kBottomMotorID, CANbus);
         m_bottomMotorSim = m_bottomMotor.getSimState();
 
+        var currentLimit = new CurrentLimitsConfigs();
+        currentLimit.SupplyCurrentLimit = 20;
+        currentLimit.SupplyCurrentLimitEnable = true;
+
+        m_topMotor.getConfigurator().apply(currentLimit);
+        m_bottomMotor.getConfigurator().apply(currentLimit);
+
         m_encoder = new DoubleEncoder(moduleConstants.kEncoderPortA, moduleConstants.kEncoderPortB,
                 moduleConstants.kEncoderPortAbs);
 
@@ -198,13 +211,17 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(0.1, 0.1, 0.001), VecBuilder.fill(9, 9), 0.02);
+                VecBuilder.fill(0.1, 0.1, 0.001), VecBuilder.fill(12, 12), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
 
-        m_systemLoop = new LinearSystemLoop<>(m_diffySwervePlant, m_controller,
-                m_observer, 9.0, 0.02);
+        m_systemLoop = new AngleWrapLinearSystemLoop<>(
+                m_controller,
+                new LinearPlantInversionFeedforward<>(m_diffySwervePlant, 0.02),
+                m_observer,
+                u -> StateSpaceUtil.desaturateInputVector(u, 12),
+                new ArrayList<Integer>(Arrays.asList(2)));
     }
 
     public void periodic() {
@@ -321,7 +338,7 @@ public class DiffSwerveModule implements Sendable {
     public double getModuleAngle() {
         double angle = m_encoder.get() - m_offset;
 
-        return Math.toDegrees(MathUtil.angleModulus(Math.toRadians(angle)));
+        return angle;
     }
 
     /**
@@ -333,6 +350,8 @@ public class DiffSwerveModule implements Sendable {
     public void setDesiredState(SwerveModuleState desiredState) {
         m_desiredState = SwerveModuleOptimizer.customOptimize(desiredState,
                 Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
+
+        // m_desiredState = desiredState;
 
         // SwerveModuleState state = desiredState;
 
@@ -424,7 +443,7 @@ public class DiffSwerveModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Module Angle (Degrees)", () -> {
-            return m_moduleAngle;
+            return Math.toDegrees(MathUtil.angleModulus(Math.toRadians(m_moduleAngle)));
         }, null);
 
         builder.addDoubleProperty("Encoder Zero Offset", () -> {

@@ -16,6 +16,7 @@ import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreload;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.commands.JoystickDriveHeadingLock;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
@@ -64,7 +65,7 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(140 * m_driverController.getRawAxis(0));
+            .fromDegrees(140 * MathUtil.applyDeadband(m_driverController.getRawAxis(0), 0.1));
 
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(6));
     private final IntSupplier m_povSupplier = () -> -1;
@@ -104,7 +105,7 @@ public class RobotContainer {
             m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
-    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(
+    private final JoystickDriveHeadingLock m_driveCommand = new JoystickDriveHeadingLock(
             m_drivetrainSubsystem,
             m_drive,
             m_driveOmega,

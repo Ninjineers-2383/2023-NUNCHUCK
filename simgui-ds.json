@@ -1,9 +1,4 @@
 {
-  "Keyboard 0 Settings": {
-    "window": {
-      "visible": true
-    }
-  },
   "Keyboard 1 Settings": {
     "window": {
       "visible": true
@@ -13,9 +8,7 @@
     {
       "axisConfig": [
         {
-          "decKey": 87,
-          "decayRate": 0.10000000149011612,
-          "incKey": 83
+          "decayRate": 0.10000000149011612
         },
         {
           "decKey": 264,
@@ -27,9 +20,7 @@
           "incKey": 75,
           "keyRate": 0.009999999776482582
         },
-        {
-          "incKey": 76
-        },
+        {},
         {},
         {
           "decKey": 263,
@@ -59,7 +50,21 @@
       "povCount": 1
     },
     {
-      "axisCount": 2,
+      "axisConfig": [
+        {
+          "decKey": 83,
+          "incKey": 87
+        },
+        {
+          "decKey": 68,
+          "incKey": 65
+        },
+        {
+          "decKey": 74,
+          "incKey": 76
+        }
+      ],
+      "axisCount": 3,
       "buttonCount": 4,
       "buttonKeys": [
         -1,
@@ -75,9 +80,7 @@
           "decKey": 73
         },
         {},
-        {
-          "incKey": 74
-        },
+        {},
         {
           "decKey": 77,
           "incKey": 78

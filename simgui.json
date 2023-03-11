@@ -72,6 +72,7 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": "Field2d",
+      "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
@@ -200,10 +201,12 @@
         },
         "WristSubsystem": {
           "open": true
-        },
-        "open": true
+        }
       },
       "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
         "PPSwerveControllerCommand_field": {
           "open": true
         },

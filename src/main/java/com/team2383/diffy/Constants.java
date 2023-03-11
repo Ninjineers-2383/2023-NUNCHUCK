@@ -19,8 +19,8 @@ public final class Constants {
 
     public static final class OI {
         public static int DriveX = Robot.isReal() ? 5 : 0;
-        public static int DriveY = Robot.isReal() ? 4 : 0;
-        public static int DriveOmegaX = Robot.isReal() ? 0 : 0;
+        public static int DriveY = Robot.isReal() ? 4 : 1;
+        public static int DriveOmegaX = Robot.isReal() ? 0 : 2;
         public static int DriveOmegaY = Robot.isReal() ? 1 : 0;
     }
 }
