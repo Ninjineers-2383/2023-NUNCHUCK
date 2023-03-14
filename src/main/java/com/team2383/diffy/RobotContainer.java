@@ -12,10 +12,9 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.autos.ConeCubeAuto;
 import com.team2383.diffy.autos.ScorePreload;
 import com.team2383.diffy.commands.FeederCommand;
-import com.team2383.diffy.commands.JoystickDriveCommand;
 import com.team2383.diffy.commands.JoystickDriveHeadingLock;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
@@ -227,8 +226,8 @@ public class RobotContainer {
     private void setAutoCommands() {
         // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
         // autoBuilder);
-        Command coneCube = new FullAutoCommand(m_drivetrainSubsystem, "ConeCube",
-                autoBuilder);
+        Command coneCube = new ConeCubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+                m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
         Command score_preload_high = new ScorePreload(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);

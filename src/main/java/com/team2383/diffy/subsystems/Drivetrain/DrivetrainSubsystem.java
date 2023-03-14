@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -103,19 +104,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(getHeading(), getModulePositions());
 
-        // EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
-        // if (cam_pose != null) {
-        // var estimate = cam_pose.estimatedPose.toPose2d();
-        // if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 16 &&
-        // estimate.getY() < 9) {
-        // m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
-        // cam_pose.timestampSeconds,
-        // VecBuilder.fill(1, 1, 1));
-        // }
-        // }
+        if (cam_pose != null) {
+            var estimate = cam_pose.estimatedPose.toPose2d();
+            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
+                    estimate.getY() < 9) {
+                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
+                        cam_pose.timestampSeconds,
+                        VecBuilder.fill(1, 1, 1));
+            }
+        }
 
-        m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        Pose2d estimatedPose = m_poseEstimator.getEstimatedPosition();
+
+        if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
+            Translation2d transformedTranslation = new Translation2d(16.46 - estimatedPose.getX(),
+                    8.02 - estimatedPose.getY());
+            Rotation2d transformedHeading = estimatedPose.getRotation().times(-1);
+
+            estimatedPose = new Pose2d(transformedTranslation, transformedHeading);
+        }
+
+        m_field.setRobotPose(estimatedPose);
 
         if (RobotController.getUserButton()) {
             if (m_counter1 == 0) {
