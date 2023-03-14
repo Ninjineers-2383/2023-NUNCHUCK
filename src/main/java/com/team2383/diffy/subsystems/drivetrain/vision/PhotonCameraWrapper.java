@@ -2,7 +2,9 @@ package com.team2383.diffy.subsystems.drivetrain.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.Optional;
 
@@ -11,6 +13,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.SimVisionSystem;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.team2383.diffy.Robot;
 
@@ -36,6 +40,10 @@ public class PhotonCameraWrapper {
                     atfl, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonCameras[i],
                     VisionConstants.kPhotonCameras[i].transform);
         }
+
+        atfl.setOrigin(DriverStation.getAlliance().equals(DriverStation.Alliance.Red)
+                ? OriginPosition.kRedAllianceWallRightSide
+                : OriginPosition.kBlueAllianceWallRightSide);
 
         if (Robot.isSimulation()) {
             simVisionSystem = new SimVisionSystem(
@@ -68,6 +76,18 @@ public class PhotonCameraWrapper {
         EstimatedRobotPose latestPose = null;
         int len = Robot.isReal() ? photonCameras.length : 1;
         for (int i = 0; i < len; i++) {
+            PhotonPipelineResult result = photonCameras[i].getLatestResult();
+            double minAmbiguity = 0;
+            for (PhotonTrackedTarget target : result.targets) {
+                double ambiguity = target.getPoseAmbiguity();
+                if (minAmbiguity > ambiguity) {
+                    minAmbiguity = ambiguity;
+                }
+            }
+
+            if (minAmbiguity > 0.4)
+                continue;
+
             photonPoseEstimators[i].setReferencePose(prevEstimatedRobotPose);
             Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimators[i].update();
             if (estimatedRobotPose.isEmpty()) {
