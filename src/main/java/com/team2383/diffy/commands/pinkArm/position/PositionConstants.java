@@ -80,7 +80,7 @@ public class PositionConstants {
 
     public static final PinkPositions MID_SCORE_BACK = new PinkPositions(
             "Mid Score Back",
-            Rotation2d.fromDegrees(-128),
+            Rotation2d.fromDegrees(-125),
             2,
             Rotation2d.fromDegrees(-100));
 

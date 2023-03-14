@@ -24,8 +24,8 @@ public class JoystickDriveHeadingLock extends CommandBase {
     private Rotation2d m_storedRotation = new Rotation2d();
 
     private final PIDController m_Controller = new PIDController(4, 0, 0);
-    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(10);
-    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(10);
+    private final SlewRateLimiter m_xRateLimiter = new SlewRateLimiter(4);
+    private final SlewRateLimiter m_yRateLimiter = new SlewRateLimiter(4);
     private final SlewRateLimiter m_oRateLimiter = new SlewRateLimiter(15);
 
     private boolean prev_zero = false;
