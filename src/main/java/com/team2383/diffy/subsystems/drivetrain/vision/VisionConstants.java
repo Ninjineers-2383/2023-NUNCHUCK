@@ -6,7 +6,17 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
-    public static final double camYDistance = -1.6764 + 1.39 + 1.08;
+
+    // Description of the camera's relative position
+    private static final Rotation3d CAM_PITCH = new Rotation3d(0, Units.degreesToRadians(20), 0);
+    private static final Rotation3d CAM_YAW = new Rotation3d(0, 0, Units.degreesToRadians(45));
+    private static final Rotation3d FRONT_YAW = new Rotation3d(0, 0, Units.degreesToRadians(180));
+
+    public static final double camYDistance = -1.6764 + 1.39 + 1.08; // in meters
+
+    private static final Translation3d CAM_X = new Translation3d(Units.inchesToMeters(1.5), 0, 0);
+    private static final Translation3d CAM_Y = new Translation3d(0, camYDistance / 2, 0);
+    private static final Translation3d CAM_Z = new Translation3d(0, 0, Units.inchesToMeters(45.5));
 
     public static final class PhotonCameraData {
         public final String name;
@@ -21,30 +31,23 @@ public final class VisionConstants {
     public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
             new PhotonCameraData("Arducam_OV9281_Front_Left",
                     new Transform3d(
-                            new Translation3d(Units.inchesToMeters(1.5), camYDistance / 2,
-                                    Units.inchesToMeters(45.5)),
-                            new Rotation3d(-45, Units.degreesToRadians(-20), 0))),
+                            CAM_Z.minus(CAM_X).minus(CAM_Y),
+                            FRONT_YAW.minus(CAM_YAW).plus(CAM_PITCH))),
 
             new PhotonCameraData("Arducam_OV9281_Front_Right",
                     new Transform3d(
-                            new Translation3d(Units.inchesToMeters(1.5), -camYDistance / 2,
-                                    Units.inchesToMeters(45.5)),
-                            new Rotation3d(45, Units.degreesToRadians(-20), 0))),
+                            CAM_Z.minus(CAM_X).plus(CAM_Y),
+                            FRONT_YAW.times(-1).plus(CAM_YAW).plus(CAM_PITCH))),
 
             new PhotonCameraData("Arducam_OV9281_Rear_Left",
                     new Transform3d(
-                            new Translation3d(Units.inchesToMeters(-1.5), camYDistance / 2,
-                                    Units.inchesToMeters(45.5)),
-                            new Rotation3d(0, 0, Units.degreesToRadians(45))
-                                    .plus(new Rotation3d(Units.degreesToRadians(20), 0, 0)))),
+                            CAM_Z.plus(CAM_X).minus(CAM_Y),
+                            CAM_YAW.plus(CAM_PITCH))),
 
             new PhotonCameraData("Arducam_OV9281_Rear_Right",
                     new Transform3d(
-                            new Translation3d(Units.inchesToMeters(-1.5), -camYDistance / 2,
-                                    Units.inchesToMeters(45.5)),
-                            new Rotation3d(0, 0, Units.degreesToRadians(
-                                    -45))
-                                    .plus(new Rotation3d(Units.degreesToRadians(-20), 0, 0)))),
+                            CAM_Z.plus(CAM_X).plus(CAM_Y),
+                            CAM_YAW.plus(CAM_PITCH))),
     };
 
 }
