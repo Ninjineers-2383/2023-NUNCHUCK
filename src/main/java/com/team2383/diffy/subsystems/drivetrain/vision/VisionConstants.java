@@ -12,11 +12,9 @@ public final class VisionConstants {
     private static final Rotation3d CAM_YAW = new Rotation3d(0, 0, Units.degreesToRadians(45));
     private static final Rotation3d FRONT_YAW = new Rotation3d(0, 0, Units.degreesToRadians(180));
 
-    public static final double camYDistance = -1.6764 + 1.39 + 1.08; // in meters
-
-    private static final Translation3d CAM_X = new Translation3d(Units.inchesToMeters(1.5), 0, 0);
-    private static final Translation3d CAM_Y = new Translation3d(0, camYDistance / 2, 0);
-    private static final Translation3d CAM_Z = new Translation3d(0, 0, Units.inchesToMeters(45.5));
+    private static final Translation3d CAM_X = new Translation3d(Units.inchesToMeters(3.5) / 2, 0, 0);
+    private static final Translation3d CAM_Y = new Translation3d(0, Units.inchesToMeters(20) / 2, 0);
+    private static final Translation3d CAM_Z = new Translation3d(0, 0, Units.inchesToMeters(45));
 
     public static final class PhotonCameraData {
         public final String name;
@@ -47,7 +45,7 @@ public final class VisionConstants {
             new PhotonCameraData("Arducam_OV9281_Rear_Right",
                     new Transform3d(
                             CAM_Z.plus(CAM_X).plus(CAM_Y),
-                            CAM_YAW.plus(CAM_PITCH))),
+                            CAM_YAW.times(-1).plus(CAM_PITCH))),
     };
 
 }
