@@ -210,7 +210,7 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(12, 12), 0.02);
+                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(9, 9), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
@@ -219,7 +219,7 @@ public class DiffSwerveModule implements Sendable {
                 m_controller,
                 new LinearPlantInversionFeedforward<>(m_diffySwervePlant, 0.02),
                 m_observer,
-                u -> StateSpaceUtil.desaturateInputVector(u, 12),
+                u -> StateSpaceUtil.desaturateInputVector(u, 9),
                 new ArrayList<Integer>(Arrays.asList(2)));
     }
 

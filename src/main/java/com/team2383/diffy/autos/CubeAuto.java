@@ -16,23 +16,21 @@ import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class ConeCubeAuto extends SequentialCommandGroup {
-    public ConeCubeAuto(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
+public class CubeAuto extends SequentialCommandGroup {
+    public CubeAuto(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
             WristSubsystem wrist, FeederSubsystem feeder, SwerveAutoBuilder autoBuilder) {
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("ConeCube",
+        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("Cube",
                 new PathConstraints(1, 1));
         addCommands(
-                new InstantCommand(() -> m_drivetrain.forceHeading(Rotation2d.fromDegrees(10.5))),
+                new InstantCommand(() -> m_drivetrain.resetHeading()),
                 new ZeroTelescope(telescope),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.MID_SCORE_BACK),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.HIGH_SCORE_BACK),
                 new FeederCommand(feeder, () -> -1).withTimeout(0.4),
                 new FeederCommand(feeder, () -> 0).withTimeout(0.01),
-                autoBuilder.fullAuto(pathGroup),
-                new InstantCommand(() -> m_drivetrain.resetHeading()));
+                autoBuilder.fullAuto(pathGroup));
     }
 }

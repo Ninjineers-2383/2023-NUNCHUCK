@@ -13,6 +13,8 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.ConeCubeAuto;
+import com.team2383.diffy.autos.CubeAuto;
+import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreload;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveHeadingLock;
@@ -132,6 +134,12 @@ public class RobotContainer {
                                     PositionConstants.FEED_CONE_POS),
                             new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
 
+            put("Feed Internal",
+                    new SequentialCommandGroup(
+                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                                    PositionConstants.FEED_INTERNAL),
+                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+
             put("Travel",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
@@ -160,7 +168,7 @@ public class RobotContainer {
             m_drivetrainSubsystem::getPose,
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(5, 0, 0),
+            new PIDConstants(1, 0, 0),
             new PIDConstants(0.5, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             autoHashMap,
@@ -232,12 +240,19 @@ public class RobotContainer {
         Command score_preload_high = new ScorePreload(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
 
+        Command forward = new FullAutoCommand(m_drivetrainSubsystem, "Forward", autoBuilder);
+
+        Command cube = new CubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+                m_wristSubsystem, m_feederSubsystem, autoBuilder);
+
         Command nullAuto = null;
 
         autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
         // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.setDefaultOption("No Auto :(", nullAuto);
         autoChooser.addOption("Score Preload High", score_preload_high);
+        autoChooser.addOption("Forward", forward);
+        autoChooser.addOption("Cube", cube);
 
         SmartDashboard.putData("Auto", autoChooser);
     }

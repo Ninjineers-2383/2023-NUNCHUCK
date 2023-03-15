@@ -121,7 +121,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
             Translation2d transformedTranslation = new Translation2d(16.46 - estimatedPose.getX(),
                     8.02 - estimatedPose.getY());
-            Rotation2d transformedHeading = estimatedPose.getRotation().times(-1);
+            Rotation2d transformedHeading = estimatedPose.getRotation();
 
             estimatedPose = new Pose2d(transformedTranslation, transformedHeading);
         }

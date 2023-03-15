@@ -184,7 +184,7 @@
               "min": -4.3
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -216,7 +216,7 @@
               "min": -4.3
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -247,7 +247,7 @@
               "min": -4.3
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -285,7 +285,7 @@
               "min": -180.0
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -316,7 +316,7 @@
               "min": -180.0
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -347,7 +347,7 @@
               "min": -180.0
             }
           ],
-          "height": 260,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -385,7 +385,7 @@
               "min": -180.0
             }
           ],
-          "height": 165,
+          "height": 230,
           "series": [
             {
               "color": [
@@ -416,7 +416,7 @@
               "min": -180.0
             }
           ],
-          "height": 165,
+          "height": 230,
           "series": [
             {
               "color": [
@@ -447,7 +447,7 @@
               "min": -180.0
             }
           ],
-          "height": 165,
+          "height": 230,
           "series": [
             {
               "color": [
@@ -724,6 +724,7 @@
               "max": 13.0
             },
             {
+              "autoFit": true,
               "lockMax": true,
               "lockMin": true,
               "max": 120.0
@@ -770,7 +771,7 @@
               "min": -13.0
             }
           ],
-          "height": 325,
+          "height": 0,
           "legend": false,
           "series": [
             {
