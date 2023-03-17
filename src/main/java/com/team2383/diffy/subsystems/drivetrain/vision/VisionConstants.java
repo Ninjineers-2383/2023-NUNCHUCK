@@ -13,7 +13,7 @@ public final class VisionConstants {
     private static final Rotation3d FRONT_YAW = new Rotation3d(0, 0, Units.degreesToRadians(180));
 
     private static final Translation3d CAM_X = new Translation3d(Units.inchesToMeters(3.5) / 2, 0, 0);
-    private static final Translation3d CAM_Y = new Translation3d(0, Units.inchesToMeters(20) / 2, 0);
+    private static final Translation3d CAM_Y = new Translation3d(0, 0.908 / 2, 0);
     private static final Translation3d CAM_Z = new Translation3d(0, 0, Units.inchesToMeters(45));
 
     public static final class PhotonCameraData {

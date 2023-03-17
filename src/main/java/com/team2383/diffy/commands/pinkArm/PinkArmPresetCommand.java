@@ -37,7 +37,7 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
         BooleanSupplier m_needToReset = () -> (((Math.signum(m_pivot.getAngle().getDegrees()) != Math
                 .signum(pinkPositions.pivot.getDegrees()))
                 || (m_PinkPositions.pivot.getDegrees() > -60 && m_PinkPositions.pivot.getDegrees() < 24))
-                && (m_pivot.getAngle().getDegrees() < -60 || m_pivot.getAngle().getDegrees() > 24));
+                && (m_pivot.getAngle().getDegrees() < -60 || m_pivot.getAngle().getDegrees() > 17));
         addCommands(
                 new InstantCommand(() -> SmartDashboard.putNumber("Stage", 1)),
                 new SequentialCommandGroup(
