@@ -42,6 +42,7 @@ public class AngleWrapLinearSystemLoop<States extends Num, Inputs extends Num, O
     private final LinearPlantInversionFeedforward<States, Inputs, Outputs> m_feedforward;
     private final KalmanFilter<States, Inputs, Outputs> m_observer;
     private Matrix<States, N1> m_nextR;
+    private Matrix<States, N1> m_r;
     private Function<Matrix<Inputs, N1>, Matrix<Inputs, N1>> m_clampFunction;
     private ArrayList<Integer> m_AngleIndexes;
     private Matrix<Inputs, N1> m_u;
@@ -71,6 +72,7 @@ public class AngleWrapLinearSystemLoop<States extends Num, Inputs extends Num, O
         this.m_AngleIndexes = m_angleIndexes;
 
         m_nextR = new Matrix<>(new SimpleMatrix(controller.getK().getNumCols(), 1));
+        m_r = new Matrix<>(new SimpleMatrix(controller.getK().getNumCols(), 1));
         m_u = new Matrix<>(new SimpleMatrix(controller.getK().getNumRows(), 1));
         reset(m_nextR);
     }
@@ -225,7 +227,7 @@ public class AngleWrapLinearSystemLoop<States extends Num, Inputs extends Num, O
      * @return The state error matrix.
      */
     public Matrix<States, N1> getError() {
-        return getController().getR().minus(m_observer.getXhat());
+        return m_r.minus(m_observer.getXhat());
     }
 
     /**
@@ -235,7 +237,7 @@ public class AngleWrapLinearSystemLoop<States extends Num, Inputs extends Num, O
      * @return The error at that index.
      */
     public double getError(int index) {
-        return (getController().getR().minus(m_observer.getXhat())).get(index, 0);
+        return (m_r.minus(m_observer.getXhat())).get(index, 0);
     }
 
     /**
@@ -287,6 +289,7 @@ public class AngleWrapLinearSystemLoop<States extends Num, Inputs extends Num, O
         var u_ff = m_feedforward.calculate(m_nextR);
         m_u = clampInput(u_back.plus(u_ff));
         getObserver().predict(m_u, dtSeconds);
+        m_r = m_nextR;
     }
 
     /**

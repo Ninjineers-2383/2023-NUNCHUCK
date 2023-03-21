@@ -13,9 +13,8 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.ConeCubeAuto;
-import com.team2383.diffy.autos.CubeAuto;
+import com.team2383.diffy.autos.CubeMobilityAuto;
 import com.team2383.diffy.autos.EngageAuto;
-import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreloadHigh;
 import com.team2383.diffy.autos.ScorePreloadMid;
 import com.team2383.diffy.commands.FeederCommand;
@@ -46,7 +45,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,13 +68,14 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(140 * MathUtil.applyDeadband(m_driverController.getRawAxis(0), 0.1));
+            .fromDegrees(140 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
 
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(6));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(Constants.OI.FieldCentric));
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(2), .1);
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn)
+                    - m_driverController.getRawAxis(Constants.OI.IntakeOut), .1);
 
     private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
             .fromDegrees(90 * m_operatorController.getRawAxis(5));
@@ -86,7 +85,7 @@ public class RobotContainer {
 
     private final Trigger m_resetPosition = ButtonBoardButtons.makeNormieButton("Reset Position");
     private final Trigger m_resetHeading = ButtonBoardButtons.makeNormieButton("Reset Heading")
-            .or(() -> m_driverController.getRawButton(8));
+            .or(() -> m_driverController.getRawButton(Constants.OI.ResetHeading));
     // private final Trigger m_paddlePreset =
     // ButtonBoardButtons.makeNormieButton("Paddle Preset")
     // .or(new JoystickButton(m_driverController, 6));
@@ -238,8 +237,6 @@ public class RobotContainer {
     }
 
     private void setAutoCommands() {
-        // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
-        // autoBuilder);
         Command coneCube = new ConeCubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
@@ -261,23 +258,19 @@ public class RobotContainer {
                         m_feederSubsystem),
                 new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
 
-        Command forward = new FullAutoCommand(m_drivetrainSubsystem, "Forward", autoBuilder);
-
-        Command cube = new CubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+        Command cube_mobility = new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
         Command nullAuto = null;
 
         autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
-        // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.setDefaultOption("No Auto :(", nullAuto);
         autoChooser.addOption("Score Preload High", score_preload_high);
         autoChooser.addOption("Score Preload Mid", score_preload_mid);
         autoChooser.addOption("Engage Score Preload High", engage_high_preload);
         autoChooser.addOption("Engage Score Preload Mid", engage_mid_preload);
-        autoChooser.addOption("Forward", forward);
-        autoChooser.addOption("engage", engage);
-        autoChooser.addOption("Cube", cube);
+        autoChooser.addOption("Engage", engage);
+        autoChooser.addOption("Cube Mobility", cube_mobility);
 
         SmartDashboard.putData("Auto", autoChooser);
     }

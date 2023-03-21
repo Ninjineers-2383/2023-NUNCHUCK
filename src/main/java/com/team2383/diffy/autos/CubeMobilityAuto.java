@@ -19,8 +19,8 @@ import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class CubeAuto extends SequentialCommandGroup {
-    public CubeAuto(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
+public class CubeMobilityAuto extends SequentialCommandGroup {
+    public CubeMobilityAuto(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
             WristSubsystem wrist, FeederSubsystem feeder, SwerveAutoBuilder autoBuilder) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("Cube",
                 new PathConstraints(1, 1));

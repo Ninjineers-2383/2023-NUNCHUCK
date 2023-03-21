@@ -18,9 +18,15 @@ public final class Constants {
     public static final String kCANivoreBus = "Drive";
 
     public static final class OI {
+        // Axis
         public static int DriveX = Robot.isReal() ? 5 : 0;
         public static int DriveY = Robot.isReal() ? 4 : 1;
-        public static int DriveOmegaX = Robot.isReal() ? 0 : 2;
-        public static int DriveOmegaY = Robot.isReal() ? 1 : 0;
+        public static int DriveOmega = Robot.isReal() ? 0 : 2;
+        public static int IntakeIn = Robot.isReal() ? 3 : 3;
+        public static int IntakeOut = Robot.isReal() ? 2 : 4;
+
+        // Buttons
+        public static int FieldCentric = Robot.isReal() ? 6 : 1;
+        public static int ResetHeading = Robot.isReal() ? 8 : 2;
     }
 }

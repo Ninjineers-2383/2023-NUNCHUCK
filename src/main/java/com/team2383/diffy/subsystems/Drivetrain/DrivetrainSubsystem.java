@@ -155,12 +155,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightModule.simulate();
         m_rearModule.simulate();
 
-        // It is important that this is the only place that uses getYaw because it is
-        // not offset
-        // The chassis speed also needs to be negated because Yaw is CW + not CCW+ like
-        // all other angles
         m_gyroSim.setRawYaw(
-                m_gyro.getYaw().getValue() + (-m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
+                m_gyro.getYaw().getValue() + (m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
 
         m_camera.simulate(getPose());
     }
@@ -241,7 +237,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * north
      */
     public void resetHeading() {
-        // getYaw is CW positive not CCW positive
         m_gyro.setYaw(getCompassHeading());
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
                 new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
@@ -254,7 +249,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return turn rate in degrees per second CCW positive
      */
     public double getTurnRate() {
-        return -m_gyro.getRate();
+        return m_gyro.getRate();
     }
 
     public Pose2d getPose() {

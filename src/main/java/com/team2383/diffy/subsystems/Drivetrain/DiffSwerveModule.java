@@ -204,7 +204,7 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(1, 1, 0.001),
+                VecBuilder.fill(1, 1, 0.01),
                 VecBuilder.fill(DriveConstants.kDriveMaxVoltage, DriveConstants.kDriveMaxVoltage), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
@@ -219,15 +219,15 @@ public class DiffSwerveModule implements Sendable {
     }
 
     public void periodic() {
-        double topMotorSpeed = m_topMotor.getRotorVelocity().refresh().getValue();
-        double bottomMotorSpeed = m_bottomMotor.getRotorVelocity().refresh().getValue();
+        double topMotorSpeed = m_topMotor.getRotorVelocity().getValue();
+        double bottomMotorSpeed = m_bottomMotor.getRotorVelocity().getValue();
 
         m_driveSpeed = getDriveSpeed(topMotorSpeed, bottomMotorSpeed);
         m_moduleAngle = getModuleAngle();
 
         // data logging
-        m_topMotorCurrent.append(m_topMotor.getStatorCurrent().refresh().getValue());
-        m_bottomMotorCurrent.append(m_bottomMotor.getStatorCurrent().refresh().getValue());
+        m_topMotorCurrent.append(m_topMotor.getStatorCurrent().getValue());
+        m_bottomMotorCurrent.append(m_bottomMotor.getStatorCurrent().getValue());
 
         m_topMotorVel.append(topMotorSpeed);
         m_bottomMotorVel.append(bottomMotorSpeed);
@@ -238,7 +238,7 @@ public class DiffSwerveModule implements Sendable {
         if (reset_counter < 200) {
             if (reset_counter == 199) {
                 m_encoder.reset();
-                m_systemLoop.setXHat(VecBuilder.fill(0, 0, Math.toRadians(getModuleAngle())));
+                m_systemLoop.reset(VecBuilder.fill(0, 0, Math.toRadians(getModuleAngle())));
             }
             reset_counter++;
         }
@@ -259,8 +259,8 @@ public class DiffSwerveModule implements Sendable {
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
                 getDriveDistanceMeters(
-                        m_topMotor.getRotorPosition().refresh().getValue(),
-                        m_bottomMotor.getRotorPosition().refresh().getValue()),
+                        m_topMotor.getRotorPosition().getValue(),
+                        m_bottomMotor.getRotorPosition().getValue()),
                 Rotation2d.fromDegrees(m_moduleAngle));
     }
 
@@ -275,10 +275,10 @@ public class DiffSwerveModule implements Sendable {
         m_bottomMotorSim.addRotorPosition(bottomMotorVel * 0.02);
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Top Motor Simulator/Output Velocity",
-                m_topMotor.getRotorVelocity().refresh().getValue());
+                m_topMotor.getRotorVelocity().getValue());
 
         SmartDashboard.putNumber("Simulated/" + m_name + "/Bottom Motor Simulator/Output Velocity",
-                m_bottomMotor.getRotorVelocity().refresh().getValue());
+                m_bottomMotor.getRotorVelocity().getValue());
 
         m_encoder.simulate(new Rotation2d(m_systemLoop.getXHat(2)).getDegrees());
 
@@ -364,17 +364,19 @@ public class DiffSwerveModule implements Sendable {
 
         m_systemLoop.correct(
                 VecBuilder.fill(
-                        sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().refresh().getValue()),
-                        sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().refresh().getValue()),
+                        sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().getValue()),
+                        sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().getValue()),
                         Math.toRadians(getModuleAngle())));
 
         m_systemLoop.predict(0.020);
 
         m_topVoltage = m_systemLoop.getU(0);
-        m_topVoltage += Math.signum(m_topVoltage) * m_kS;
+        if (Robot.isReal())
+            m_topVoltage += Math.signum(m_topVoltage) * m_kS;
 
         m_bottomVoltage = m_systemLoop.getU(1);
-        m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
+        if (Robot.isReal())
+            m_bottomVoltage += Math.signum(m_bottomVoltage) * m_kS;
 
         setVoltage();
     }
@@ -469,10 +471,10 @@ public class DiffSwerveModule implements Sendable {
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity", () -> {
-            return sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().refresh().getValue());
+            return sensorVelocityToRadiansPerSecond(m_topMotor.getRotorVelocity().getValue());
         }, null);
         builder.addDoubleProperty("Bottom Motor Velocity", () -> {
-            return sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().refresh().getValue());
+            return sensorVelocityToRadiansPerSecond(m_bottomMotor.getRotorVelocity().getValue());
         }, null);
 
         builder.addDoubleProperty("Top Motor Velocity Error", () -> {

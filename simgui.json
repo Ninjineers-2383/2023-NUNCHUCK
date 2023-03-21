@@ -87,6 +87,7 @@
         "Arducam_OV9281_Front_Left Camera": {
           "style": "Box/Image"
         },
+        "image": "C:\\Users\\Henry\\Documents\\repos\\2023-Diffy-Swerve\\sim\\2023-field.png",
         "window": {
           "visible": true
         }
@@ -103,10 +104,7 @@
         }
       },
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": {
-        "image": "sim\\2023-field.png",
-        "window": {
-          "visible": true
-        }
+        "image": "sim\\2023-field.png"
       },
       "/SmartDashboard/PPSwerveControllerCommand_field": {
         "image": "sim\\2023-field.png",
