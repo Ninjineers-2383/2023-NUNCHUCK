@@ -30,6 +30,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team2383.diffy.Robot;
@@ -139,13 +140,6 @@ public class DiffSwerveModule implements Sendable {
         m_bottomMotor = new TalonFX(moduleConstants.kBottomMotorID, CANbus);
         m_bottomMotorSim = m_bottomMotor.getSimState();
 
-        var currentLimit = new CurrentLimitsConfigs();
-        currentLimit.SupplyCurrentLimit = 20;
-        currentLimit.SupplyCurrentLimitEnable = true;
-
-        m_topMotor.getConfigurator().apply(currentLimit);
-        m_bottomMotor.getConfigurator().apply(currentLimit);
-
         m_encoder = new DoubleEncoder(moduleConstants.kEncoderPortA, moduleConstants.kEncoderPortB,
                 moduleConstants.kEncoderPortAbs);
 
@@ -210,7 +204,8 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(1, 1, 0.001), VecBuilder.fill(9, 9), 0.02);
+                VecBuilder.fill(1, 1, 0.001),
+                VecBuilder.fill(DriveConstants.kDriveMaxVoltage, DriveConstants.kDriveMaxVoltage), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
                 VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.01, 0.01, 0.01), 0.02);
@@ -219,7 +214,7 @@ public class DiffSwerveModule implements Sendable {
                 m_controller,
                 new LinearPlantInversionFeedforward<>(m_diffySwervePlant, 0.02),
                 m_observer,
-                u -> StateSpaceUtil.desaturateInputVector(u, 9),
+                u -> StateSpaceUtil.desaturateInputVector(u, RobotController.getBatteryVoltage()),
                 new ArrayList<Integer>(Arrays.asList(2)));
     }
 

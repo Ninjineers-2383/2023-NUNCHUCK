@@ -13,13 +13,14 @@ import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class ScorePreload extends SequentialCommandGroup {
-    public ScorePreload(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
+public class ScorePreloadHigh extends SequentialCommandGroup {
+    public ScorePreloadHigh(DrivetrainSubsystem m_drivetrain, TelescopeSubsystem telescope, PivotSubsystem pivot,
             WristSubsystem wrist, FeederSubsystem feeder) {
         addCommands(
                 new InstantCommand(() -> m_drivetrain.resetHeading()),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.ZERO_POS),
                 new ZeroTelescope(telescope),
+                new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.MID_SCORE_BACK),
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.HIGH_SCORE_BACK),
                 new FeederCommand(feeder, () -> -1).withTimeout(0.4),
                 new FeederCommand(feeder, () -> 0).withTimeout(0.01),

@@ -14,8 +14,10 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.ConeCubeAuto;
 import com.team2383.diffy.autos.CubeAuto;
+import com.team2383.diffy.autos.EngageAuto;
 import com.team2383.diffy.autos.FullAutoCommand;
-import com.team2383.diffy.autos.ScorePreload;
+import com.team2383.diffy.autos.ScorePreloadHigh;
+import com.team2383.diffy.autos.ScorePreloadMid;
 import com.team2383.diffy.commands.FeederCommand;
 import com.team2383.diffy.commands.JoystickDriveHeadingLock;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
@@ -29,6 +31,7 @@ import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
+import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
 
 import edu.wpi.first.math.MathUtil;
@@ -43,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -146,6 +150,8 @@ public class RobotContainer {
                                     PositionConstants.TRAVEL_POS),
                             new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0.7)));
 
+            put("Safety", new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromDegrees(-60)));
+
             put("Score Low",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
@@ -169,7 +175,7 @@ public class RobotContainer {
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
             new PIDConstants(1, 0, 0),
-            new PIDConstants(0.5, 0, 0),
+            new PIDConstants(1, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             autoHashMap,
             true,
@@ -237,8 +243,23 @@ public class RobotContainer {
         Command coneCube = new ConeCubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
-        Command score_preload_high = new ScorePreload(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+        Command score_preload_high = new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
+
+        Command score_preload_mid = new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+                m_wristSubsystem, m_feederSubsystem);
+
+        Command engage = new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem);
+
+        Command engage_high_preload = new SequentialCommandGroup(
+                new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
+                        m_feederSubsystem),
+                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
+
+        Command engage_mid_preload = new SequentialCommandGroup(
+                new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
+                        m_feederSubsystem),
+                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
 
         Command forward = new FullAutoCommand(m_drivetrainSubsystem, "Forward", autoBuilder);
 
@@ -251,7 +272,11 @@ public class RobotContainer {
         // autoChooser.addOption("Forward Test Auto", forwardTest);
         autoChooser.setDefaultOption("No Auto :(", nullAuto);
         autoChooser.addOption("Score Preload High", score_preload_high);
+        autoChooser.addOption("Score Preload Mid", score_preload_mid);
+        autoChooser.addOption("Engage Score Preload High", engage_high_preload);
+        autoChooser.addOption("Engage Score Preload Mid", engage_mid_preload);
         autoChooser.addOption("Forward", forward);
+        autoChooser.addOption("engage", engage);
         autoChooser.addOption("Cube", cube);
 
         SmartDashboard.putData("Auto", autoChooser);
