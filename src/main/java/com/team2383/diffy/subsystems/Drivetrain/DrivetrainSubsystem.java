@@ -1,11 +1,8 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
-import org.photonvision.EstimatedRobotPose;
-
 import com.ctre.phoenixpro.hardware.Pigeon2;
 import com.ctre.phoenixpro.sim.Pigeon2SimState;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
-import com.team2383.diffy.subsystems.drivetrain.vision.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final DiffSwerveModule m_frontLeftModule;
@@ -37,7 +33,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModuleState[] m_lastStates;
     private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
 
-    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
+    // private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
     private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
     private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
@@ -104,17 +100,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(getHeading(), getModulePositions());
 
-        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+        // EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
-        if (cam_pose != null) {
-            var estimate = cam_pose.estimatedPose.toPose2d();
-            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
-                    estimate.getY() < 9) {
-                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
-                        cam_pose.timestampSeconds,
-                        VecBuilder.fill(1.5, 1.5, 1.5));
-            }
-        }
+        // if (cam_pose != null) {
+        // var estimate = cam_pose.estimatedPose.toPose2d();
+        // if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
+        // estimate.getY() < 9) {
+        // m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
+        // cam_pose.timestampSeconds,
+        // VecBuilder.fill(1.5, 1.5, 1.5));
+        // }
+        // }
 
         Pose2d estimatedPose = m_poseEstimator.getEstimatedPosition();
 
@@ -147,6 +143,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (m_counter1 > 0) {
             m_counter1--;
         }
+
+        SmartDashboard.putNumber("Roll", getRoll());
     }
 
     @Override
@@ -158,7 +156,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_gyroSim.setRawYaw(
                 m_gyro.getYaw().getValue() + (m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
 
-        m_camera.simulate(getPose());
+        // m_camera.simulate(getPose());
     }
 
     /**
@@ -250,6 +248,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public double getTurnRate() {
         return m_gyro.getRate();
+    }
+
+    public double getRoll() {
+        return m_gyro.getRoll().getValue();
     }
 
     public Pose2d getPose() {

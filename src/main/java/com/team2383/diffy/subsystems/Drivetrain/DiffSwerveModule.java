@@ -204,7 +204,7 @@ public class DiffSwerveModule implements Sendable {
                         0, 0));
 
         LinearQuadraticRegulator<N3, N2, N3> m_controller = new LinearQuadraticRegulator<>(m_diffySwervePlant,
-                VecBuilder.fill(1, 1, 0.01),
+                VecBuilder.fill(1.5, 1.5, 0.005),
                 VecBuilder.fill(DriveConstants.kDriveMaxVoltage, DriveConstants.kDriveMaxVoltage), 0.02);
 
         KalmanFilter<N3, N2, N3> m_observer = new KalmanFilter<>(Nat.N3(), Nat.N3(), m_diffySwervePlant,
@@ -345,10 +345,9 @@ public class DiffSwerveModule implements Sendable {
         m_desiredState = SwerveModuleOptimizer.customOptimize(desiredState,
                 Rotation2d.fromDegrees(getModuleAngle()), m_staticAngle);
 
-        // m_desiredState = desiredState;
-
-        // SwerveModuleState state = desiredState;
-
+        if (Math.abs(m_desiredState.speedMetersPerSecond) < 0.01) {
+            m_desiredState = new SwerveModuleState(0, Rotation2d.fromDegrees(m_moduleAngle));
+        }
     }
 
     private void calculateVoltage() {

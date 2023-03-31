@@ -68,7 +68,7 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(140 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
+            .fromDegrees(125 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
 
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(Constants.OI.FieldCentric));
     private final IntSupplier m_povSupplier = () -> -1;
@@ -174,7 +174,7 @@ public class RobotContainer {
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
             new PIDConstants(1, 0, 0),
-            new PIDConstants(1, 0, 0),
+            new PIDConstants(3, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             autoHashMap,
             true,
