@@ -14,10 +14,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,11 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
 
 public class DrivetrainSubsystem extends SubsystemBase {
-    private final DiffSwerveModule m_frontLeftModule;
-    private final DiffSwerveModule m_frontRightModule;
-    private final DiffSwerveModule m_rearModule;
+    private final CoaxialSwerveModule m_frontLeftModule;
+    private final CoaxialSwerveModule m_frontRightModule;
+    private final CoaxialSwerveModule m_rearModule;
 
-    private final DiffSwerveModule[] m_modules;
+    private final CoaxialSwerveModule[] m_modules;
     private final SwerveModuleState[] m_lastStates;
     private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
 
@@ -48,18 +46,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
 
-    private int m_counter1;
-    private int m_counter2;
-
     public DrivetrainSubsystem(DataLog log) {
-        m_frontLeftModule = new DiffSwerveModule(DriveConstants.frontLeftConstants,
+        m_frontLeftModule = new CoaxialSwerveModule(DriveConstants.frontLeftConstants,
                 Constants.kCANivoreBus, log);
-        m_frontRightModule = new DiffSwerveModule(DriveConstants.frontRightConstants,
+        m_frontRightModule = new CoaxialSwerveModule(DriveConstants.frontRightConstants,
                 Constants.kCANivoreBus, log);
-        m_rearModule = new DiffSwerveModule(DriveConstants.rearConstants,
+        m_rearModule = new CoaxialSwerveModule(DriveConstants.rearConstants,
                 Constants.kCANivoreBus, log);
 
-        m_modules = new DiffSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
+        m_modules = new CoaxialSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
 
         m_poseEstimator = new SwerveDrivePoseEstimator(
                 m_kinematics,
@@ -68,8 +63,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 new Pose2d());
 
         m_lastStates = new SwerveModuleState[m_modules.length];
-
-        loadWheelOffsets();
 
         SmartDashboard.putData("Field", m_field);
         m_COR = m_field.getObject("COR");
@@ -92,7 +85,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Gyro Heading", getHeading().getDegrees());
 
         for (int i = 0; i < m_modules.length; i++) {
-            m_modules[i].periodic();
             m_lastStates[i] = m_modules[i].getState();
         }
 
@@ -123,26 +115,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
 
         m_field.setRobotPose(estimatedPose);
-
-        if (RobotController.getUserButton()) {
-            if (m_counter1 == 0) {
-                m_counter2++;
-                m_counter1 = 100;
-                DataLogManager.log("Counter 2 = " + m_counter2);
-            }
-        } else {
-            if (m_counter2 == 1) {
-                setWheelOffsets();
-            } else if (m_counter2 == 2) {
-                setCompassOffset();
-                resetHeading();
-            }
-            m_counter2 = 0;
-        }
-
-        if (m_counter1 > 0) {
-            m_counter1--;
-        }
 
         SmartDashboard.putNumber("Roll", getRoll());
     }
@@ -190,7 +162,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxVelocity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxSpeed);
 
         for (int i = 0; i < m_modules.length; i++) {
             m_modules[i].setDesiredState(states[i]);
@@ -198,7 +170,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        // for (DiffSwerveModule module : m_modules) {
+        // for (CoaxialSwerveModule module : m_modules) {
         // module.resetEncoders();
         // }
     }
@@ -273,28 +245,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void setPosition(Translation2d position) {
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(), new Pose2d(position, getHeading()));
         resetEncoders();
-    }
-
-    public void motorsOff() {
-        for (DiffSwerveModule module : m_modules) {
-            module.motorsOff();
-        }
-    }
-
-    public void setWheelOffsets() {
-        for (DiffSwerveModule module : m_modules) {
-            module.setZeroOffset();
-        }
-
-        DataLogManager.log("INFO: SetWheelOffsets Complete\n");
-    }
-
-    public void loadWheelOffsets() {
-        for (DiffSwerveModule module : m_modules) {
-            module.loadZeroOffset();
-        }
-
-        DataLogManager.log("INFO: LoadWheelOffsets Complete\n");
     }
 
     public double getCompassHeading() {

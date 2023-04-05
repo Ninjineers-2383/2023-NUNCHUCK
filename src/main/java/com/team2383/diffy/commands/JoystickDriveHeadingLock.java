@@ -52,9 +52,9 @@ public class JoystickDriveHeadingLock extends CommandBase {
     public void execute() {
         Translation2d move = m_moveSupply.get();
         double x = -ThrottleSoftener.soften(move.getX())
-                * DriveConstants.kMaxVelocity;
+                * DriveConstants.kMaxSpeed;
         double y = -ThrottleSoftener.soften(move.getY())
-                * DriveConstants.kMaxVelocity;
+                * DriveConstants.kMaxSpeed;
         Rotation2d omega = Rotation2d
                 .fromRadians(m_oRateLimiter.calculate(-ThrottleSoftener.soften(m_rotSupply.get().getRadians())));
 
@@ -96,11 +96,6 @@ public class JoystickDriveHeadingLock extends CommandBase {
         Translation2d pos = new Translation2d((Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 3, 0);
         pos = pos.rotateBy(Rotation2d.fromDegrees(-hatPosition));
         return new Translation2d((Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 12, 0).plus(pos);
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        m_drivetrain.motorsOff();
     }
 
     @Override

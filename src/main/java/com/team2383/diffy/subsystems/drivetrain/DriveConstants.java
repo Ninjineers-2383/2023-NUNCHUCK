@@ -1,20 +1,31 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
+import com.ctre.phoenixpro.configs.CANcoderConfiguration;
+import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
+import com.ctre.phoenixpro.configs.MotorOutputConfigs;
+import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenixpro.configs.TalonFXConfiguration;
+import com.ctre.phoenixpro.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenixpro.signals.SensorDirectionValue;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public final class DriveConstants {
-    public static final double kMaxVelocity = 4; // meters per second
+    public static final double kMaxSpeed = 4; // meters per second
 
     public final static double kTrackWidthMeters = 0.6173724;
     public final static double kDriveMaxVoltage = 9.0;
     public final static double kMaxCurrent = 30.0;
 
-    public final static double kTurnGearRatio = (10 / 58.0) * (20 / 84.0);
-    public final static double kDriveGearRatio = kTurnGearRatio * (64 / 16.0); // 1/7
+    public final static double kAngleGearRatio = 12.8 / 1.0;
+    public final static double kDriveGearRatio = 6.75 / 1.0;
 
-    public final static double kDriveWheelDiameterMeters = 0.1016; // 4 inches
+    public final static double kDriveWheelDiameterMeters = Units.inchesToMeters(4);
+    public final static double kDriveWheelCircumferenceMeters = Math.PI * kDriveWheelDiameterMeters;
 
     public final static double kMaxAngularVelocity = Math.PI * 20;
     public final static double kMaxAngularAcceleration = Math.PI * 2 * 100;
@@ -22,43 +33,86 @@ public final class DriveConstants {
     public final static PIDController HEADING_CONTROLLER = new PIDController(1, 0, 0);
 
     public static final class ModuleConstants {
+        public final HardwareConfigs kHardwareConfigs = new HardwareConfigs();
         public final double kS;
         public final double kV;
         public final double kA;
 
-        public final int kTopMotorID;
-        public final int kBottomMotorID;
+        public final double kP;
+        public final double kI;
+        public final double kD;
 
-        public final int kEncoderPortA;
-        public final int kEncoderPortB;
-        public final int kEncoderPortAbs;
+        public final int kAngleMotorID;
+        public final int kDriveMotorID;
+
+        public final int kEncoderID;
 
         public final String name;
         public final Translation2d translation;
-        public final Rotation2d staticAngle;
-        public final Rotation2d mountAngle;
+
+        public final Rotation2d kAngleOffset;
 
         public ModuleConstants(double kS, double kV, double kA,
-                int kTopMotorID, int kBottomMotorID,
-                int kEncoderPortA, int kEncoderPortB, int kEncoderPortAbs,
+                double kP, double kI, double kD,
+                int kAngleMotorID, int kDriveMotorID, int kEncoderID,
                 String name, Translation2d translation,
-                Rotation2d staticAngle, Rotation2d mountAngle) {
+                Rotation2d angleOffset) {
 
             this.kS = kS;
             this.kV = kV;
             this.kA = kA;
 
-            this.kTopMotorID = kTopMotorID;
-            this.kBottomMotorID = kBottomMotorID;
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
 
-            this.kEncoderPortA = kEncoderPortA;
-            this.kEncoderPortB = kEncoderPortB;
-            this.kEncoderPortAbs = kEncoderPortAbs;
+            this.kAngleMotorID = kAngleMotorID;
+            this.kDriveMotorID = kDriveMotorID;
+
+            this.kEncoderID = kEncoderID;
 
             this.name = name;
             this.translation = translation;
-            this.staticAngle = staticAngle;
-            this.mountAngle = mountAngle;
+
+            this.kAngleOffset = angleOffset;
+        }
+
+        public final class HardwareConfigs {
+            public TalonFXConfiguration kDriveMotorConfigs;
+            public TalonFXConfiguration kAngleMotorConfigs;
+            public CANcoderConfiguration kAngleEncoderConfigs;
+
+            public HardwareConfigs() {
+                kDriveMotorConfigs = new TalonFXConfiguration();
+                kAngleMotorConfigs = new TalonFXConfiguration();
+                kAngleEncoderConfigs = new CANcoderConfiguration();
+
+                kDriveMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
+                kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
+                kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+                kDriveMotorConfigs.Slot0 = new Slot0Configs();
+                kDriveMotorConfigs.Slot0.kP = kP;
+                kDriveMotorConfigs.Slot0.kI = kI;
+                kDriveMotorConfigs.Slot0.kD = kD;
+
+                kDriveMotorConfigs.Slot0.kS = kS;
+                kDriveMotorConfigs.Slot0.kV = kV;
+                kDriveMotorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.0;
+
+                kAngleEncoderConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+                kAngleEncoderConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+
+                kAngleMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
+                kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
+                kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+                kAngleMotorConfigs.Slot0 = new Slot0Configs();
+                kAngleMotorConfigs.Slot0.kP = 0.2;
+
+                kAngleMotorConfigs.MotorOutput = new MotorOutputConfigs();
+                kAngleMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            }
         }
     }
 
@@ -66,39 +120,36 @@ public final class DriveConstants {
             0.12042,
             0.018865,
             0.00092008,
-            20, 21,
-            0, 1, 2,
+            0, 0, 0,
+            20, 21, 1,
             "frontLeft",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(-45),
-            Rotation2d.fromDegrees(60));
+            Rotation2d.fromDegrees(0));
 
     public final static ModuleConstants frontRightConstants = new ModuleConstants(
             0.2029,
             0.018601,
             0.00038568,
-            22, 23,
-            3, 4, 5,
+            0, 0, 0,
+            22, 23, 2,
             "frontRight",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     -DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(45),
-            Rotation2d.fromDegrees(-60));
+            Rotation2d.fromDegrees(0));
 
     public final static ModuleConstants rearConstants = new ModuleConstants(
             0.23873,
             0.018696,
             0.00033035,
-            24, 25,
-            7, 8, 9,
+            0, 0, 0,
+            24, 25, 3,
             "rear",
             new Translation2d(
                     -(Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     0),
-            Rotation2d.fromDegrees(90),
-            Rotation2d.fromDegrees(180));
+            Rotation2d.fromDegrees(0));
 
 }

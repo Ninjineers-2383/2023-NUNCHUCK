@@ -7,7 +7,6 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
@@ -22,7 +21,6 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 new PathConstraints(1, 1));
 
         addCommands(
-                autoBuilder.fullAuto(pathGroup),
-                new InstantCommand(() -> drivetrain.motorsOff()));
+                autoBuilder.fullAuto(pathGroup));
     }
 }
