@@ -41,6 +41,8 @@ public class CoaxialSwerveModule implements Sendable {
 
     private final Rotation2d m_angleOffset;
 
+    private SwerveModuleState m_desiredState;
+
     public CoaxialSwerveModule(ModuleConstants moduleConstants, String CANbus, DataLog log) {
         this.m_angleMotor = new TalonFX(moduleConstants.kAngleMotorID, CANbus);
         this.m_driveMotor = new TalonFX(moduleConstants.kDriveMotorID, CANbus);
@@ -80,25 +82,25 @@ public class CoaxialSwerveModule implements Sendable {
          * This is a custom optimize function, since default WPILib optimize assumes
          * continuous controller which CTRE and Rev onboard is not
          */
-        desiredState = OnboardModuleState.optimize(desiredState, getState().angle);
-        setAngle(desiredState);
-        setSpeed(desiredState);
+        m_desiredState = OnboardModuleState.optimize(desiredState, getState().angle);
+        setAngle(m_desiredState);
+        setSpeed(m_desiredState);
     }
 
     private void setSpeed(SwerveModuleState desiredState) {
-        double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond,
+        double desiredSpeed = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond,
                 DriveConstants.kDriveWheelCircumferenceMeters, DriveConstants.kDriveGearRatio);
-        m_driveMotor.setControl(m_velocityOut.withVelocity(velocity));
+        m_driveMotor.setControl(m_velocityOut.withVelocity(desiredSpeed));
     }
 
     private void setAngle(SwerveModuleState desiredState) {
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.kMaxSpeed * 0.01))
+        Rotation2d desiredAngle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.kMaxSpeed * 0.01))
                 ? m_lastAngle
                 : desiredState.angle; // Prevent rotating module if speed is less then 1%. Prevents Jittering.
 
         m_angleMotor.setControl(m_positionOut.withPosition(
-                Conversions.degreesToRotations(angle.getDegrees(), DriveConstants.kAngleGearRatio)));
-        m_lastAngle = angle;
+                Conversions.degreesToRotations(desiredAngle.getDegrees(), DriveConstants.kAngleGearRatio)));
+        m_lastAngle = desiredAngle;
     }
 
     private Rotation2d getAngle() {
@@ -158,5 +160,12 @@ public class CoaxialSwerveModule implements Sendable {
         builder.addDoubleProperty("Speed", () -> {
             return getState().speedMetersPerSecond;
         }, null);
+        builder.addDoubleProperty("Desired Speed", () -> {
+            return m_desiredState.speedMetersPerSecond;
+        }, null);
+        builder.addDoubleProperty("Desired Angle Degrees", () -> {
+            return m_desiredState.angle.getDegrees();
+        }, null);
+
     }
 }
