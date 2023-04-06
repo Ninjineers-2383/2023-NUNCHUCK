@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
@@ -24,6 +26,8 @@ public final class WristConstants {
     public static final Rotation2d kLowerBound = Rotation2d.fromDegrees(-180);
     public static final Rotation2d feedAngle = Rotation2d.fromDegrees(0);
     public static final Rotation2d outFeedAngle = Rotation2d.fromDegrees(0);
+    public static final SupplyCurrentLimitConfiguration kCurrentLimit = new SupplyCurrentLimitConfiguration(true,
+            kMaxCurrent, kMaxCurrent, 0.1);
 
     public static final PIDController PID_CONTROLLER = new PIDController(9, 0, 0);
     public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.3, -1.15, 2.5, 0.10864); // ks:
