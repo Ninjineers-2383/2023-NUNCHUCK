@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CoaxialSwerveModule implements Sendable {
     private final TalonFX m_angleMotor;
@@ -43,7 +42,7 @@ public class CoaxialSwerveModule implements Sendable {
     private final Rotation2d m_angleOffset;
 
     private SwerveModuleState m_desiredState;
-
+    
     public CoaxialSwerveModule(ModuleConstants moduleConstants, String CANbus, DataLog log) {
         this.m_angleMotor = new TalonFX(moduleConstants.kAngleMotorID, CANbus);
         this.m_driveMotor = new TalonFX(moduleConstants.kDriveMotorID, CANbus);
@@ -93,7 +92,6 @@ public class CoaxialSwerveModule implements Sendable {
                 DriveConstants.kDriveWheelCircumferenceMeters, DriveConstants.kDriveGearRatio);
         m_driveMotor.setControl(m_velocityOut.withVelocity(desiredSpeed));
 
-        //SmartDashboard.putNumber("Desired Speed", desiredSpeed);
     }
 
     private void setAngle(SwerveModuleState desiredState) {
@@ -105,7 +103,6 @@ public class CoaxialSwerveModule implements Sendable {
                 Conversions.degreesToRotations(desiredAngle.getDegrees(), DriveConstants.kAngleGearRatio)));
         m_lastAngle = desiredAngle;
 
-        //SmartDashboard.putNumber("Desired Speed", desiredAngle.getDegrees());
     }
 
     private Rotation2d getAngle() {
@@ -165,12 +162,6 @@ public class CoaxialSwerveModule implements Sendable {
         builder.addDoubleProperty("Speed", () -> {
             return getState().speedMetersPerSecond;
         }, null);
-        // builder.addDoubleProperty("Desired Speed", () -> {
-        //     return m_desiredState.speedMetersPerSecond;
-        // }, null);
-        // builder.addDoubleProperty("Desired Angle Degrees", () -> {
-        //     return m_desiredState.angle.getDegrees();
-        // }, null);
 
     }
 }
