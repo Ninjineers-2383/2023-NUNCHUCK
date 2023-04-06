@@ -33,7 +33,6 @@ public final class DriveConstants {
     public final static PIDController HEADING_CONTROLLER = new PIDController(1, 0, 0);
 
     public static final class ModuleConstants {
-        public final HardwareConfigs kHardwareConfigs = new HardwareConfigs();
         public final double kS;
         public final double kV;
         public final double kA;
@@ -51,6 +50,8 @@ public final class DriveConstants {
         public final Translation2d translation;
 
         public final Rotation2d kAngleOffset;
+
+        public final HardwareConfigs kHardwareConfigs;
 
         public ModuleConstants(double kS, double kV, double kA,
                 double kP, double kI, double kD,
@@ -75,44 +76,46 @@ public final class DriveConstants {
             this.translation = translation;
 
             this.kAngleOffset = angleOffset;
+
+            this.kHardwareConfigs = new HardwareConfigs(kP, kI, kD, kS, kV);
         }
+    }
 
-        public final class HardwareConfigs {
-            public TalonFXConfiguration kDriveMotorConfigs;
-            public TalonFXConfiguration kAngleMotorConfigs;
-            public CANcoderConfiguration kAngleEncoderConfigs;
+    public static final class HardwareConfigs {
+        public TalonFXConfiguration kDriveMotorConfigs;
+        public TalonFXConfiguration kAngleMotorConfigs;
+        public CANcoderConfiguration kAngleEncoderConfigs;
 
-            public HardwareConfigs() {
-                kDriveMotorConfigs = new TalonFXConfiguration();
-                kAngleMotorConfigs = new TalonFXConfiguration();
-                kAngleEncoderConfigs = new CANcoderConfiguration();
+        public HardwareConfigs(double kP, double kI, double kD, double kS, double kV) {
+            kDriveMotorConfigs = new TalonFXConfiguration();
+            kAngleMotorConfigs = new TalonFXConfiguration();
+            kAngleEncoderConfigs = new CANcoderConfiguration();
 
-                kDriveMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
-                kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
-                kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+            kDriveMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
+            kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
+            kDriveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-                kDriveMotorConfigs.Slot0 = new Slot0Configs();
-                kDriveMotorConfigs.Slot0.kP = kP;
-                kDriveMotorConfigs.Slot0.kI = kI;
-                kDriveMotorConfigs.Slot0.kD = kD;
+            kDriveMotorConfigs.Slot0 = new Slot0Configs();
+            kDriveMotorConfigs.Slot0.kP = kP;
+            kDriveMotorConfigs.Slot0.kI = kI;
+            kDriveMotorConfigs.Slot0.kD = kD;
 
-                kDriveMotorConfigs.Slot0.kS = kS;
-                kDriveMotorConfigs.Slot0.kV = kV;
-                kDriveMotorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.0;
+            kDriveMotorConfigs.Slot0.kS = kS;
+            kDriveMotorConfigs.Slot0.kV = kV;
+            kDriveMotorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.0;
 
-                kAngleEncoderConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-                kAngleEncoderConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+            kAngleEncoderConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+            kAngleEncoderConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
-                kAngleMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
-                kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
-                kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+            kAngleMotorConfigs.CurrentLimits = new CurrentLimitsConfigs();
+            kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimit = 65;
+            kAngleMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-                kAngleMotorConfigs.Slot0 = new Slot0Configs();
-                kAngleMotorConfigs.Slot0.kP = 0.2;
+            kAngleMotorConfigs.Slot0 = new Slot0Configs();
+            kAngleMotorConfigs.Slot0.kP = 0.8;
 
-                kAngleMotorConfigs.MotorOutput = new MotorOutputConfigs();
-                kAngleMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            }
+            kAngleMotorConfigs.MotorOutput = new MotorOutputConfigs();
+            kAngleMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         }
     }
 
@@ -120,36 +123,36 @@ public final class DriveConstants {
             0.12042,
             0.018865,
             0.00092008,
-            0, 0, 0,
+            0.0001, 0, 0,
             20, 21, 1,
             "frontLeft",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(228.2));
+            Rotation2d.fromDegrees(228.60351));
 
     public final static ModuleConstants frontRightConstants = new ModuleConstants(
             0.2029,
             0.018601,
             0.00038568,
-            0, 0, 0,
+            0.0001, 0, 0,
             22, 23, 2,
             "frontRight",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     -DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(205.5));
+            Rotation2d.fromDegrees(206.6308));
 
     public final static ModuleConstants rearConstants = new ModuleConstants(
             0.23873,
             0.018696,
             0.00033035,
-            0, 0, 0,
+            0.0001, 0, 0,
             24, 25, 3,
             "rear",
             new Translation2d(
                     -(Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     0),
-            Rotation2d.fromDegrees(282.7));
+            Rotation2d.fromDegrees(282.39257));
 
 }
