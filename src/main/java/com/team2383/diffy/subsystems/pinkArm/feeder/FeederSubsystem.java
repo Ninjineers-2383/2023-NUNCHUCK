@@ -1,84 +1,63 @@
 package com.team2383.diffy.subsystems.pinkArm.feeder;
 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team2383.diffy.helpers.SparkMaxSimWrapper;
+import com.ctre.phoenixpro.controls.VoltageOut;
+import com.ctre.phoenixpro.hardware.TalonFX;
 
 import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FeederSubsystem extends SubsystemBase {
-    private final SparkMaxSimWrapper m_topMotor;
-    private final SparkMaxSimWrapper m_bottomMotor;
+    private final TalonFX m_feederMotor;
 
-    private double m_bottomVoltage;
-    private double m_topVoltage;
+    private final VoltageOut m_bottomVoltage;
 
-    private DataLog m_log;
-
-    private final DoubleLogEntry m_topMotorCurrent;
-    private final DoubleLogEntry m_bottomMotorCurrent;
+    private double m_motorPower;
 
     public FeederSubsystem(DataLog log) {
-        // Declare motor instances
-        m_topMotor = new SparkMaxSimWrapper(FeederConstants.kTopMotorID, MotorType.kBrushless);
-        m_bottomMotor = new SparkMaxSimWrapper(FeederConstants.kBottomMotorID, MotorType.kBrushless);
+        // TODO: Add CANivore if it's being used
+        m_feederMotor = new TalonFX(FeederConstants.kTopMotorID);
 
-        m_log = log;
+        m_bottomVoltage = new VoltageOut(0, false, false);
 
-        m_topMotorCurrent = new DoubleLogEntry(m_log, "/topMotorCurrent");
-        m_bottomMotorCurrent = new DoubleLogEntry(m_log, "/bottomMotorCurrent");
-
-        m_topMotor.restoreFactoryDefaults();
-        m_bottomMotor.restoreFactoryDefaults();
-
-        m_topMotor.setInverted(true);
-        m_bottomMotor.setInverted(false);
-
-        m_topMotor.setSmartCurrentLimit(FeederConstants.MAX_CURRENT);
-        m_bottomMotor.setSmartCurrentLimit(FeederConstants.MAX_CURRENT);
+        m_feederMotor.getConfigurator().apply(FeederConstants.FEEDER_CONFIGS);
 
         addChild("Feeder", this);
     }
 
     @Override
     public void periodic() {
-        m_topMotorCurrent.append(m_topMotor.getOutputCurrent());
-        m_bottomMotorCurrent.append(m_bottomMotor.getOutputCurrent());
+
     }
 
     @Override
     public void simulationPeriodic() {
     }
 
-    public void setPower(double top, double bottom) {
+    /**
+     * Sets the power of the feeder motor, 0 is off, and 1 and -1 are the max speed in either direction
+     * 
+     * @param power from -1 to 1
+     */
+    public void setPower(double power) {
         // Set discrete motor power
-
-        m_bottomVoltage = bottom;
-        m_topVoltage = top;
+        m_motorPower = power;
 
         setVoltage();
     }
 
     public void setVoltage() {
-        // m_bottomMotor.setVoltage(m_bottomVoltage);
-        // m_topMotor.setVoltage(m_topVoltage);
-        m_bottomMotor.set(m_bottomVoltage);
-        m_topMotor.set(m_topVoltage);
+        m_feederMotor.setControl(m_bottomVoltage.withOutput(m_motorPower * 12));
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Telescope");
+        builder.setSmartDashboardType("Feeder?");
 
-        builder.addDoubleProperty("Top Voltage", () -> {
-            return m_topVoltage;
+        builder.addDoubleProperty("Feeder Voltage", () -> {
+            return m_bottomVoltage.Output;
         }, null);
 
-        builder.addDoubleProperty("Bottom Voltage", () -> {
-            return m_bottomVoltage;
-        }, null);
     }
 
 }
