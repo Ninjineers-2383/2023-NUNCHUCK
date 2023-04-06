@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public final class WristConstants {

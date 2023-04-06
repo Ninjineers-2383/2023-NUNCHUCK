@@ -14,9 +14,9 @@ public class FeederSubsystem extends SubsystemBase {
 
     private double m_motorPower;
 
-    public FeederSubsystem(DataLog log, String CANbus) {
+    public FeederSubsystem(DataLog log) {
         // TODO: Add CANivore if it's being used
-        m_feederMotor = new TalonFX(FeederConstants.kTopMotorID, CANbus);
+        m_feederMotor = new TalonFX(FeederConstants.kTopMotorID);
 
         m_bottomVoltage = new VoltageOut(0, false, false);
 
