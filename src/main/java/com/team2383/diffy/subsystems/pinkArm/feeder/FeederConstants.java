@@ -5,15 +5,14 @@ import com.ctre.phoenixpro.configs.Slot0Configs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 
 public final class FeederConstants {
-        public static final double kV = 0.01;
-        public static final double kA = 0.001;
+    public static final double kV = 0.01;
+    public static final double kA = 0.001;
 
-        public static final int kTopMotorID = 6;
-        public static final int kBottomMotorID = 7;
+    public static final int kTopMotorID = 6;
+    public static final int kBottomMotorID = 7;
 
-        public static final int MAX_CURRENT = 20;
+    public static final int MAX_CURRENT = 20;
 
-    
     public static final class MotorConfigs {
         public TalonFXConfiguration kDriveMotorConfigs;
 
@@ -33,5 +32,12 @@ public final class FeederConstants {
             kDriveMotorConfigs.Slot0.kV = kV;
             kDriveMotorConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.0;
         }
+
+        public final TalonFXConfiguration feederConfig() {
+            return kDriveMotorConfigs;
+        }
     }
+
+    // TODO: ARBITRARY VALUES, MUST TUNE WITH SYSID LATER
+    public static final MotorConfigs kMotorConfigs = new MotorConfigs(0.1, 0, 0, 0, 0);
 }

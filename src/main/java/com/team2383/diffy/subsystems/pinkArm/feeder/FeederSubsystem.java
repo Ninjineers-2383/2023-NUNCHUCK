@@ -14,13 +14,13 @@ public class FeederSubsystem extends SubsystemBase {
 
     private double m_motorPower;
 
-    public FeederSubsystem(DataLog log) {
+    public FeederSubsystem(DataLog log, String CANbus) {
         // TODO: Add CANivore if it's being used
-        m_feederMotor = new TalonFX(FeederConstants.kTopMotorID);
+        m_feederMotor = new TalonFX(FeederConstants.kTopMotorID, CANbus);
 
         m_bottomVoltage = new VoltageOut(0, false, false);
 
-        m_feederMotor.getConfigurator().apply(FeederConstants.FEEDER_CONFIGS);
+        m_feederMotor.getConfigurator().apply(FeederConstants.kMotorConfigs.feederConfig());
 
         addChild("Feeder", this);
     }
@@ -35,7 +35,8 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the power of the feeder motor, 0 is off, and 1 and -1 are the max speed in either direction
+     * Sets the power of the feeder motor, 0 is off, and 1 and -1 are the max speed
+     * in either direction
      * 
      * @param power from -1 to 1
      */

@@ -6,10 +6,9 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
-import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class FullAutoCommand extends SequentialCommandGroup {
     public FullAutoCommand(DrivetrainSubsystem drivetrain, String pathName, SwerveAutoBuilder autoBuilder) {

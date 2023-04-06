@@ -12,25 +12,23 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.diffy.autos.ConeCubeAuto;
-import com.team2383.diffy.autos.CubeMobilityAuto;
-import com.team2383.diffy.autos.EngageAuto;
-import com.team2383.diffy.autos.ScorePreloadHigh;
-import com.team2383.diffy.autos.ScorePreloadMid;
+import com.team2383.diffy.autos.FullAutoCommand;
+import com.team2383.diffy.commands.PaddleCommandPosition;
 import com.team2383.diffy.commands.FeederCommand;
-import com.team2383.diffy.commands.JoystickDriveHeadingLock;
+import com.team2383.diffy.commands.JoystickDriveCommand;
+import com.team2383.diffy.commands.pinkArm.TravelCommand;
 import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.diffy.helpers.ButtonBoardButtons;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.diffy.subsystems.paddle.PaddleSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
-import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
 
 import edu.wpi.first.math.MathUtil;
@@ -45,9 +43,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -68,14 +66,14 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(125 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
+            .fromDegrees(140 * m_driverController.getRawAxis(0));
 
-    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(Constants.OI.FieldCentric));
+    private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(10)
+            || m_driverController.getRawButton(9));
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn)
-                    - m_driverController.getRawAxis(Constants.OI.IntakeOut), .1);
+            .applyDeadband(m_driverController.getRawAxis(3) - m_driverController.getRawAxis(2), .1);
 
     private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
             .fromDegrees(90 * m_operatorController.getRawAxis(5));
@@ -85,21 +83,18 @@ public class RobotContainer {
 
     private final Trigger m_resetPosition = ButtonBoardButtons.makeNormieButton("Reset Position");
     private final Trigger m_resetHeading = ButtonBoardButtons.makeNormieButton("Reset Heading")
-            .or(() -> m_driverController.getRawButton(Constants.OI.ResetHeading));
-    // private final Trigger m_paddlePreset =
-    // ButtonBoardButtons.makeNormieButton("Paddle Preset")
-    // .or(new JoystickButton(m_driverController, 6));
-    // private final Trigger m_paddleHome =
-    // ButtonBoardButtons.makeNormieButton("Paddle Home")
-    // .or(new JoystickButton(m_driverController, 5));
+            .or(() -> m_driverController.getRawButton(8));
+    private final Trigger m_paddlePreset = ButtonBoardButtons.makeNormieButton("Paddle Preset")
+            .or(new JoystickButton(m_driverController, 6));
+    private final Trigger m_paddleHome = ButtonBoardButtons.makeNormieButton("Paddle Home")
+            .or(new JoystickButton(m_driverController, 5));
 
-    // private final Trigger m_paddleRetrieve =
-    // ButtonBoardButtons.makeNormieButton("Retrieve From Paddle");
+    private final Trigger m_paddleRetrieve = ButtonBoardButtons.makeNormieButton("Retrieve From Paddle");
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
-    // private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
+    private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
     private Supplier<Rotation2d> m_pivotSupplier;
     private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
     private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
@@ -109,7 +104,7 @@ public class RobotContainer {
             m_telescopeSubsystem, m_wristSubsystem);
 
     // Commands are defined here
-    private final JoystickDriveHeadingLock m_driveCommand = new JoystickDriveHeadingLock(
+    private final JoystickDriveCommand m_driveCommand = new JoystickDriveCommand(
             m_drivetrainSubsystem,
             m_drive,
             m_driveOmega,
@@ -122,63 +117,73 @@ public class RobotContainer {
     // This is just an example event map. It would be better to have a constant,
     // global event map
     // in your code that will be used by all path following commands.
-    HashMap<String, Command> autoHashMap = new HashMap<>() {
-        {
-            put("Auto Log", new PrintCommand("Auto Event: log"));
+    // HashMap<String, Command> autoHashMap = new HashMap<>() {
+    // {
+    // put("Auto Log", new PrintCommand("Auto Event: log"));
 
-            put("Feed Cone",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_UPRIGHT_CONE),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
-            put("Feed Cube",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_CONE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+    // put("Feed Cone",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.FEED_UPRIGHT_CONE),
+    // new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+    // put("Feed Cube",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.FEED_CONE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
 
-            put("Feed Internal",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_INTERNAL),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+    // put("Score Cone Low",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.LOW_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+    // put("Score Cone Mid",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.MID_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+    // put("Score Cone High",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.HIGH_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
 
-            put("Travel",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.TRAVEL_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0.7)));
+    // put("Score Cube Low",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.LOW_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
+    // put("Score Cube Mid",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.MID_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
+    // put("Score Cube High",
+    // new SequentialCommandGroup(
+    // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem,
+    // m_wristSubsystem,
+    // PositionConstants.HIGH_SCORE_POS),
+    // new FeederCommand(m_feederSubsystem, () -> -0.6).withTimeout(0.7)));
+    // }
+    // };
 
-            put("Safety", new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromDegrees(-60)));
-
-            put("Score Low",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Mid",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score High",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-        }
-    };
-
-    public SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-            m_drivetrainSubsystem::getPose,
-            m_drivetrainSubsystem::forceOdometry,
-            m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(1, 0, 0),
-            new PIDConstants(3, 0, 0),
-            m_drivetrainSubsystem::setModuleStates,
-            autoHashMap,
-            true,
-            m_drivetrainSubsystem);
+    // public SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+    // m_drivetrainSubsystem::getPose,
+    // m_drivetrainSubsystem::forceOdometry,
+    // m_drivetrainSubsystem.m_kinematics,
+    // new PIDConstants(5, 0, 0),
+    // new PIDConstants(0.5, 0, 0),
+    // m_drivetrainSubsystem::setModuleStates,
+    // autoHashMap,
+    // true,
+    // m_drivetrainSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -204,18 +209,15 @@ public class RobotContainer {
     private void configureButtonBindings() {
         ButtonBoardButtons.instantiatePositionalButtons(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
         m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
-        m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
+        // m_resetHeading.onTrue(new
+        // InstantCommand(m_drivetrainSubsystem::resetHeading));
 
-        // m_paddlePreset.onTrue(new PaddleCommandPosition(m_dickSubsystem,
-        // Rotation2d.fromDegrees(165)))
-        // .onFalse(new PaddleCommandPosition(m_dickSubsystem,
-        // Rotation2d.fromDegrees(70)));
-        // m_paddleHome.onTrue(new PaddleCommandPosition(m_dickSubsystem,
-        // Rotation2d.fromDegrees(-5)));
+        m_paddlePreset.onTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(165)))
+                .onFalse(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(70)));
+        m_paddleHome.onTrue(new PaddleCommandPosition(m_dickSubsystem, Rotation2d.fromDegrees(-5)));
 
-        // m_paddleRetrieve.onTrue(new TravelCommand(m_pivotSubsystem,
-        // m_telescopeSubsystem, m_wristSubsystem,
-        // m_dickSubsystem, m_feederSubsystem));
+        m_paddleRetrieve.onTrue(new TravelCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                m_dickSubsystem, m_feederSubsystem));
 
     }
 
@@ -233,45 +235,22 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        // return new FullAutoCommand(m_drivetrainSubsystem, "Forward", m_autoBuilder);
+        // return new FullAutoCommand(m_drivetrainSubsystem, "TwoCones", m_autoBuilder);
+        // return autoChooser.getSelected();
+        return null;// m_pinkArmAutoCommand;
     }
 
     private void setAutoCommands() {
-        Command coneCube = new ConeCubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem, autoBuilder);
-
-        Command score_preload_high = new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem);
-
-        Command score_preload_mid = new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem);
-
-        Command engage = new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem);
-
-        Command engage_high_preload = new SequentialCommandGroup(
-                new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
-                        m_feederSubsystem),
-                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
-
-        Command engage_mid_preload = new SequentialCommandGroup(
-                new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
-                        m_feederSubsystem),
-                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
-
-        Command cube_mobility = new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem, autoBuilder);
+        // Command forwardTest = new FullAutoCommand(m_drivetrainSubsystem, "Forward",
+        // autoBuilder);
+        // Command twoConeAuto = new FullAutoCommand(m_drivetrainSubsystem, "TwoCones",
+        // autoBuilder);
 
         Command nullAuto = null;
 
-        autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
-        autoChooser.setDefaultOption("No Auto :(", nullAuto);
-        autoChooser.addOption("Score Preload High", score_preload_high);
-        autoChooser.addOption("Score Preload Mid", score_preload_mid);
-        autoChooser.addOption("Engage Score Preload High", engage_high_preload);
-        autoChooser.addOption("Engage Score Preload Mid", engage_mid_preload);
-        autoChooser.addOption("Engage", engage);
-        autoChooser.addOption("Cube Mobility", cube_mobility);
-
-        SmartDashboard.putData("Auto", autoChooser);
+        // autoChooser.setDefaultOption("Two Cone Path Auto", twoConeAuto);
+        // autoChooser.addOption("Forward Test Auto", forwardTest);
+        autoChooser.addOption("No Auto :(", nullAuto);
     }
 }
