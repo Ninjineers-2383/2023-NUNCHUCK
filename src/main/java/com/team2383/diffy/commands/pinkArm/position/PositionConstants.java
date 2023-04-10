@@ -26,9 +26,9 @@ public class PositionConstants {
 
     public static final PinkPositions FEED_CUBE_POS = new PinkPositions(
             "Feed Cube",
-            new Rotation2d(0.415),
-            1,
-            new Rotation2d(-2.375029));
+            new Rotation2d(0.53),
+            9.1,
+            new Rotation2d(1.367));
 
     public static final PinkPositions FEED_CONE_POS = new PinkPositions(
             "Feed Cone",

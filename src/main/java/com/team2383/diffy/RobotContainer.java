@@ -23,6 +23,7 @@ import com.team2383.diffy.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.PivotVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.diffy.commands.pinkArm.velocity.WristVelocityCommand;
+import com.team2383.diffy.commands.pinkArm.zero.ZeroTelescope;
 import com.team2383.diffy.helpers.ButtonBoardButtons;
 import com.team2383.diffy.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.PinkArmSimSubsystem;
@@ -203,7 +204,7 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         ButtonBoardButtons.instantiatePositionalButtons(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem);
-        m_resetPosition.onTrue(new InstantCommand(m_telescopeSubsystem::resetPosition));
+        m_resetPosition.onTrue(new ZeroTelescope(m_telescopeSubsystem));
         m_resetHeading.onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
 
         // m_paddlePreset.onTrue(new PaddleCommandPosition(m_dickSubsystem,

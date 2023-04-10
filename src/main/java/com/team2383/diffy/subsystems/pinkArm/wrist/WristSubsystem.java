@@ -38,7 +38,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
         m_pivotMotor.getSensorCollection()
                 .setQuadraturePosition(m_pivotMotor.getSensorCollection().getPulseWidthPosition(), 200);
 
-        m_pivotMotor.setInverted(false);
+        m_pivotMotor.setInverted(true);
     }
 
     @Override

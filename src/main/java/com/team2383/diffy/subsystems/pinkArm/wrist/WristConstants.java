@@ -13,7 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class WristConstants {
 
     public static final int kMotorID = 8;
-    public static final int encoderOffset = 2892; // -2.502
+    public static final int encoderOffset = 1186; // -2.502
 
     public static final int kMaxCurrent = 20;
 

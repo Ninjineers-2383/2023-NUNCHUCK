@@ -14,7 +14,7 @@ public final class PivotConstants {
     public static final int ABS_ENCODER_ID = 6;
 
     public static final int MAX_CURRENT = 40;
-    public static final double ENCODER_OFFSET = 13.0 / 360;
+    public static final double ENCODER_OFFSET = 3.365 / (2 * Math.PI);
 
     public static final Rotation2d POSITION_THRESHOLD = Rotation2d.fromDegrees(10);
 

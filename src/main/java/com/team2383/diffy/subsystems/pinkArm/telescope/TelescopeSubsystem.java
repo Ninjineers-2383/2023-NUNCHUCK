@@ -81,12 +81,11 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
 
     /* Velocity measured in inches per minute */
     public double getVelocity() {
-        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION / 120.0;
+        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION;
     }
 
     public double getExtensionInches() {
-        return m_motor.getPosition() * TelescopeConstants.ROTATION_CONVERSION
-                / 2.0;
+        return m_motor.getPosition() * TelescopeConstants.ROTATION_CONVERSION;
     }
 
     protected TrapezoidProfile.State getState() {
