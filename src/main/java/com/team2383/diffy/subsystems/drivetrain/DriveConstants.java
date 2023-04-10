@@ -120,39 +120,39 @@ public final class DriveConstants {
     }
 
     public final static ModuleConstants frontLeftConstants = new ModuleConstants(
-            0.12042,
-            0.018865,
-            0.00092008,
-            0.0001, 0, 0,
+            0.065635,
+            0.15,
+            0.015968,
+            0.27135, 0, 0,
             20, 21, 1,
             "frontLeft",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(228.60351));
+            Rotation2d.fromDegrees(230.625));
 
     public final static ModuleConstants frontRightConstants = new ModuleConstants(
-            0.2029,
-            0.018601,
-            0.00038568,
-            0.0001, 0, 0,
+            0.065635,
+            0.15,
+            0.015968,
+            0.27135, 0, 0,
             22, 23, 2,
             "frontRight",
             new Translation2d(
                     (Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     -DriveConstants.kTrackWidthMeters / 2),
-            Rotation2d.fromDegrees(206.6308));
+            Rotation2d.fromDegrees(207.86));
 
     public final static ModuleConstants rearConstants = new ModuleConstants(
-            0.23873,
-            0.018696,
-            0.00033035,
-            0.0001, 0, 0,
+            0.065635,
+            0.15,
+            0.015968,
+            0.27135, 0, 0,
             24, 25, 3,
             "rear",
             new Translation2d(
                     -(Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     0),
-            Rotation2d.fromDegrees(282.39257));
+            Rotation2d.fromDegrees(283.359375));
 
 }
