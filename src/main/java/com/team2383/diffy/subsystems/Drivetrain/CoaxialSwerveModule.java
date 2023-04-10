@@ -42,6 +42,8 @@ public class CoaxialSwerveModule implements Sendable {
     private final Rotation2d m_angleOffset;
 
     private SwerveModuleState m_desiredState;
+
+    private double m_desiredVelocity;
     
     public CoaxialSwerveModule(ModuleConstants moduleConstants, String CANbus, DataLog log) {
         this.m_angleMotor = new TalonFX(moduleConstants.kAngleMotorID, CANbus);
@@ -88,9 +90,9 @@ public class CoaxialSwerveModule implements Sendable {
     }
 
     private void setSpeed(SwerveModuleState desiredState) {
-        double desiredSpeed = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond,
+        m_desiredVelocity = Conversions.MPSToFalconRPS(desiredState.speedMetersPerSecond,
                 DriveConstants.kDriveWheelCircumferenceMeters, DriveConstants.kDriveGearRatio);
-        m_driveMotor.setControl(m_velocityOut.withVelocity(desiredSpeed));
+        m_driveMotor.setControl(m_velocityOut.withVelocity(m_desiredVelocity));
 
     }
 
@@ -161,6 +163,13 @@ public class CoaxialSwerveModule implements Sendable {
         }, null);
         builder.addDoubleProperty("Speed", () -> {
             return getState().speedMetersPerSecond;
+        }, null);
+        builder.addDoubleProperty("Control Speed", () -> {
+            return m_desiredVelocity;
+        }, null);
+
+        builder.addDoubleProperty("Actual Velocity", () -> {
+            return m_driveMotor.getVelocity().getValue();
         }, null);
 
     }

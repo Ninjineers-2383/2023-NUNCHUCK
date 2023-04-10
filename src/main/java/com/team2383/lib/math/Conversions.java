@@ -124,6 +124,12 @@ public class Conversions {
         return wheelVelocity;
     }
 
+    public static double MPSToFalconRPS(double velocity, double circumference, double gearRatio) {
+        double wheelRPS = velocity / circumference;
+        double rotorVelocity = wheelRPS * gearRatio;
+        return rotorVelocity;
+    }
+
     /**
      * @param positionCounts Falcon Position Counts
      * @param circumference  Circumference of Wheel
