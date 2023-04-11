@@ -147,7 +147,7 @@ public class Conversions {
      * @return Meters
      */
     public static double rotationsToMeters(double rotations, double circumference, double gearRatio) {
-        return rotations * (circumference / (gearRatio * 2048.0));
+        return rotations * (circumference / gearRatio);
     }
 
     /**

@@ -17,18 +17,14 @@ public class ButtonBoardButtons {
     private static PositionConstants.PinkPositions[] positions = new PositionConstants.PinkPositions[] {
             PositionConstants.ZERO_POS,
             PositionConstants.TRAVEL_POS,
-            PositionConstants.FEED_PADDLE_POS_INIT,
-            PositionConstants.FEED_UPRIGHT_CONE,
-            PositionConstants.FEED_CONE_CHUTE,
+            PositionConstants.FEED_CHUTE,
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
-            PositionConstants.FEED_CONE_UPRIGHT,
             PositionConstants.LOW_SCORE_BACK,
             PositionConstants.MID_SCORE_BACK,
             PositionConstants.HIGH_SCORE_BACK,
             PositionConstants.MID_SCORE_FRONT,
-            PositionConstants.HIGH_SCORE_FRONT,
-            PositionConstants.FEED_INTERNAL };
+            PositionConstants.HIGH_SCORE_FRONT };
 
     private static ArrayList<String> names = new ArrayList<String>();
 

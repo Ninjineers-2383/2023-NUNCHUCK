@@ -26,4 +26,9 @@ public class FeederCommand extends CommandBase {
     public void execute() {
         m_feederSubsystem.setPower(m_intake.getAsDouble());
     }
+
+    @Override
+    public void end(boolean ahhhh) {
+        m_feederSubsystem.setPower(0);
+    }
 }

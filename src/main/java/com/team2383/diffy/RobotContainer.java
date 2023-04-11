@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.ConeCubeAuto;
 import com.team2383.diffy.autos.CubeMobilityAuto;
 import com.team2383.diffy.autos.EngageAuto;
+import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreloadHigh;
 import com.team2383.diffy.autos.ScorePreloadMid;
 import com.team2383.diffy.commands.FeederCommand;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -76,7 +78,8 @@ public class RobotContainer {
 
     private final DoubleSupplier m_intake = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn)
-                    - m_driverController.getRawAxis(Constants.OI.IntakeOut), .1);
+                    - m_driverController.getRawAxis(Constants.OI.IntakeOut)
+                    + 0.2, .1);
 
     private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
             .fromDegrees(90 * m_operatorController.getRawAxis(5));
@@ -127,21 +130,10 @@ public class RobotContainer {
         {
             put("Auto Log", new PrintCommand("Auto Event: log"));
 
-            put("Feed Cone",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_UPRIGHT_CONE),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
             put("Feed Cube",
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                                     PositionConstants.FEED_CONE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
-
-            put("Feed Internal",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_INTERNAL),
                             new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
 
             put("Travel",
@@ -151,6 +143,10 @@ public class RobotContainer {
                             new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0.7)));
 
             put("Safety", new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromDegrees(-60)));
+
+            put("Intake", new FeederCommand(m_feederSubsystem, () -> 1));
+
+            put("Feeder Off", new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0));
 
             put("Score Low",
                     new SequentialCommandGroup(
@@ -262,6 +258,20 @@ public class RobotContainer {
         Command cube_mobility = new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
+        Command cone_cube_2 = new SequentialCommandGroup(
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.HIGH_SCORE_BACK),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.5),
+                new ParallelCommandGroup(
+                        new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                                PositionConstants.FEED_CUBE_POS),
+                        new FullAutoCommand(m_drivetrainSubsystem, "ConeCube2", autoBuilder)),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.HIGH_SCORE_BACK),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.5)
+
+        );
+
         Command nullAuto = null;
 
         autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
@@ -272,6 +282,7 @@ public class RobotContainer {
         autoChooser.addOption("Engage Score Preload Mid", engage_mid_preload);
         autoChooser.addOption("Engage", engage);
         autoChooser.addOption("Cube Mobility", cube_mobility);
+        autoChooser.addOption("Cone Cube 2", cone_cube_2);
 
         SmartDashboard.putData("Auto", autoChooser);
     }

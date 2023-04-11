@@ -27,25 +27,10 @@ public final class VisionConstants {
     }
 
     public static final PhotonCameraData[] kPhotonCameras = new PhotonCameraData[] {
-            new PhotonCameraData("Arducam_OV9281_Front_Left",
+            new PhotonCameraData("Rear",
                     new Transform3d(
-                            CAM_Z.minus(CAM_X).minus(CAM_Y),
-                            FRONT_YAW.minus(CAM_YAW).plus(CAM_PITCH))),
-
-            new PhotonCameraData("Arducam_OV9281_Front_Right",
-                    new Transform3d(
-                            CAM_Z.minus(CAM_X).plus(CAM_Y),
-                            FRONT_YAW.times(-1).plus(CAM_YAW).plus(CAM_PITCH))),
-
-            new PhotonCameraData("Arducam_OV9281_Rear_Left",
-                    new Transform3d(
-                            CAM_Z.plus(CAM_X).minus(CAM_Y),
-                            CAM_YAW.plus(CAM_PITCH))),
-
-            new PhotonCameraData("Arducam_OV9281_Rear_Right",
-                    new Transform3d(
-                            CAM_Z.plus(CAM_X).plus(CAM_Y),
-                            CAM_YAW.times(-1).plus(CAM_PITCH))),
+                            CAM_Z,
+                            FRONT_YAW)),
     };
 
 }

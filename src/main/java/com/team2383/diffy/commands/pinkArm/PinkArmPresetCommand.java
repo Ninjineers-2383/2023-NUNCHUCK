@@ -57,9 +57,11 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
                                 new InstantCommand(() -> SmartDashboard.putNumber("Stage", 2)),
                                 new PivotPositionCommand(pivot, m_PinkPositions.pivot),
                                 new SequentialCommandGroup(
-                                        new WaitUntilCommand(() -> Math
+                                        new WaitUntilCommand(() -> (Math
                                                 .signum(pivot.getAngle().getRadians()) == Math
                                                         .signum(m_PinkPositions.pivot.getRadians())
+                                                && (pivot.getAngle().getDegrees() < -60 ||
+                                                        pivot.getAngle().getDegrees() > 25))
                                                 || m_PinkPositions.pivot.getDegrees() == 0),
                                         new ParallelCommandGroup(
                                                 new InstantCommand(() -> SmartDashboard.putNumber("Stage", 3)),

@@ -26,69 +26,45 @@ public class PositionConstants {
 
     public static final PinkPositions FEED_CUBE_POS = new PinkPositions(
             "Feed Cube",
-            new Rotation2d(0.53),
-            9.1,
-            new Rotation2d(1.367));
+            new Rotation2d(0.773),
+            5.68,
+            new Rotation2d(2.465));
 
     public static final PinkPositions FEED_CONE_POS = new PinkPositions(
             "Feed Cone",
-            Rotation2d.fromDegrees(35),
-            16,
-            Rotation2d.fromDegrees(-120));
+            Rotation2d.fromRadians(0.529),
+            8.645,
+            Rotation2d.fromRadians(1.4388));
 
-    public static final PinkPositions FEED_CONE_CHUTE = new PinkPositions(
+    public static final PinkPositions FEED_CHUTE = new PinkPositions(
             "Feed Chute",
-            new Rotation2d(0.352),
+            new Rotation2d(0.2188),
             0,
-            new Rotation2d(-0.8145));
-
-    public static final PinkPositions FEED_PADDLE_POS_INIT = new PinkPositions(
-            "Transfer",
-            Rotation2d.fromDegrees(-41),
-            0.31,
-            Rotation2d.fromDegrees(-45));
+            new Rotation2d(-0.02));
 
     public static final PinkPositions TRAVEL_POS = new PinkPositions(
             "Travel Position",
             Rotation2d.fromDegrees(-18),
             0,
-            Rotation2d.fromDegrees(0));
-
-    public static final PinkPositions FEED_CONE_UPRIGHT = new PinkPositions(
-            "Feed Cone Upright",
-            Rotation2d.fromRadians(0.8),
-            1,
-            Rotation2d.fromRadians(-2.5));
-
-    // public static final PinkPositions TRANSFER_POS = new PinkPositions(
-    // "Transfer Position",
-    // Rotation2d.fromDegrees(-41),
-    // 0,
-    // Rotation2d.fromDegrees(0));
-
-    public static final PinkPositions FEED_UPRIGHT_CONE = new PinkPositions(
-            "Feed Upright",
-            Rotation2d.fromDegrees(60),
-            2,
-            Rotation2d.fromDegrees(108));
+            Rotation2d.fromRadians(0));
 
     public static final PinkPositions LOW_SCORE_BACK = new PinkPositions(
             "Low Score",
-            Rotation2d.fromDegrees(-62),
-            3,
-            Rotation2d.fromDegrees(-125));
+            Rotation2d.fromRadians(-1.1),
+            0.3,
+            Rotation2d.fromRadians(1.88));
 
     public static final PinkPositions MID_SCORE_BACK = new PinkPositions(
             "Mid Score Back",
-            Rotation2d.fromDegrees(-125),
-            2,
-            Rotation2d.fromDegrees(-100));
+            Rotation2d.fromRadians(-1.94),
+            0,
+            Rotation2d.fromRadians(1.16));
 
     public static final PinkPositions HIGH_SCORE_BACK = new PinkPositions(
             "High Score Back",
-            Rotation2d.fromDegrees(-125),
-            20,
-            Rotation2d.fromDegrees(-120));
+            Rotation2d.fromRadians(-2.12),
+            19,
+            Rotation2d.fromRadians(1.4));
 
     public static final PinkPositions MID_SCORE_FRONT = new PinkPositions(
             "Mid Score Front",
@@ -101,10 +77,4 @@ public class PositionConstants {
             new Rotation2d(2.11),
             22,
             new Rotation2d(2.2));
-
-    public static final PinkPositions FEED_INTERNAL = new PinkPositions(
-            "Feed Internal",
-            Rotation2d.fromRadians(0.32),
-            4.8,
-            Rotation2d.fromRadians(-2.05));
 }

@@ -1,8 +1,12 @@
 package com.team2383.diffy.subsystems.drivetrain;
 
+import org.photonvision.EstimatedRobotPose;
+
 import com.ctre.phoenixpro.hardware.Pigeon2;
 import com.ctre.phoenixpro.sim.Pigeon2SimState;
 
+import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team2383.diffy.Constants;
+import com.team2383.diffy.subsystems.drivetrain.vision.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final CoaxialSwerveModule m_frontLeftModule;
@@ -31,7 +36,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModuleState[] m_lastStates;
     private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
 
-    // private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
+    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
     private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
     private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
@@ -92,24 +97,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(getHeading(), getModulePositions());
 
-        // EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
-        // if (cam_pose != null) {
-        // var estimate = cam_pose.estimatedPose.toPose2d();
-        // if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
-        // estimate.getY() < 9) {
-        // m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
-        // cam_pose.timestampSeconds,
-        // VecBuilder.fill(1.5, 1.5, 1.5));
-        // }
-        // }
+        if (cam_pose != null) {
+            var estimate = cam_pose.estimatedPose.toPose2d();
+            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
+                    estimate.getY() < 9) {
+                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
+                        MathSharedStore.getTimestamp(),
+                        VecBuilder.fill(1.5, 1.5, 1.5));
+            }
+        }
 
         Pose2d estimatedPose = m_poseEstimator.getEstimatedPosition();
 
         if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
             Translation2d transformedTranslation = new Translation2d(16.46 - estimatedPose.getX(),
                     8.02 - estimatedPose.getY());
-            Rotation2d transformedHeading = estimatedPose.getRotation();
+            Rotation2d transformedHeading = estimatedPose.getRotation().plus(Rotation2d.fromDegrees(180));
 
             estimatedPose = new Pose2d(transformedTranslation, transformedHeading);
         }
