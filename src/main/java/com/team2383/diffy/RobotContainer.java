@@ -134,7 +134,8 @@ public class RobotContainer {
                     new SequentialCommandGroup(
                             new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                                     PositionConstants.FEED_CONE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7),
+                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, PositionConstants.TRAVEL_POS)));
 
             put("Travel",
                     new SequentialCommandGroup(
