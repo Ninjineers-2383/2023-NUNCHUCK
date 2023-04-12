@@ -45,7 +45,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -130,11 +129,8 @@ public class RobotContainer {
         {
             put("Auto Log", new PrintCommand("Auto Event: log"));
 
-            put("Feed Cube",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.FEED_CONE_POS),
-                            new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.7)));
+            put("Cube", new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.FEED_CUBE_POS));
 
             put("Travel",
                     new SequentialCommandGroup(
@@ -145,24 +141,18 @@ public class RobotContainer {
             put("Safety", new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromDegrees(-60)));
 
             put("Intake", new FeederCommand(m_feederSubsystem, () -> 1));
+            put("Outake", new FeederCommand(m_feederSubsystem, () -> -1));
 
             put("Feeder Off", new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0));
 
-            put("Score Low",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.LOW_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score Mid",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.MID_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
-            put("Score High",
-                    new SequentialCommandGroup(
-                            new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                    PositionConstants.HIGH_SCORE_BACK),
-                            new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.7)));
+            put("Low", new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.LOW_SCORE_BACK));
+
+            put("Mid", new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.MID_SCORE_BACK));
+
+            put("High", new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                    PositionConstants.HIGH_SCORE_BACK));
         }
     };
 
@@ -170,7 +160,7 @@ public class RobotContainer {
             m_drivetrainSubsystem::getPose,
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(1, 0, 0),
+            new PIDConstants(2, 0, 0),
             new PIDConstants(3, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             autoHashMap,
@@ -259,18 +249,11 @@ public class RobotContainer {
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
 
         Command cone_cube_2 = new SequentialCommandGroup(
+                new ZeroTelescope(m_telescopeSubsystem),
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.HIGH_SCORE_BACK),
                 new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.5),
-                new ParallelCommandGroup(
-                        new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                                PositionConstants.FEED_CUBE_POS),
-                        new FullAutoCommand(m_drivetrainSubsystem, "ConeCube2", autoBuilder)),
-                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
-                        PositionConstants.HIGH_SCORE_BACK),
-                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.5)
-
-        );
+                new FullAutoCommand(m_drivetrainSubsystem, "ConeCube2", autoBuilder));
 
         Command nullAuto = null;
 

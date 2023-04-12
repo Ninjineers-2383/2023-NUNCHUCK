@@ -7,8 +7,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6016183460938356,
-        "y": 4.781124133676839
+        "x": 3.864178671214484,
+        "y": 4.998708225987876
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -16,24 +16,26 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "Travel"
+        ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "deadline",
+        "waitTime": 0.01
       }
     },
     {
       "anchorPoint": {
-        "x": 6.595431619434668,
-        "y": 4.595032475779237
+        "x": 6.85309699190827,
+        "y": 4.365996589136035
       },
       "prevControl": {
-        "x": 5.231014431494511,
-        "y": 4.589459560598511
+        "x": 5.6220291012010595,
+        "y": 4.909956819913639
       },
       "nextControl": {
-        "x": 5.231014431494511,
-        "y": 4.589459560598511
+        "x": 5.6220291012010595,
+        "y": 4.909956819913639
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -49,12 +51,37 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8552119546987187,
-        "y": 4.2
+        "x": 1.88059386206924,
+        "y": 4.310840574442361
       },
       "prevControl": {
-        "x": 3.773387505335534,
-        "y": 4.600812801625604
+        "x": 1.7284190282666283,
+        "y": 4.2657933887296355
+      },
+      "nextControl": {
+        "x": 2.3758846859665397,
+        "y": 4.457457838075131
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.669498167567763,
+        "y": 4.700961573351719
+      },
+      "prevControl": {
+        "x": 2.2568523212882567,
+        "y": 4.222469164176078
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -78,9 +105,27 @@
       ]
     },
     {
-      "position": 1.2727272727272716,
+      "position": 1.054545454545457,
       "names": [
-        "Feeder Off"
+        "High"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "Cube"
+      ]
+    },
+    {
+      "position": 2.2090909090909063,
+      "names": [
+        "Travel"
+      ]
+    },
+    {
+      "position": 1.8272727272727272,
+      "names": [
+        "Outake"
       ]
     }
   ]
