@@ -145,6 +145,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
 
+        super.addChild("Feedforward", TelescopeConstants.FEEDFORWARD_CONTROLLER);
+
         builder.addBooleanProperty("Pivot angle does the existy", () -> m_pivotAngle != null, null);
 
         builder.addDoubleProperty("Pivot Angle", () -> m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0,

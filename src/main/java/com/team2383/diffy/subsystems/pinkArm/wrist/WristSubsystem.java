@@ -24,7 +24,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
 
     public WristSubsystem(Supplier<Rotation2d> pivotAngle) {
         super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM,
-                WristConstants.POSITON_THRESHOLD.getRadians());
+                WristConstants.POSITION_THRESHOLD.getRadians());
         m_pivotMotor = new TalonSRX(WristConstants.kMotorID);
         m_pivotMotor.configFactoryDefault();
         // Set postional offset
@@ -104,6 +104,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
+
+        super.addChild("Feedforward", WristConstants.FEEDFORWARD_CONTROLLER);
 
         builder.addDoubleProperty("Pivot Angle", () -> {
             return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;

@@ -20,6 +20,8 @@ public class ButtonBoardButtons {
             PositionConstants.FEED_CHUTE,
             PositionConstants.FEED_CUBE_POS,
             PositionConstants.FEED_CONE_POS,
+            PositionConstants.FEED_UPRIGHT,
+            PositionConstants.FEED_HIGH,
             PositionConstants.LOW_SCORE_BACK,
             PositionConstants.MID_SCORE_BACK,
             PositionConstants.HIGH_SCORE_BACK,

@@ -165,6 +165,9 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
+
+        super.addChild("Feedforward", PivotConstants.FEEDFORWARD_CONTROLLER);
+
         builder.addBooleanProperty("extension existance", () -> m_extensionSupplier != null, null);
         builder.addDoubleProperty("extension",
                 () -> (m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0), null);

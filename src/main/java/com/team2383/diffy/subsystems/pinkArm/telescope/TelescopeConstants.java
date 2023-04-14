@@ -1,6 +1,7 @@
 package com.team2383.diffy.subsystems.pinkArm.telescope;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+import com.team2383.diffy.helpers.TunableArmFeedforward;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
@@ -25,7 +26,7 @@ public final class TelescopeConstants {
     public static final double POSITION_THRESHOLD = 1.25;
 
     public static final PIDController PID_CONTROLLER = new PIDController(1, 0, 0);
-    public static final ArmFeedforward FEEDFORWARD_CONTROLLER = new ArmFeedforward(0.25, 0, 0.57, 0.01);
+    public static final TunableArmFeedforward FEEDFORWARD_CONTROLLER = new TunableArmFeedforward(0.25, 0, 0.57, 0.01);
     public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(80,
             40);
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId

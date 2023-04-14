@@ -1,7 +1,8 @@
 package com.team2383.diffy.subsystems.pinkArm.pivot;
 
+import com.team2383.diffy.helpers.TunableFeedforward;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
@@ -29,8 +30,8 @@ public final class PivotConstants {
     public static final double kGOFFSET = 25;
 
     public static final PIDController PID_CONTROLLER = new PIDController(14, 0, 0);
-    public static final SimpleMotorFeedforward FEEDFORWARD_CONTROLLER = new SimpleMotorFeedforward(0.5, 1.65, // kv:
-                                                                                                              // 1.65
+    public static final TunableFeedforward FEEDFORWARD_CONTROLLER = new TunableFeedforward(0.5, 1.65, // kv:
+                                                                                                      // 1.65
             0.001);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);

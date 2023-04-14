@@ -32,9 +32,21 @@ public class PositionConstants {
 
     public static final PinkPositions FEED_CONE_POS = new PinkPositions(
             "Feed Cone",
-            Rotation2d.fromRadians(0.529),
-            8.645,
-            Rotation2d.fromRadians(1.4388));
+            Rotation2d.fromRadians(0.558),
+            8.771,
+            Rotation2d.fromRadians(1.587));
+
+    public static final PinkPositions FEED_UPRIGHT = new PinkPositions(
+            "Feed Upright",
+            Rotation2d.fromRadians(0.718),
+            1.694,
+            Rotation2d.fromRadians(2.258));
+
+    public static final PinkPositions FEED_HIGH = new PinkPositions(
+            "Feed High",
+            Rotation2d.fromRadians(2.406),
+            0.69,
+            Rotation2d.fromRadians(3.783));
 
     public static final PinkPositions FEED_CHUTE = new PinkPositions(
             "Feed Chute",
