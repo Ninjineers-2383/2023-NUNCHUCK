@@ -53,11 +53,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public DrivetrainSubsystem(DataLog log) {
         m_frontLeftModule = new CoaxialSwerveModule(DriveConstants.frontLeftConstants,
-                Constants.kCANivoreBus, log);
+                DriveConstants.frontLeftEncoder, Constants.kCANivoreBus);
         m_frontRightModule = new CoaxialSwerveModule(DriveConstants.frontRightConstants,
-                Constants.kCANivoreBus, log);
+                DriveConstants.frontRightEncoder, Constants.kCANivoreBus);
         m_rearModule = new CoaxialSwerveModule(DriveConstants.rearConstants,
-                Constants.kCANivoreBus, log);
+                DriveConstants.rearEncoder, Constants.kCANivoreBus);
 
         m_modules = new CoaxialSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
 

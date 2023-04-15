@@ -8,6 +8,9 @@ import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
 import com.ctre.phoenixpro.signals.SensorDirectionValue;
+import com.team2383.diffy.helpers.AbsoluteCancoder;
+import com.team2383.diffy.helpers.AbsoluteMagEncoder;
+import com.team2383.diffy.helpers.IAbsoluteEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -154,5 +157,11 @@ public final class DriveConstants {
                     -(Math.sqrt(3) * DriveConstants.kTrackWidthMeters) / 4,
                     0),
             Rotation2d.fromDegrees(283.359375));
+
+    public final static IAbsoluteEncoder frontLeftEncoder = new AbsoluteMagEncoder(0);
+    public final static IAbsoluteEncoder frontRightEncoder = new AbsoluteCancoder(2, "Drive",
+            frontRightConstants.kHardwareConfigs.kAngleEncoderConfigs);
+    public final static IAbsoluteEncoder rearEncoder = new AbsoluteCancoder(3, "Drive",
+            rearConstants.kHardwareConfigs.kAngleEncoderConfigs);
 
 }

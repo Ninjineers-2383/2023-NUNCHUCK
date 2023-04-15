@@ -2,40 +2,28 @@ package com.team2383.diffy.subsystems.drivetrain;
 
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
-import com.ctre.phoenixpro.hardware.CANcoder;
 import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.sim.CANcoderSimState;
-import com.ctre.phoenixpro.sim.TalonFXSimState;
+import com.team2383.diffy.helpers.IAbsoluteEncoder;
 import com.team2383.diffy.subsystems.drivetrain.DriveConstants.ModuleConstants;
 import com.team2383.lib.math.Conversions;
 import com.team2383.lib.util.OnboardModuleState;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class CoaxialSwerveModule implements Sendable {
     private final TalonFX m_angleMotor;
     private final TalonFX m_driveMotor;
-    private final CANcoder m_angleEncoder;
 
-    private final TalonFXSimState m_angleMotorSim;
-    private final TalonFXSimState m_driveMotorSim;
-    private final CANcoderSimState m_anglerEncoderSim;
+    private final IAbsoluteEncoder m_angleEncoder;
 
     private final VelocityVoltage m_velocityOut = new VelocityVoltage(0, true, 0, 0, false);
     private final PositionVoltage m_positionOut = new PositionVoltage(0, true, 0, 0, false);
 
-    private final SimpleMotorFeedforward m_driveFeedForward;
-
     private final ModuleConstants m_moduleConstants;
-
-    private final String m_name;
-    private final DataLog m_log;
 
     private Rotation2d m_lastAngle;
 
@@ -44,29 +32,16 @@ public class CoaxialSwerveModule implements Sendable {
     private SwerveModuleState m_desiredState;
 
     private double m_desiredVelocity;
-    
-    public CoaxialSwerveModule(ModuleConstants moduleConstants, String CANbus, DataLog log) {
+
+    public CoaxialSwerveModule(ModuleConstants moduleConstants, IAbsoluteEncoder angleEncoder, String CANbus) {
         this.m_angleMotor = new TalonFX(moduleConstants.kAngleMotorID, CANbus);
         this.m_driveMotor = new TalonFX(moduleConstants.kDriveMotorID, CANbus);
 
-        this.m_angleEncoder = new CANcoder(moduleConstants.kEncoderID, CANbus);
-
-        this.m_angleMotorSim = m_angleMotor.getSimState();
-        this.m_driveMotorSim = m_driveMotor.getSimState();
-
-        this.m_anglerEncoderSim = m_angleEncoder.getSimState();
-
-        this.m_driveFeedForward = new SimpleMotorFeedforward(moduleConstants.kS, moduleConstants.kV,
-                moduleConstants.kA);
-
         this.m_moduleConstants = moduleConstants;
 
-        this.m_name = moduleConstants.name;
-        this.m_log = log;
+        this.m_angleEncoder = angleEncoder;
 
         this.m_angleOffset = moduleConstants.kAngleOffset;
-
-        configAngleEncoder();
 
         /* Motor Config */
         configAngleMotor();
@@ -113,19 +88,15 @@ public class CoaxialSwerveModule implements Sendable {
                         DriveConstants.kAngleGearRatio));
     }
 
-    public Rotation2d getCanCoder() {
-        return Rotation2d.fromRotations(m_angleEncoder.getAbsolutePosition().getValue());
+    public Rotation2d getAbsolute() {
+        return m_angleEncoder.getAbsoluteAngle();
     }
 
     public void resetToAbsolute() {
         double absolutePosition = Conversions.degreesToRotations(
-                getCanCoder().getDegrees() - m_angleOffset.getDegrees(),
+                getAbsolute().getDegrees() - m_angleOffset.getDegrees(),
                 DriveConstants.kAngleGearRatio);
         m_angleMotor.setRotorPosition(absolutePosition);
-    }
-
-    private void configAngleEncoder() {
-        m_angleEncoder.getConfigurator().apply(m_moduleConstants.kHardwareConfigs.kAngleEncoderConfigs);
     }
 
     private void configAngleMotor() {
@@ -159,7 +130,7 @@ public class CoaxialSwerveModule implements Sendable {
             return getAngle().getDegrees();
         }, null);
         builder.addDoubleProperty("Absolute Angle", () -> {
-            return m_angleEncoder.getAbsolutePosition().getValue() * 360;
+            return getAbsolute().getDegrees();
         }, null);
         builder.addDoubleProperty("Speed", () -> {
             return getState().speedMetersPerSecond;
