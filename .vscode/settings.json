@@ -62,5 +62,6 @@
   "latex.linter.config": "",
   "python.analysis.typeCheckingMode": "off",
   "editor.detectIndentation": false,
-  "wpilib.autoSaveOnDeploy": false
+"wpilib.autoSaveOnDeploy": false,
+"search.useIgnoreFiles": true
 }
