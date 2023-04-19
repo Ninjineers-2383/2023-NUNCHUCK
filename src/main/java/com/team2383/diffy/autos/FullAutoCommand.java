@@ -18,7 +18,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         // of 4 m/s and a max acceleration of 3 m/s^2
         // for every path in the group
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName,
-                new PathConstraints(2, 1));
+                new PathConstraints(1, 1));
 
         addCommands(
                 autoBuilder.fullAuto(pathGroup));

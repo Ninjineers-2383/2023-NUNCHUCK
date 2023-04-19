@@ -17,7 +17,7 @@ public final class PivotConstants {
     public static final int MAX_CURRENT = 40;
     public static final double ENCODER_OFFSET = 3.365 / (2 * Math.PI);
 
-    public static final Rotation2d POSITION_THRESHOLD = Rotation2d.fromDegrees(10);
+    public static final Rotation2d POSITION_THRESHOLD = Rotation2d.fromDegrees(15);
 
     public static final Rotation2d UPPER_BOUND = Rotation2d.fromDegrees(170);
     public static final Rotation2d LOWER_BOUND = Rotation2d.fromDegrees(-170);
@@ -25,20 +25,17 @@ public final class PivotConstants {
     public static final Rotation2d UPPER_SAFETY = Rotation2d.fromDegrees(0);
     public static final Rotation2d LOWER_SAFETY = Rotation2d.fromDegrees(-0);
 
-    public static final double kG = 0.98;
+    public static final double kG = 0.5;
 
-    public static final double kGOFFSET = 25;
+    public static final double kGOFFSET = 19;
 
-    public static final PIDController PID_CONTROLLER = new PIDController(14, 0, 0);
-    public static final TunableFeedforward FEEDFORWARD_CONTROLLER = new TunableFeedforward(0.5, 1.65, // kv:
-                                                                                                      // 1.65
-            0.001);
+    public static final PIDController PID_CONTROLLER = new PIDController(6, 0, 0);
+    public static final TunableFeedforward FEEDFORWARD_CONTROLLER = new TunableFeedforward(0.2, 1.66, 0.001);
 
     public static final Rotation2d VELOCITY_CONVERSION_FACTOR = Rotation2d.fromDegrees(360 * 60);
 
     // Values will be in radians and seconds
-    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(12,
-            12);
+    public static final TrapezoidProfile.Constraints TRAPEZOIDAL_CONSTRAINTS = new TrapezoidProfile.Constraints(17, 7);
 
     public static final LinearSystem<N1, N1, N1> SIMULATION_SUBSYSTEM = LinearSystemId.identifyVelocitySystem(
             PivotConstants.FEEDFORWARD_CONTROLLER.kv,

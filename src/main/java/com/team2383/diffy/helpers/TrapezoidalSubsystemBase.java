@@ -91,6 +91,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
         if (m_enabled) {
             m_desiredVelocity = m_isFinished ? 0 : m_state.velocity;
             m_desiredPosition = m_isFinished ? m_goal.position : m_state.position;
+        } else {
+            m_desiredPosition += m_desiredVelocity * 0.02;
         }
 
         // Calculate voltage to send to motors
@@ -143,8 +145,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      * @param velocity
      */
     protected void setVelocity(double velocity) {
-        m_desiredVelocity = velocity;
         disable();
+        m_desiredVelocity = velocity;
     }
 
     protected abstract double calculateVoltage(double velocity, double position);

@@ -14,7 +14,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private final SparkMaxSimWrapper m_motor;
@@ -35,6 +37,9 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         m_motor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
 
         m_motor.setInverted(true);
+
+        SmartDashboard.putData("Telescope FF", TelescopeConstants.FEEDFORWARD_CONTROLLER);
+        SmartDashboard.putData("Telescope PID", TelescopeConstants.PID_CONTROLLER);
     }
 
     public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
@@ -79,9 +84,9 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
         super.setVelocity(desiredVelocity);
     }
 
-    /* Velocity measured in inches per minute */
+    /* Velocity measured in inches per second */
     public double getVelocity() {
-        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION;
+        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION / 60.0;
     }
 
     public double getExtensionInches() {
@@ -144,8 +149,6 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-
-        super.addChild("Feedforward", TelescopeConstants.FEEDFORWARD_CONTROLLER);
 
         builder.addBooleanProperty("Pivot angle does the existy", () -> m_pivotAngle != null, null);
 

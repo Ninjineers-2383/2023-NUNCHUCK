@@ -105,7 +105,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     estimate.getY() < 9) {
                 m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
                         MathSharedStore.getTimestamp(),
-                        VecBuilder.fill(1.5, 1.5, 1.5));
+                        VecBuilder.fill(1, 1, 1));
             }
         }
 

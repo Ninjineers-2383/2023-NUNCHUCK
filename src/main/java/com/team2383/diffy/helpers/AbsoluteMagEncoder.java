@@ -12,6 +12,6 @@ public class AbsoluteMagEncoder implements IAbsoluteEncoder {
 
     @Override
     public Rotation2d getAbsoluteAngle() {
-        return Rotation2d.fromRotations(this.encoder.getAbsolutePosition());
+        return Rotation2d.fromRotations(this.encoder.getAbsolutePosition() - 0.25);
     }
 }

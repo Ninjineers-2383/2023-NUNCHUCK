@@ -22,6 +22,7 @@ public class ButtonBoardButtons {
             PositionConstants.FEED_CONE_POS,
             PositionConstants.FEED_UPRIGHT,
             PositionConstants.FEED_HIGH,
+            PositionConstants.FEED_HIGH_CONE,
             PositionConstants.LOW_SCORE_BACK,
             PositionConstants.MID_SCORE_BACK,
             PositionConstants.HIGH_SCORE_BACK,

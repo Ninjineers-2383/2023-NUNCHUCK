@@ -14,6 +14,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WristSubsystem extends TrapezoidalSubsystemBase {
     private final TalonSRX m_pivotMotor;
@@ -39,6 +41,9 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
                 .setQuadraturePosition(m_pivotMotor.getSensorCollection().getPulseWidthPosition(), 200);
 
         m_pivotMotor.setInverted(true);
+
+        SmartDashboard.putData("Wrist FF", WristConstants.FEEDFORWARD_CONTROLLER);
+        SmartDashboard.putData("Wrist PID", WristConstants.PID_CONTROLLER);
     }
 
     @Override
@@ -88,8 +93,8 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     private double getAbsoluteAngleRadians() {
-        return getAngle().getRadians() - Math.PI / 2
-                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() + Math.PI : 0);
+        return -getAngle().getRadians() + 2.36
+                + (m_pivotAngle != null ? m_pivotAngle.get().getRadians() - Math.PI / 2 : 0);
     }
 
     @Override
@@ -104,8 +109,6 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-
-        super.addChild("Feedforward", WristConstants.FEEDFORWARD_CONTROLLER);
 
         builder.addDoubleProperty("Pivot Angle", () -> {
             return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;

@@ -29,6 +29,6 @@ public class FeederCommand extends CommandBase {
 
     @Override
     public void end(boolean ahhhh) {
-        m_feederSubsystem.setPower(0);
+        // m_feederSubsystem.setPower(0);
     }
 }

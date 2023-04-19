@@ -22,11 +22,35 @@ public class TunableFeedforward implements Sendable {
         return calculate(velocity, 0);
     }
 
+    public double getKs() {
+        return ks;
+    }
+
+    public void setKs(double value) {
+        ks = value;
+    }
+
+    public double getKv() {
+        return kv;
+    }
+
+    public void setKv(double value) {
+        kv = value;
+    }
+
+    public double getKa() {
+        return ka;
+    }
+
+    public void setKa(double value) {
+        ka = value;
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("TunableFeedforward");
-        builder.addDoubleProperty("kS", () -> ks, (value) -> ks = value);
-        builder.addDoubleProperty("kV", () -> kv, (value) -> kv = value);
-        builder.addDoubleProperty("kA", () -> ka, (value) -> ka = value);
+        builder.addDoubleProperty("kS", this::getKs, this::setKs);
+        builder.addDoubleProperty("kV", this::getKv, this::setKv);
+        builder.addDoubleProperty("kA", this::getKa, this::setKa);
     }
 }

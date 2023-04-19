@@ -44,10 +44,10 @@ public class PinkArmPresetCommand extends SequentialCommandGroup {
                         new ConditionalCommand(
                                 new ParallelCommandGroup(
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(() -> m_telescope.getExtensionInches() < 12),
+                                                new WaitUntilCommand(() -> m_telescope.getExtensionInches() < 3),
                                                 new ConditionalCommand(
                                                         new PivotPositionCommand(pivot, Rotation2d.fromDegrees(24)),
-                                                        new PivotPositionCommand(pivot, Rotation2d.fromDegrees(-60)),
+                                                        new PivotPositionCommand(pivot, Rotation2d.fromDegrees(-80)),
                                                         () -> Math.signum(m_pivot.getAngle().getDegrees()) == 1)),
                                         new TelescopePositionCommand(telescope, 0),
                                         new WristPositionCommand(wrist, Rotation2d.fromDegrees(0))),

@@ -14,9 +14,12 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PivotSubsystem extends TrapezoidalSubsystemBase {
     private final SparkMaxSimWrapper m_rightMotor;
@@ -57,6 +60,9 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
         m_velocity = new AngularVelocityWrapper(getAngle());
 
         m_extensionSupplier = extension;
+
+        SmartDashboard.putData("Pivot FF", PivotConstants.FEEDFORWARD_CONTROLLER);
+        SmartDashboard.putData("Pivot PID", PivotConstants.PID_CONTROLLER);
     }
 
     @Override
@@ -165,8 +171,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-
-        super.addChild("Feedforward", PivotConstants.FEEDFORWARD_CONTROLLER);
 
         builder.addBooleanProperty("extension existance", () -> m_extensionSupplier != null, null);
         builder.addDoubleProperty("extension",

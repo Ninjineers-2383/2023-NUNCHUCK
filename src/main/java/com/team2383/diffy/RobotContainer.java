@@ -34,6 +34,7 @@ import com.team2383.diffy.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.diffy.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.diffy.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.diffy.commands.pinkArm.position.PositionConstants;
+import com.team2383.diffy.commands.pinkArm.position.PositionConstants.PinkPositions;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -76,15 +77,17 @@ public class RobotContainer {
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
-            .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn)
+            .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn) / 2.0
                     - m_driverController.getRawAxis(Constants.OI.IntakeOut)
                     + 0.2, .1);
 
     private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
-            .fromDegrees(90 * m_operatorController.getRawAxis(5));
-    private final DoubleSupplier m_extension = () -> 7 * m_operatorController.getRawAxis(1);
+            .fromDegrees(90 * MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.1));
+    private final DoubleSupplier m_extension = () -> 12
+            * MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.1);
     private final Supplier<Rotation2d> m_wrist = () -> Rotation2d
-            .fromDegrees(90 * (m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2)));
+            .fromDegrees(90 * MathUtil
+                    .applyDeadband(m_operatorController.getRawAxis(3) - m_operatorController.getRawAxis(2), 0.1));
 
     private final Trigger m_resetPosition = ButtonBoardButtons.makeNormieButton("Reset Position");
     private final Trigger m_resetHeading = ButtonBoardButtons.makeNormieButton("Reset Heading")
@@ -141,7 +144,8 @@ public class RobotContainer {
             put("Safety", new PivotPositionCommand(m_pivotSubsystem, Rotation2d.fromDegrees(-60)));
 
             put("Intake", new FeederCommand(m_feederSubsystem, () -> 1));
-            put("Outake", new FeederCommand(m_feederSubsystem, () -> -1));
+            put("Outake", new FeederCommand(m_feederSubsystem, () -> -0.5));
+            put("OutakeFull", new FeederCommand(m_feederSubsystem, () -> -1));
 
             put("Feeder Off", new FeederCommand(m_feederSubsystem, () -> 0).withTimeout(0));
 
@@ -160,8 +164,8 @@ public class RobotContainer {
             m_drivetrainSubsystem::getPose,
             m_drivetrainSubsystem::forceOdometry,
             m_drivetrainSubsystem.m_kinematics,
-            new PIDConstants(2, 0, 0),
-            new PIDConstants(3, 0, 0),
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(4, 0, 0),
             m_drivetrainSubsystem::setModuleStates,
             autoHashMap,
             true,
@@ -251,8 +255,10 @@ public class RobotContainer {
         Command cone_cube_2 = new SequentialCommandGroup(
                 new ZeroTelescope(m_telescopeSubsystem),
                 new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        new PinkPositions("", PositionConstants.HIGH_SCORE_BACK.pivot, 0, new Rotation2d(0))),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.HIGH_SCORE_BACK),
-                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.5),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.4),
                 new FullAutoCommand(m_drivetrainSubsystem, "ConeCube2", autoBuilder));
 
         Command nullAuto = null;
