@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public final class DriveConstants {
-    public static final double kMaxSpeed = 3.2; // meters per second
+    public static final double kMaxSpeed = 3.8; // meters per second
 
     public final static double kTrackWidthMeters = 0.6173724;
     public final static double kDriveMaxVoltage = 9.0;

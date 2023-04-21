@@ -92,7 +92,7 @@ public class PositionConstants {
 
     public static final PinkPositions HIGH_SCORE_FRONT = new PinkPositions(
             "High Score Front",
-            new Rotation2d(2.11),
-            22,
-            new Rotation2d(2.2));
+            new Rotation2d(2.15),
+            19.7,
+            new Rotation2d(3.387));
 }

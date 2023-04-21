@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team2383.diffy.autos.ConeCubeAuto;
 import com.team2383.diffy.autos.CubeMobilityAuto;
+import com.team2383.diffy.autos.Engage;
 import com.team2383.diffy.autos.EngageAuto;
 import com.team2383.diffy.autos.FullAutoCommand;
 import com.team2383.diffy.autos.ScorePreloadHigh;
@@ -71,14 +72,17 @@ public class RobotContainer {
             MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY), .1));
 
     private final Supplier<Rotation2d> m_driveOmega = () -> Rotation2d
-            .fromDegrees(125 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
+            .fromDegrees(100 * MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega), 0.1));
 
     private final BooleanSupplier m_fieldCentric = () -> !(m_driverController.getRawButton(Constants.OI.FieldCentric));
     private final IntSupplier m_povSupplier = () -> -1;
 
     private final DoubleSupplier m_intake = () -> MathUtil
             .applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeIn) / 2.0
-                    - m_driverController.getRawAxis(Constants.OI.IntakeOut)
+                    - (m_driverController.getRawAxis(Constants.OI.IntakeOut)
+                            + Math.signum(
+                                    MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.IntakeOut), 0.1)
+                                            * 0.2))
                     + 0.2, .1);
 
     private final Supplier<Rotation2d> m_pivot = () -> Rotation2d
@@ -228,26 +232,11 @@ public class RobotContainer {
     }
 
     private void setAutoCommands() {
-        Command coneCube = new ConeCubeAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem, autoBuilder);
-
         Command score_preload_high = new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
 
         Command score_preload_mid = new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
-
-        Command engage = new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem);
-
-        Command engage_high_preload = new SequentialCommandGroup(
-                new ScorePreloadHigh(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
-                        m_feederSubsystem),
-                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
-
-        Command engage_mid_preload = new SequentialCommandGroup(
-                new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem, m_wristSubsystem,
-                        m_feederSubsystem),
-                new EngageAuto(m_drivetrainSubsystem, autoBuilder, m_pivotSubsystem));
 
         Command cube_mobility = new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem, autoBuilder);
@@ -261,17 +250,48 @@ public class RobotContainer {
                 new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.4),
                 new FullAutoCommand(m_drivetrainSubsystem, "ConeCube2", autoBuilder));
 
+        Command center_one = new SequentialCommandGroup(
+                new InstantCommand(() -> m_drivetrainSubsystem.forceHeading(Rotation2d.fromDegrees(180))),
+                new ZeroTelescope(m_telescopeSubsystem),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.HIGH_SCORE_FRONT),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.4),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.ZERO_POS),
+                new FullAutoCommand(m_drivetrainSubsystem, "CenterOne", autoBuilder),
+                new Engage(m_drivetrainSubsystem, false));
+
+        Command dirty_cube = new SequentialCommandGroup(
+                new InstantCommand(() -> m_drivetrainSubsystem.forceHeading(Rotation2d.fromDegrees(180))),
+                new ZeroTelescope(m_telescopeSubsystem),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.HIGH_SCORE_FRONT),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.4),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.ZERO_POS),
+                new FullAutoCommand(m_drivetrainSubsystem, "DirtyCube", autoBuilder));
+
+        Command dirty_no_turn = new SequentialCommandGroup(
+                new ZeroTelescope(m_telescopeSubsystem),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        new PinkPositions("", PositionConstants.HIGH_SCORE_BACK.pivot, 0, new Rotation2d(0))),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.HIGH_SCORE_BACK),
+                new FeederCommand(m_feederSubsystem, () -> -1).withTimeout(0.4),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
+                        PositionConstants.ZERO_POS),
+                new FullAutoCommand(m_drivetrainSubsystem, "Dirty No Turn", autoBuilder));
+
         Command nullAuto = null;
 
-        autoChooser.setDefaultOption("Cone Cube Auto", coneCube);
         autoChooser.setDefaultOption("No Auto :(", nullAuto);
         autoChooser.addOption("Score Preload High", score_preload_high);
         autoChooser.addOption("Score Preload Mid", score_preload_mid);
-        autoChooser.addOption("Engage Score Preload High", engage_high_preload);
-        autoChooser.addOption("Engage Score Preload Mid", engage_mid_preload);
-        autoChooser.addOption("Engage", engage);
         autoChooser.addOption("Cube Mobility", cube_mobility);
         autoChooser.addOption("Cone Cube 2", cone_cube_2);
+        autoChooser.addOption("Center One", center_one);
+        autoChooser.addOption("Dirty Cube", dirty_cube);
+        autoChooser.addOption("Dirty No Turn", dirty_no_turn);
 
         SmartDashboard.putData("Auto", autoChooser);
     }
