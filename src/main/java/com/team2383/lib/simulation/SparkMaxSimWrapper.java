@@ -1,4 +1,4 @@
-package com.team2383.nunchuck.helpers;
+package com.team2383.lib.simulation;
 
 import com.revrobotics.CANSparkMax;
 

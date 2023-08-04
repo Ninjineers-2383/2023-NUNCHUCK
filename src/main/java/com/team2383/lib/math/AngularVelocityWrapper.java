@@ -1,4 +1,4 @@
-package com.team2383.nunchuck.helpers;
+package com.team2383.lib.math;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,7 +27,7 @@ public class AngularVelocityWrapper {
      * Need to run this every loop to be accurate
      * 
      * @param displacement
-     * @return discrete-time-derivitive velocity
+     * @return discrete-time-derivative velocity
      */
     public Rotation2d calculate(Rotation2d displacement) {
         double time = Timer.getFPGATimestamp();

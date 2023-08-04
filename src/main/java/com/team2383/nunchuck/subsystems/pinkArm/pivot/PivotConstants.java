@@ -1,6 +1,6 @@
 package com.team2383.nunchuck.subsystems.pinkArm.pivot;
 
-import com.team2383.nunchuck.helpers.TunableFeedforward;
+import com.team2383.lib.controller.TunableFeedforward;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;

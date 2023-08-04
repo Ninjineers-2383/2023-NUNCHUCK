@@ -1,4 +1,4 @@
-package com.team2383.nunchuck.helpers;
+package com.team2383.lib.swerve;
 
 import com.ctre.phoenixpro.configs.CANcoderConfiguration;
 import com.ctre.phoenixpro.hardware.CANcoder;

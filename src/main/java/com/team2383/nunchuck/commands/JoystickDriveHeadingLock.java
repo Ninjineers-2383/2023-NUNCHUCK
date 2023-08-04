@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team2383.nunchuck.helpers.ThrottleSoftener;
+
+import com.team2383.lib.math.ThrottleSoftener;
 import com.team2383.nunchuck.subsystems.drivetrain.DriveConstants;
 import com.team2383.nunchuck.subsystems.drivetrain.DrivetrainSubsystem;
 

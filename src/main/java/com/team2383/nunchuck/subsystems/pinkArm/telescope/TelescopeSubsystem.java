@@ -3,9 +3,9 @@ package com.team2383.nunchuck.subsystems.pinkArm.telescope;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team2383.lib.math.Clip;
+import com.team2383.lib.simulation.SparkMaxSimWrapper;
 import com.team2383.nunchuck.Robot;
-import com.team2383.nunchuck.helpers.Clip;
-import com.team2383.nunchuck.helpers.SparkMaxSimWrapper;
 import com.team2383.nunchuck.helpers.TrapezoidalSubsystemBase;
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotConstants;
 
@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

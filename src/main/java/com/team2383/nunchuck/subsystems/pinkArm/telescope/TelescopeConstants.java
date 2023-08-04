@@ -1,6 +1,6 @@
 package com.team2383.nunchuck.subsystems.pinkArm.telescope;
 
-import com.team2383.nunchuck.helpers.TunableArmFeedforward;
+import com.team2383.lib.controller.TunableArmFeedforward;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;

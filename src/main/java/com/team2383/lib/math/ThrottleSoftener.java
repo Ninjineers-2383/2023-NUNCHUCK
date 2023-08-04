@@ -1,4 +1,4 @@
-package com.team2383.nunchuck.helpers;
+package com.team2383.lib.math;
 
 public class ThrottleSoftener {
     /**

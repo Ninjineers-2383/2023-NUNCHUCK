@@ -3,9 +3,9 @@ package com.team2383.nunchuck.subsystems.drivetrain;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
-import com.team2383.nunchuck.helpers.IAbsoluteEncoder;
 import com.team2383.nunchuck.subsystems.drivetrain.DriveConstants.ModuleConstants;
 import com.team2383.lib.math.Conversions;
+import com.team2383.lib.swerve.IAbsoluteEncoder;
 import com.team2383.lib.util.OnboardModuleState;
 
 import edu.wpi.first.math.geometry.Rotation2d;

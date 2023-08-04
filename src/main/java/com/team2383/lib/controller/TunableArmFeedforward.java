@@ -1,4 +1,4 @@
-package com.team2383.nunchuck.helpers;
+package com.team2383.lib.controller;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;

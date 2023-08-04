@@ -8,9 +8,9 @@ import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
 import com.ctre.phoenixpro.signals.SensorDirectionValue;
-import com.team2383.nunchuck.helpers.AbsoluteCancoder;
-import com.team2383.nunchuck.helpers.AbsoluteMagEncoder;
-import com.team2383.nunchuck.helpers.IAbsoluteEncoder;
+import com.team2383.lib.swerve.AbsoluteCancoder;
+import com.team2383.lib.swerve.AbsoluteMagEncoder;
+import com.team2383.lib.swerve.IAbsoluteEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;

@@ -12,10 +12,8 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team2383.nunchuck.autos.ConeCubeAuto;
 import com.team2383.nunchuck.autos.CubeMobilityAuto;
 import com.team2383.nunchuck.autos.Engage;
-import com.team2383.nunchuck.autos.EngageAuto;
 import com.team2383.nunchuck.autos.FullAutoCommand;
 import com.team2383.nunchuck.autos.ScorePreloadHigh;
 import com.team2383.nunchuck.autos.ScorePreloadMid;
