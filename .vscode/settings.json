@@ -63,5 +63,9 @@
   "python.analysis.typeCheckingMode": "off",
   "editor.detectIndentation": false,
 "wpilib.autoSaveOnDeploy": false,
-"search.useIgnoreFiles": true
+"search.useIgnoreFiles": true,
+"[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+},
+"python.formatting.provider": "none"
 }
