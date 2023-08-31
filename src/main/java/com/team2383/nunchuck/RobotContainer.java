@@ -27,6 +27,7 @@ import com.team2383.nunchuck.commands.pinkArm.zero.ZeroTelescope;
 import com.team2383.nunchuck.helpers.ButtonBoardButtons;
 import com.team2383.nunchuck.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.PinkArmSimSubsystem;
+import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIOFalcon500;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeSubsystem;
@@ -106,7 +107,7 @@ public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
-    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(DataLogManager.getLog());
+    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(new FeederIOFalcon500());
     // private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
     private Supplier<Rotation2d> m_pivotSupplier;
     private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
