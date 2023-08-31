@@ -17,6 +17,19 @@ public final class Constants {
     public static final String kRIOBus = "rio";
     public static final String kCANivoreBus = "Drive";
 
+      public static final Mode currentMode = Mode.REAL;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
     public static final class OI {
         // Axis
         public static int DriveX = Robot.isReal() ? 5 : 0;

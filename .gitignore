@@ -165,3 +165,5 @@ FRC_*.wpilog
 *.csv
 
 !repos/**/*
+
+src/main/java/com/team2383/nunchuck/BuildConstants.java
