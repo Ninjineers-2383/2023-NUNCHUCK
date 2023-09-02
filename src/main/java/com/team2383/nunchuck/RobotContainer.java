@@ -31,7 +31,9 @@ import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIOFalcon500;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotIOSparkMax;
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotSubsystem;
+import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeIOSparkMax;
 import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeSubsystem;
+import com.team2383.nunchuck.subsystems.pinkArm.wrist.WristIOTalonSRX;
 import com.team2383.nunchuck.subsystems.pinkArm.wrist.WristSubsystem;
 import com.team2383.nunchuck.commands.pinkArm.position.PivotPositionCommand;
 import com.team2383.nunchuck.commands.pinkArm.position.PositionConstants;
@@ -111,8 +113,8 @@ public class RobotContainer {
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(new FeederIOFalcon500());
     // private final PaddleSubsystem m_dickSubsystem = new PaddleSubsystem();
     private Supplier<Rotation2d> m_pivotSupplier;
-    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(m_pivotSupplier);
-    private final WristSubsystem m_wristSubsystem = new WristSubsystem(m_pivotSupplier);
+    private final TelescopeSubsystem m_telescopeSubsystem = new TelescopeSubsystem(new TelescopeIOSparkMax(), m_pivotSupplier);
+    private final WristSubsystem m_wristSubsystem = new WristSubsystem(new WristIOTalonSRX(), m_pivotSupplier);
     private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem(new PivotIOSparkMax(), m_telescopeSubsystem::getExtensionInches);
 
     private final PinkArmSimSubsystem pinkArmSim = new PinkArmSimSubsystem(m_pivotSubsystem,

@@ -2,44 +2,30 @@ package com.team2383.nunchuck.subsystems.pinkArm.wrist;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import org.littletonrobotics.junction.Logger;
+
 import com.team2383.lib.math.Clip;
 import com.team2383.nunchuck.helpers.TrapezoidalSubsystemBase;
-// import com.revrobotics.PowerDistribution.voltage;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WristSubsystem extends TrapezoidalSubsystemBase {
-    private final TalonSRX m_pivotMotor;
+    private final WristIO m_io;
+    private final WristIOInputsAutoLogged m_inputs = new WristIOInputsAutoLogged();
 
     double m_simVelocity = 0;
 
     private Supplier<Rotation2d> m_pivotAngle;
 
-    public WristSubsystem(Supplier<Rotation2d> pivotAngle) {
+    public WristSubsystem(WristIO io, Supplier<Rotation2d> pivotAngle) {
         super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM,
                 WristConstants.POSITION_THRESHOLD.getRadians());
-        m_pivotMotor = new TalonSRX(WristConstants.kMotorID);
-        m_pivotMotor.configFactoryDefault();
-        // Set postional offset
+        
+        m_io = io;
 
-        m_pivotMotor.configPeakCurrentLimit(WristConstants.kMaxCurrent, 500);
-        m_pivotMotor.enableCurrentLimit(true);
-        m_pivotMotor.configVoltageCompSaturation(12);
-        m_pivotMotor.enableVoltageCompensation(true);
-        m_pivotMotor.configVoltageMeasurementFilter(1);
         m_pivotAngle = pivotAngle;
-        m_pivotMotor.getSensorCollection()
-                .setQuadraturePosition(m_pivotMotor.getSensorCollection().getPulseWidthPosition(), 200);
-
-        m_pivotMotor.setInverted(true);
 
         SmartDashboard.putData("Wrist FF", WristConstants.FEEDFORWARD_CONTROLLER);
         SmartDashboard.putData("Wrist PID", WristConstants.PID_CONTROLLER);
@@ -48,6 +34,9 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        m_io.updateInputs(m_inputs);
+
+        Logger.getInstance().processInputs("Wrist", m_inputs);
     }
 
     public void setPivotAngle(Supplier<Rotation2d> pivotAngle) {
@@ -66,14 +55,12 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public Rotation2d getAngle() {
-        return Rotation2d
-                .fromRotations((m_pivotMotor.getSensorCollection().getQuadraturePosition()
-                        - WristConstants.encoderOffset) / 4096.0);
+        return m_inputs.angle;
     }
 
     @Override
     public void setVoltage(double voltage) {
-        m_pivotMotor.set(ControlMode.PercentOutput, voltage / 12);
+        m_io.setVoltage(voltage);
     }
 
     @Override
@@ -82,13 +69,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public Rotation2d getVelocity() {
-        return Rotation2d.fromRotations(m_pivotMotor.getSensorCollection().getQuadratureVelocity() / 4096.0 * 10);
-    }
-
-    protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        m_pivotMotor.getSimCollection().setPulseWidthPosition((int) (m_pivotMotor.getSelectedSensorPosition()
-                + Units.radiansToRotations(matrix.get(0, 0) * 0.02) * 4096));
-
+        return m_inputs.velocity;
     }
 
     private double getAbsoluteAngleRadians() {
@@ -103,24 +84,5 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
                 getAbsoluteAngleRadians(),
                 velocity);
         return voltage;
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-
-        builder.addDoubleProperty("Pivot Angle", () -> {
-            return m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0;
-        }, null);
-
-        builder.addDoubleProperty("Absolute Angle", () -> {
-            return getAbsoluteAngleRadians();
-
-        }, null);
-
-        builder.addDoubleProperty("ABS Raw", m_pivotMotor.getSensorCollection()::getPulseWidthPosition, null);
-
-        builder.addDoubleProperty("Quad Raw", m_pivotMotor.getSensorCollection()::getQuadraturePosition, null);
-
     }
 }

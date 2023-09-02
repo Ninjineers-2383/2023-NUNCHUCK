@@ -3,28 +3,19 @@ package com.team2383.nunchuck.subsystems.pinkArm.pivot;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team2383.nunchuck.helpers.TrapezoidalSubsystemBase;
 import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeConstants;
-import com.team2383.lib.math.AngularVelocityWrapper;
 import com.team2383.lib.math.Clip;
-import com.team2383.lib.simulation.SparkMaxSimWrapper;
 import com.team2383.nunchuck.Robot;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PivotSubsystem extends TrapezoidalSubsystemBase {
     private final PivotIO m_io;
     private final PivotIOInputsAutoLogged m_inputs = new PivotIOInputsAutoLogged();
-    private final AngularVelocityWrapper m_velocity;
 
     private final DoubleSupplier m_extensionSupplier;
 
@@ -40,8 +31,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
 
         m_io = io;
 
-        m_velocity = new AngularVelocityWrapper(getAngle());
-
         m_extensionSupplier = extension;
 
         SmartDashboard.putData("Pivot FF", PivotConstants.FEEDFORWARD_CONTROLLER);
@@ -52,8 +41,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     public void periodic() {
         super.periodic();
         m_io.updateInputs(m_inputs);
-        Rotation2d angle = getAngle();
-        m_velocity.calculate(angle);
 
         Logger.getInstance().processInputs("Pivot", m_inputs);
     }
@@ -91,16 +78,6 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     }
 
     /**
-     * Sets the voltage of the pivot motors
-     * 
-     * @param voltage
-     */
-    @Override
-    protected void setVoltage(double voltage) {
-        m_io.setVoltage(voltage);
-    }
-
-    /**
      * PIDF calculations used by trapezoidal motion profiling
      * 
      * @param velocity in radians per second
@@ -123,7 +100,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * @return
      */
     public Rotation2d getVelocity() {
-        return m_velocity.get();
+        return m_inputs.velocity;
     }
 
     /**
@@ -136,7 +113,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     }
 
     protected TrapezoidProfile.State getState() {
-        return new TrapezoidProfile.State(getAngle().getRadians(), m_velocity.get().getRadians());
+        return new TrapezoidProfile.State(getAngle().getRadians(), getVelocity().getRadians());
     }
 
     @Override
@@ -148,10 +125,13 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
                 () -> (m_extensionSupplier != null ? m_extensionSupplier.getAsDouble() : 0), null);
     }
 
+    /**
+     * Sets the voltage of the pivot motors
+     * 
+     * @param voltage
+     */
     @Override
-    protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        // TODO Auto-generated method stub
-        
+    protected void setVoltage(double voltage) {
+        m_io.setVoltage(voltage);
     }
-
 }

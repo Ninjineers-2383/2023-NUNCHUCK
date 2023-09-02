@@ -7,12 +7,9 @@ package com.team2383.nunchuck.helpers;
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -27,8 +24,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     private final TrapezoidProfile.Constraints m_constraints;
 
-    private final LinearSystem<N1, N1, N1> m_simSubsystem;
-
     private TrapezoidProfile.State m_state;
     private TrapezoidProfile.State m_goal;
 
@@ -36,7 +31,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     private double m_voltage;
     private double m_desiredVelocity = 0;
     private double m_desiredPosition = 0;
-    private String m_name;
+    //private String m_name;
 
     private boolean m_enabled = true;
 
@@ -62,8 +57,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
         m_state = new TrapezoidProfile.State(initialPosition, 0);
         setGoal(new TrapezoidProfile.State(initialPosition, 0));
 
-        m_simSubsystem = simSubsystem;
-        m_name = name;
+        //m_name = name;
         m_positionThreshold = positionaThreshold;
     }
 
@@ -101,14 +95,6 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
         setVoltage(m_voltage);
     }
 
-    @Override
-    public void simulationPeriodic() {
-        Matrix<N1, N1> newX = m_simSubsystem.calculateX(VecBuilder.fill(getState().velocity),
-                VecBuilder.fill(m_voltage),
-                0.02);
-        setSimulatedMotors(newX);
-    }
-
     /**
      * Sets the goal state for the subsystem.
      *
@@ -137,8 +123,6 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      */
     protected abstract TrapezoidProfile.State getState();
 
-    protected abstract void setSimulatedMotors(Matrix<N1, N1> matrix);
-
     /**
      * Set velocity of subsystem
      * 
@@ -165,38 +149,5 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      */
     public boolean isAtPosition() {
         return m_isFinished && Math.abs(m_goal.position - getState().position) < m_positionThreshold;
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType(m_name);
-
-        builder.addDoubleProperty("Position", () -> {
-            return getState().position;
-        }, null);
-
-        builder.addDoubleProperty("Desired Position", () -> {
-            return m_goal.position;
-        }, null);
-
-        builder.addDoubleProperty("Current Desired", () -> {
-            return m_desiredPosition;
-        }, null);
-
-        builder.addDoubleProperty("Set Velocity", () -> {
-            return m_state.velocity;
-        }, null);
-
-        builder.addDoubleProperty("Velocity", () -> {
-            return getState().velocity;
-        }, null);
-
-        builder.addDoubleProperty("Desired Velocity", () -> {
-            return m_desiredVelocity;
-        }, null);
-
-        builder.addDoubleProperty("Voltage (Volts)", () -> {
-            return m_voltage;
-        }, null);
     }
 }

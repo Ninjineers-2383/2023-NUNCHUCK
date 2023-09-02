@@ -2,40 +2,32 @@ package com.team2383.nunchuck.subsystems.pinkArm.telescope;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import org.littletonrobotics.junction.Logger;
+
 import com.team2383.lib.math.Clip;
-import com.team2383.lib.simulation.SparkMaxSimWrapper;
 import com.team2383.nunchuck.Robot;
 import com.team2383.nunchuck.helpers.TrapezoidalSubsystemBase;
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotConstants;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
-    private final SparkMaxSimWrapper m_motor;
+    private final TelescopeIO m_io;
+    private final TelescopeIOInputsAutoLogged m_inputs = new TelescopeIOInputsAutoLogged();
 
     private Supplier<Rotation2d> m_pivotAngle;
 
-    public TelescopeSubsystem(Supplier<Rotation2d> pivotAngle) {
+    public TelescopeSubsystem(TelescopeIO io, Supplier<Rotation2d> pivotAngle) {
         super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS, TelescopeConstants.SIMULATION_SUBSYSTEM,
                 TelescopeConstants.POSITION_THRESHOLD);
         m_pivotAngle = pivotAngle;
 
-        m_motor = new SparkMaxSimWrapper(TelescopeConstants.EXTENSION_ID, MotorType.kBrushless);
-
-        m_motor.restoreFactoryDefaults();
+        m_io = io;
 
         resetPosition();
-
-        m_motor.setSmartCurrentLimit(TelescopeConstants.MAX_CURRENT);
-
-        m_motor.setInverted(true);
 
         SmartDashboard.putData("Telescope FF", TelescopeConstants.FEEDFORWARD_CONTROLLER);
         SmartDashboard.putData("Telescope PID", TelescopeConstants.PID_CONTROLLER);
@@ -48,6 +40,9 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        m_io.updateInputs(m_inputs);
+
+        Logger.getInstance().processInputs("Telescope", m_inputs);
     }
 
     /**
@@ -85,23 +80,15 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
 
     /* Velocity measured in inches per second */
     public double getVelocity() {
-        return m_motor.get() * TelescopeConstants.ROTATION_CONVERSION / 60.0;
+        return m_inputs.velocity;
     }
 
     public double getExtensionInches() {
-        return m_motor.getPosition() * TelescopeConstants.ROTATION_CONVERSION;
+        return m_inputs.extension;
     }
 
     protected TrapezoidProfile.State getState() {
         return new TrapezoidProfile.State(getExtensionInches(), getVelocity());
-    }
-
-    /** Handles simulation */
-    protected void setSimulatedMotors(Matrix<N1, N1> matrix) {
-        double simVelocity = matrix.get(0, 0);
-        m_motor.setSimVelocity(simVelocity);
-
-        m_motor.setSimPosition(m_motor.getPosition() + simVelocity * 0.02);
     }
 
     private double getCosGravityAngle() {
@@ -129,33 +116,19 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      */
     @Override
     protected void setVoltage(double voltage) {
-        m_motor.setVoltage(voltage);
+        m_io.setVoltage(voltage);;
     }
 
     public void resetPosition() {
         DataLogManager.log("Telescope reset");
-        m_motor.getEncoder().setPosition(0);
+        m_io.setEncoderPosition(0);
     }
 
     public double getCurrent() {
-        return m_motor.getOutputCurrent();
+        return m_inputs.current;
     }
 
     public boolean getZeroState() {
         return getCurrent() > TelescopeConstants.CURRENT_THRESHOLD;
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-
-        builder.addBooleanProperty("Pivot angle does the existy", () -> m_pivotAngle != null, null);
-
-        builder.addDoubleProperty("Pivot Angle", () -> m_pivotAngle != null ? m_pivotAngle.get().getRadians() : 0,
-                null);
-
-        builder.addDoubleProperty("Current", this::getCurrent,
-                null);
-
     }
 }
