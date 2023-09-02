@@ -55,7 +55,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public Rotation2d getAngle() {
-        return m_inputs.angle;
+        return Rotation2d.fromRotations(m_inputs.angle);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     }
 
     public Rotation2d getVelocity() {
-        return m_inputs.velocity;
+        return Rotation2d.fromRotations(m_inputs.velocity);
     }
 
     private double getAbsoluteAngleRadians() {

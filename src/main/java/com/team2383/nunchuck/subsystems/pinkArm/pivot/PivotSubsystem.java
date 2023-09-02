@@ -100,7 +100,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * @return
      */
     public Rotation2d getVelocity() {
-        return m_inputs.velocity;
+        return Rotation2d.fromRotations(m_inputs.velocity);
     }
 
     /**
@@ -109,7 +109,7 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * @return angle in Rotation2d
      */
     public Rotation2d getAngle() {
-        return m_inputs.angle;
+        return Rotation2d.fromRotations(m_inputs.angle);
     }
 
     protected TrapezoidProfile.State getState() {

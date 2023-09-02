@@ -3,8 +3,6 @@ package com.team2383.nunchuck.subsystems.pinkArm.wrist;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 public class WristIOTalonSRX implements WristIO {
     private final TalonSRX m_wristMotor;
 
@@ -25,10 +23,9 @@ public class WristIOTalonSRX implements WristIO {
 
     @Override
     public void updateInputs(WristIOInputs inputs) {
-        inputs.angle = Rotation2d
-        .fromRotations((m_wristMotor.getSensorCollection().getQuadraturePosition()
-                - WristConstants.encoderOffset) / 4096.0);
-        inputs.velocity = Rotation2d.fromRotations(m_wristMotor.getSensorCollection().getQuadratureVelocity() / 4096.0 * 10);
+        inputs.angle = (m_wristMotor.getSensorCollection().getQuadraturePosition()
+                - WristConstants.encoderOffset) / 4096.0;
+        inputs.velocity = m_wristMotor.getSensorCollection().getQuadratureVelocity() / 4096.0 * 10;
         inputs.appliedVolts = m_wristMotor.getMotorOutputVoltage();
         inputs.current = m_wristMotor.getStatorCurrent();
     }
