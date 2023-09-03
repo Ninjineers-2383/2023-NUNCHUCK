@@ -1,6 +1,9 @@
 package com.team2383.nunchuck.helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import com.team2383.nunchuck.commands.pinkArm.PinkArmPresetCommand;
 import com.team2383.nunchuck.commands.pinkArm.position.PositionConstants;
@@ -8,7 +11,6 @@ import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.wrist.WristSubsystem;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -29,27 +31,27 @@ public class ButtonBoardButtons {
             PositionConstants.MID_SCORE_FRONT,
             PositionConstants.HIGH_SCORE_FRONT };
 
+    private static HashMap<String, LoggedDashboardBoolean> buttons = new HashMap<String, LoggedDashboardBoolean>();
+
     private static ArrayList<String> names = new ArrayList<String>();
 
-    private static void publishDashboard(String key) {
+    private static void oneHot(String key) {
         for (PositionConstants.PinkPositions position : positions) {
             if (!key.equals(position.name)) {
-                SmartDashboard.putBoolean(position.name, false);
+                if (buttons.get(position.name) == null) {
+                    buttons.put(position.name, new LoggedDashboardBoolean(position.name, false));
+                }
+                buttons.get(position.name).set(false);
             }
         }
     }
 
-    public static void setAllFalse() {
-        for (String name : names) {
-            SmartDashboard.putBoolean(name, false);
-        }
-    }
-
     public static Trigger makeNormieButton(String name) {
-        SmartDashboard.setDefaultBoolean(name, false);
-        Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(name, false));
+        var button = new LoggedDashboardBoolean(name, false);
+        buttons.put(name, button);
+        Trigger smartTrigger = new Trigger(() -> button.get());
         smartTrigger
-                .onTrue(new WaitCommand(.01).andThen(new InstantCommand(() -> SmartDashboard.putBoolean(name, false))));
+                .onTrue(new WaitCommand(.01).andThen(new InstantCommand(() -> button.set(false))));
         names.add(name);
         return smartTrigger;
     }
@@ -58,9 +60,10 @@ public class ButtonBoardButtons {
             TelescopeSubsystem telescopeSubsystem,
             WristSubsystem wristSubsystem,
             PositionConstants.PinkPositions constant) {
-        SmartDashboard.setDefaultBoolean(constant.name, false);
-        Trigger smartTrigger = new Trigger(() -> SmartDashboard.getBoolean(constant.name, false));
-        smartTrigger.onTrue(new InstantCommand(() -> publishDashboard(constant.name))
+        var button = new LoggedDashboardBoolean(constant.name, false);
+        buttons.put(constant.name, button);
+        Trigger smartTrigger = new Trigger(() -> button.get());
+        smartTrigger.onTrue(new InstantCommand(() -> oneHot(constant.name))
                 .andThen(new PinkArmPresetCommand(pivotSubsystem, telescopeSubsystem, wristSubsystem, constant)));
         names.add(constant.name);
         return smartTrigger;

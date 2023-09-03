@@ -3,7 +3,7 @@ package com.team2383.nunchuck.subsystems.pinkArm.telescope;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class TelescopeIOSparkMax implements TelescopeIO{
+public class TelescopeIOSparkMax implements TelescopeIO {
     private final CANSparkMax m_motor;
 
     public TelescopeIOSparkMax() {
@@ -16,7 +16,7 @@ public class TelescopeIOSparkMax implements TelescopeIO{
     @Override
     public void updateInputs(TelescopeIOInputs inputs) {
         inputs.extension = m_motor.getEncoder().getPosition() * TelescopeConstants.ROTATION_CONVERSION;
-        inputs.velocity = m_motor.get() * TelescopeConstants.ROTATION_CONVERSION / 60.0;
+        inputs.velocity = m_motor.getEncoder().getVelocity() * TelescopeConstants.ROTATION_CONVERSION / 60.0;
         inputs.appliedVolts = m_motor.getAppliedOutput();
         inputs.current = m_motor.getOutputCurrent();
     }

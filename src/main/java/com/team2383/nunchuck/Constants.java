@@ -4,6 +4,8 @@
 
 package com.team2383.nunchuck;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 /**
  * Note: Translations calculated with the formula graphed here
  * https://www.desmos.com/calculator/jj9i5bdjhe
@@ -17,18 +19,40 @@ public final class Constants {
     public static final String kRIOBus = "rio";
     public static final String kCANivoreBus = "Drive";
 
-      public static final Mode currentMode = Mode.REAL;
+    public static final RobotType robot = RobotType.ROBOT_SIM;
 
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
+    public static RobotType getRobot() {
+        if (RobotBase.isReal()) {
+            if (robot == RobotType.ROBOT_SIM) { // Invalid robot selected
+                return RobotType.ROBOT_COMP;
+            } else {
+                return robot;
+            }
+        } else {
+            return robot;
+        }
+    }
 
-    /** Running a physics simulator. */
-    SIM,
+    public static Mode getMode() {
+        switch (getRobot()) {
+            case ROBOT_COMP:
+                return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
-    /** Replaying from a log file. */
-    REPLAY
-  }
+            case ROBOT_SIM:
+                return Mode.SIM;
+
+            default:
+                return Mode.REAL;
+        }
+    }
+
+    public static enum RobotType {
+        ROBOT_COMP, ROBOT_SIM
+    }
+
+    public static enum Mode {
+        REAL, REPLAY, SIM
+    }
 
     public static final class OI {
         // Axis

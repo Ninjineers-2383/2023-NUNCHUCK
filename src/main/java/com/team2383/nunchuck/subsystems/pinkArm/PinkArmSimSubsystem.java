@@ -1,13 +1,15 @@
 package com.team2383.nunchuck.subsystems.pinkArm;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team2383.nunchuck.subsystems.pinkArm.pivot.PivotSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.telescope.TelescopeSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.wrist.WristSubsystem;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +30,7 @@ public class PinkArmSimSubsystem extends SubsystemBase {
         m_wrist = wrist;
 
         m_mechanism2d = new Mechanism2d(10, 10);
-        m_mechanismRoot2d = m_mechanism2d.getRoot("Bottom Pivot", 5, 5);
+        m_mechanismRoot2d = m_mechanism2d.getRoot("Bottom Pivot", 0, 0);
         m_telescopeLigament = m_mechanismRoot2d
                 .append(new MechanismLigament2d("Telescope", 1, -90, 6, new Color8Bit(Color.kAqua)));
         m_feederLigament = m_telescopeLigament
@@ -39,10 +41,11 @@ public class PinkArmSimSubsystem extends SubsystemBase {
     public void periodic() {
         m_telescopeLigament.setAngle(m_pivot.getAngle().getDegrees() - 90);
         m_telescopeLigament
-                .setLength((m_telescope.getExtensionInches() >= 0 ? m_telescope.getExtensionInches() : 0) + 1);
+                .setLength(Units.inchesToMeters(
+                        (m_telescope.getExtensionInches() >= 0 ? m_telescope.getExtensionInches() : 0) + 7));
         m_feederLigament.setAngle(m_wrist.getAngle().getDegrees() + 180);
 
-        SmartDashboard.putData("Pink Arm", m_mechanism2d);
+        Logger.getInstance().recordOutput("Pink Arm", m_mechanism2d);
     }
 
     public void init() {

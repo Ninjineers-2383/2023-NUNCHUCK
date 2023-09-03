@@ -162,6 +162,7 @@ bin/
 *-window.json
 
 FRC_*.wpilog
+Log_*.wpilog
 *.csv
 
 !repos/**/*

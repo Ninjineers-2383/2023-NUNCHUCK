@@ -7,9 +7,8 @@ package com.team2383.nunchuck.helpers;
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -31,7 +30,7 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     private double m_voltage;
     private double m_desiredVelocity = 0;
     private double m_desiredPosition = 0;
-    //private String m_name;
+    // private String m_name;
 
     private boolean m_enabled = true;
 
@@ -42,34 +41,38 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     /**
      * Creates a new TrapezoidProfileSubsystem.
      *
-     * @param constraints     The constraints (maximum velocity and acceleration)
-     *                        for the profiles.
-     * @param initialPosition The initial position of the controlled mechanism when
-     *                        the subsystem is
-     *                        constructed.
-     * @param period          The period of the main robot loop, in seconds.
+     * @param constraints
+     *            The constraints (maximum velocity and acceleration)
+     *            for the profiles.
+     * @param initialPosition
+     *            The initial position of the controlled mechanism when
+     *            the subsystem is
+     *            constructed.
+     * @param period
+     *            The period of the main robot loop, in seconds.
      */
     protected TrapezoidalSubsystemBase(
-            String name, TrapezoidProfile.Constraints constraints, LinearSystem<N1, N1, N1> simSubsystem,
+            String name, TrapezoidProfile.Constraints constraints,
             double positionaThreshold, double initialPosition) {
 
         m_constraints = requireNonNullParam(constraints, "constraints", "TrapezoidProfileSubsystemBase");
         m_state = new TrapezoidProfile.State(initialPosition, 0);
         setGoal(new TrapezoidProfile.State(initialPosition, 0));
 
-        //m_name = name;
+        // m_name = name;
         m_positionThreshold = positionaThreshold;
     }
 
     /**
      * Creates a new TrapezoidProfileSubsystem.
      *
-     * @param constraints The constraints (maximum velocity and acceleration) for
-     *                    the profiles.
+     * @param constraints
+     *            The constraints (maximum velocity and acceleration) for
+     *            the profiles.
      */
     protected TrapezoidalSubsystemBase(String name, TrapezoidProfile.Constraints constraints,
-            LinearSystem<N1, N1, N1> simSubsystem, double positionThreshold) {
-        this(name, constraints, simSubsystem, positionThreshold, 0);
+            double positionThreshold) {
+        this(name, constraints, positionThreshold, 0);
     }
 
     @Override
@@ -98,7 +101,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     /**
      * Sets the goal state for the subsystem.
      *
-     * @param goal The goal state for the subsystem's motion profile.
+     * @param goal
+     *            The goal state for the subsystem's motion profile.
      */
     protected void setGoal(TrapezoidProfile.State goal) {
         m_goal = goal;
@@ -138,7 +142,8 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
     /**
      * Set voltage of motors
      * 
-     * @param voltage to be passed to motors
+     * @param voltage
+     *            to be passed to motors
      */
     protected abstract void setVoltage(double voltage);
 
@@ -149,5 +154,20 @@ public abstract class TrapezoidalSubsystemBase extends SubsystemBase {
      */
     public boolean isAtPosition() {
         return m_isFinished && Math.abs(m_goal.position - getState().position) < m_positionThreshold;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+
+        builder.setSmartDashboardType("TrapezoidProfileSubsystem");
+
+        builder.addDoubleProperty("goal", () -> m_goal.position, null);
+
+        builder.addDoubleProperty("position", () -> getState().position, null);
+
+        builder.addDoubleProperty("velocity", () -> getState().velocity, null);
+
+        builder.addDoubleProperty("error", () -> m_goal.position - getState().position, null);
     }
 }

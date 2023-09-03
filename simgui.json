@@ -23,12 +23,14 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Pink Arm": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/DrivetrainSubsystem": "Subsystem",
       "/LiveWindow/FeederSubsystem/Feeder": "Subsystem",
       "/LiveWindow/PaddleSubsystem": "Subsystem",
       "/LiveWindow/PinkArmSimSubsystem": "Subsystem",
       "/LiveWindow/PinkArmSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[10]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[12]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[15]": "Digital Input",
@@ -37,7 +39,19 @@
       "/LiveWindow/Ungrouped/DigitalInput[6]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
@@ -73,21 +87,35 @@
       "/LiveWindow/Ungrouped/rear/Drive PID": "PIDController",
       "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": "Field2d",
       "/SmartDashboard/Auto": "String Chooser",
+      "/SmartDashboard/Enable LW": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/Pink Arm": "Mechanism2d",
+      "/SmartDashboard/Pivot PID": "PIDController",
+      "/SmartDashboard/Rear Sim Field": "Field2d",
       "/SmartDashboard/Telescope Mechanism": "Mechanism2d",
+      "/SmartDashboard/Telescope PID": "PIDController",
+      "/SmartDashboard/Wrist PID": "PIDController",
       "/SmartDashboard/frontLeft/Drive PID": "PIDController",
       "/SmartDashboard/frontRight/Drive PID": "PIDController",
       "/SmartDashboard/rear/Drive PID": "PIDController"
     },
     "windows": {
+      "/AdvantageKit/RealOutputs/Pink Arm": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Arducam_OV9281_Front_Left Sim Field": {
         "Arducam_OV9281_Front_Left Camera": {
           "style": "Box/Image"
         },
-        "image": "C:\\Users\\Henry\\Documents\\repos\\2023-Diffy-Swerve\\sim\\2023-field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Enable LW": {
         "window": {
           "visible": true
         }
@@ -104,7 +132,10 @@
         }
       },
       "/SmartDashboard/Microsoft_LifeCam_HD-3000 Sim Field": {
-        "image": "sim\\2023-field.png"
+        "image": "sim\\2023-field.png",
+        "window": {
+          "visible": true
+        }
       },
       "/SmartDashboard/PPSwerveControllerCommand_field": {
         "image": "sim\\2023-field.png",
@@ -112,11 +143,6 @@
           "arrows": false,
           "style": "Line"
         },
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Pink Arm": {
         "window": {
           "visible": true
         }
@@ -173,6 +199,12 @@
       "open": true
     },
     "transitory": {
+      "AdvantageKit": {
+        "RealOutputs": {
+          "open": true
+        },
+        "open": true
+      },
       "LiveWindow": {
         "DrivetrainSubsystem": {
           "frontLeft": {
@@ -191,15 +223,10 @@
           },
           "open": true
         },
-        "PivotSubsystem": {
-          "open": true
-        },
-        "TelescopeSubsystem": {
-          "open": true
-        },
         "WristSubsystem": {
           "open": true
-        }
+        },
+        "open": true
       },
       "SmartDashboard": {
         "Field": {
@@ -222,8 +249,7 @@
             "open": true
           },
           "open": true
-        },
-        "open": true
+        }
       }
     }
   },

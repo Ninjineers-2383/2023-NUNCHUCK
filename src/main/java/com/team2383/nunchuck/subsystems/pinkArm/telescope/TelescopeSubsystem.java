@@ -21,7 +21,7 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     private Supplier<Rotation2d> m_pivotAngle;
 
     public TelescopeSubsystem(TelescopeIO io, Supplier<Rotation2d> pivotAngle) {
-        super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS, TelescopeConstants.SIMULATION_SUBSYSTEM,
+        super("Telescope", TelescopeConstants.TRAPEZOIDAL_CONSTRAINTS,
                 TelescopeConstants.POSITION_THRESHOLD);
         m_pivotAngle = pivotAngle;
 
@@ -72,7 +72,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      * If used externally, call disable() before using this method
      * Make sure to call enable() to resume positional control
      * 
-     * @param desiredVelocity in inches per second
+     * @param desiredVelocity
+     *            in inches per second
      */
     public void setVelocity(double desiredVelocity) {
         super.setVelocity(desiredVelocity);
@@ -98,7 +99,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
     /**
      * PIDF calculations used by trapezoidal motion profiling
      * 
-     * @param velocity in radians per second
+     * @param velocity
+     *            in radians per second
      */
     @Override
     protected double calculateVoltage(double velocity, double position) {
@@ -116,7 +118,8 @@ public class TelescopeSubsystem extends TrapezoidalSubsystemBase {
      */
     @Override
     protected void setVoltage(double voltage) {
-        m_io.setVoltage(voltage);;
+        m_io.setVoltage(voltage);
+        ;
     }
 
     public void resetPosition() {

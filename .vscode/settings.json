@@ -42,6 +42,7 @@
     "Kalman",
     "Ninjineers",
     "Normie",
+    "nunchuck",
     "Odometry",
     "overriden",
     "Penrose",
@@ -62,10 +63,16 @@
   "latex.linter.config": "",
   "python.analysis.typeCheckingMode": "off",
   "editor.detectIndentation": false,
-"wpilib.autoSaveOnDeploy": false,
-"search.useIgnoreFiles": true,
-"[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-},
-"python.formatting.provider": "none"
+  "wpilib.autoSaveOnDeploy": false,
+  "search.useIgnoreFiles": true,
+  "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "[java]": {
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.defaultFormatter": "redhat.java",
+    "editor.tabSize": 4,
+    "editor.rulers": [120]
+  },
+  "java.format.settings.url": "formatter.xml",
 }

@@ -15,14 +15,12 @@ public class WristSubsystem extends TrapezoidalSubsystemBase {
     private final WristIO m_io;
     private final WristIOInputsAutoLogged m_inputs = new WristIOInputsAutoLogged();
 
-    double m_simVelocity = 0;
-
     private Supplier<Rotation2d> m_pivotAngle;
 
     public WristSubsystem(WristIO io, Supplier<Rotation2d> pivotAngle) {
-        super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS, WristConstants.SIMULATION_SUBSYSTEM,
+        super("Wrist", WristConstants.TRAPEZOIDAL_CONSTRAINTS,
                 WristConstants.POSITION_THRESHOLD.getRadians());
-        
+
         m_io = io;
 
         m_pivotAngle = pivotAngle;

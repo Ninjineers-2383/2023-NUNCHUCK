@@ -23,10 +23,11 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * Pivot Subsystem Constructor (The pivot is the big swinging joint on the pink
      * arm)
      * 
-     * @param extension for safety; checks extension to make sure it's not too long
+     * @param extension
+     *            for safety; checks extension to make sure it's not too long
      */
     public PivotSubsystem(PivotIO io, DoubleSupplier extension) {
-        super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS, PivotConstants.SIMULATION_SUBSYSTEM,
+        super("Pivot", PivotConstants.TRAPEZOIDAL_CONSTRAINTS,
                 PivotConstants.POSITION_THRESHOLD.getRadians());
 
         m_io = io;
@@ -71,7 +72,8 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
      * Set velocity of the pivot using PID and feedforward control
      * Using this method disables trapezoidal motion profiling
      * 
-     * @param desiredVelocity in radians per second
+     * @param desiredVelocity
+     *            in radians per second
      */
     public void setVelocity(Rotation2d desiredVelocity) {
         super.setVelocity(desiredVelocity.getRadians());
@@ -80,7 +82,8 @@ public class PivotSubsystem extends TrapezoidalSubsystemBase {
     /**
      * PIDF calculations used by trapezoidal motion profiling
      * 
-     * @param velocity in radians per second
+     * @param velocity
+     *            in radians per second
      */
     @Override
     protected double calculateVoltage(double velocity, double position) {
