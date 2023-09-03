@@ -1,9 +1,7 @@
 package com.team2383.nunchuck.subsystems.drivetrain;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
-
-import com.ctre.phoenixpro.hardware.Pigeon2;
-import com.ctre.phoenixpro.sim.Pigeon2SimState;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.VecBuilder;
@@ -16,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -24,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.team2383.nunchuck.Constants;
 import com.team2383.nunchuck.subsystems.drivetrain.vision.PhotonCameraWrapper;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -34,12 +30,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final CoaxialSwerveModule[] m_modules;
     private final SwerveModuleState[] m_lastStates;
-    private ChassisSpeeds m_lastChassisSpeed = new ChassisSpeeds();
 
     private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
 
-    private final Pigeon2 m_gyro = new Pigeon2(0, Constants.kCANivoreBus);
-    private final Pigeon2SimState m_gyroSim = m_gyro.getSimState();
+    private final GyroIO m_gyro;
+    private final GyroIOInputsAutoLogged m_gyroInputs = new GyroIOInputsAutoLogged();
 
     public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             DriveConstants.frontLeftConstants.translation,
@@ -51,19 +46,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
 
-    public DrivetrainSubsystem(DataLog log) {
-        m_frontLeftModule = new CoaxialSwerveModule(DriveConstants.frontLeftConstants,
-                DriveConstants.frontLeftEncoder, Constants.kCANivoreBus);
-        m_frontRightModule = new CoaxialSwerveModule(DriveConstants.frontRightConstants,
-                DriveConstants.frontRightEncoder, Constants.kCANivoreBus);
-        m_rearModule = new CoaxialSwerveModule(DriveConstants.rearConstants,
-                DriveConstants.rearEncoder, Constants.kCANivoreBus);
+    public DrivetrainSubsystem(GyroIO gyro, SwerveModuleIO frontLeftIO, SwerveModuleIO frontRightIO,
+            SwerveModuleIO rearIO) {
+        m_gyro = gyro;
+
+        m_frontLeftModule = new CoaxialSwerveModule(frontLeftIO, "FL");
+        m_frontRightModule = new CoaxialSwerveModule(frontRightIO, "FR");
+        m_rearModule = new CoaxialSwerveModule(rearIO, "R");
 
         m_modules = new CoaxialSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
 
         m_poseEstimator = new SwerveDrivePoseEstimator(
                 m_kinematics,
-                getHeading(),
+                new Rotation2d(),
                 getModulePositions(),
                 new Pose2d());
 
@@ -87,15 +82,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro Heading", getHeading().getDegrees());
+        m_gyro.updateInputs(m_gyroInputs);
+        Logger.getInstance().processInputs("Gyro", m_gyroInputs);
+
+        for (CoaxialSwerveModule module : m_modules) {
+            module.periodic();
+        }
 
         for (int i = 0; i < m_modules.length; i++) {
             m_lastStates[i] = m_modules[i].getState();
         }
 
-        m_lastChassisSpeed = m_kinematics.toChassisSpeeds(m_lastStates[0], m_lastStates[1], m_lastStates[2]);
+        ChassisSpeeds chassis = m_kinematics.toChassisSpeeds(m_lastStates);
 
-        m_poseEstimator.update(getHeading(), getModulePositions());
+        if (m_gyroInputs.connected) {
+            m_poseEstimator.update(Rotation2d.fromDegrees(m_gyroInputs.headingDeg), getModulePositions());
+        } else {
+            m_poseEstimator.update(
+                    Rotation2d.fromRadians(getHeading().getRadians() + chassis.omegaRadiansPerSecond * 0.02),
+                    getModulePositions());
+        }
 
         EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
 
@@ -126,24 +132,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        m_frontLeftModule.simulate();
-        m_frontRightModule.simulate();
-        m_rearModule.simulate();
-
-        m_gyroSim.setRawYaw(
-                m_gyro.getYaw().getValue() + (m_lastChassisSpeed.omegaRadiansPerSecond * 180 / Math.PI) * 0.02);
-
-        // m_camera.simulate(getPose());
+        // m_gyroSim.setRawYaw(
+        // m_gyro.getYaw().getValue() + (m_lastChassisSpeed.omegaRadiansPerSecond * 180
+        // / Math.PI) * 0.02);
     }
 
     /**
      * Drive the robot using field or robot relative velocity
      * 
-     * @param drive            The speed for driving
-     * @param angle            The set angular speed
-     * @param fieldRelative    Whether the speeds are relative to the field or the
-     *                         robot
-     * @param centerOfRotation Its the center of rotation duh
+     * @param drive
+     *            The speed for driving
+     * @param angle
+     *            The set angular speed
+     * @param fieldRelative
+     *            Whether the speeds are relative to the field or the
+     *            robot
+     * @param centerOfRotation
+     *            Its the center of rotation duh
      */
     public void drive(Translation2d drive, Rotation2d angle, boolean fieldRelative,
             Translation2d centerOfRotation) {
@@ -153,7 +158,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(drive.getX(), drive.getY(), angle.getRadians(),
                     getHeading());
         } else {
-
             speeds = new ChassisSpeeds(drive.getX(), drive.getY(), angle.getRadians());
         }
 
@@ -190,18 +194,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The heading of the robot in a Rotation2D
      */
     public Rotation2d getHeading() {
-        return m_gyro.getRotation2d();
+        return m_poseEstimator.getEstimatedPosition().getRotation();
     }
 
     /**
      * Reset the heading to the param
      * 
-     * @param currentHeading the heading to reset the gyro to. This must be in field
-     *                       relative coordinates when CCW is position and 0 is
-     *                       facing directly towards the opposing alliance wall
+     * @param currentHeading
+     *            the heading to reset the gyro to. This must be in field
+     *            relative coordinates when CCW is position and 0 is
+     *            facing directly towards the opposing alliance wall
      */
     public void forceHeading(Rotation2d currentHeading) {
-        m_gyro.setYaw(currentHeading.getDegrees());
+        m_gyro.setHeading(currentHeading);
         m_poseEstimator.resetPosition(currentHeading, getModulePositions(), m_poseEstimator.getEstimatedPosition());
     }
 
@@ -213,7 +218,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * north
      */
     public void resetHeading() {
-        m_gyro.setYaw(getCompassHeading());
+        m_gyro.setHeading(Rotation2d.fromDegrees(getCompassHeading()));
         m_poseEstimator.resetPosition(getHeading(), getModulePositions(),
                 new Pose2d(m_poseEstimator.getEstimatedPosition().getTranslation(), getHeading()));
         resetEncoders();
@@ -225,11 +230,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return turn rate in degrees per second CCW positive
      */
     public double getTurnRate() {
-        return m_gyro.getRate();
+        return m_gyroInputs.headingRateDPS;
     }
 
     public double getRoll() {
-        return m_gyro.getRoll().getValue();
+        return m_gyroInputs.rollDeg;
     }
 
     public Pose2d getPose() {
@@ -273,8 +278,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-
-        // builder.addDoubleProperty("Compass Heading", m_gyro::getCompassHeading,
-        // null);
     }
 }

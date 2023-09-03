@@ -24,7 +24,13 @@ import com.team2383.nunchuck.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.nunchuck.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.nunchuck.commands.pinkArm.zero.ZeroTelescope;
 import com.team2383.nunchuck.helpers.ButtonBoardButtons;
+import com.team2383.nunchuck.subsystems.drivetrain.DriveConstants;
 import com.team2383.nunchuck.subsystems.drivetrain.DrivetrainSubsystem;
+import com.team2383.nunchuck.subsystems.drivetrain.GyroIO;
+import com.team2383.nunchuck.subsystems.drivetrain.GyroIOPigeon;
+import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIO;
+import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIOFalcon500;
+import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIOSim;
 import com.team2383.nunchuck.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIO;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIOFalcon500;
@@ -49,7 +55,6 @@ import com.team2383.nunchuck.commands.pinkArm.position.PositionConstants.PinkPos
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -71,7 +76,7 @@ public class RobotContainer {
     private final GenericHID m_driverController = new GenericHID(0);
     private final XboxController m_operatorController = new XboxController(2);
 
-    private DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private DrivetrainSubsystem m_drivetrainSubsystem;
     private FeederSubsystem m_feederSubsystem;
     private TelescopeSubsystem m_telescopeSubsystem;
     private WristSubsystem m_wristSubsystem;
@@ -98,6 +103,14 @@ public class RobotContainer {
         if (Constants.getMode() != Mode.REPLAY) {
             switch (Constants.getRobot()) {
                 case ROBOT_COMP:
+                    m_drivetrainSubsystem = new DrivetrainSubsystem(
+                            new GyroIOPigeon(0, Constants.kCANivoreBus),
+                            new SwerveModuleIOFalcon500(DriveConstants.frontLeftConstants,
+                                    DriveConstants.frontLeftEncoder, Constants.kCANivoreBus),
+                            new SwerveModuleIOFalcon500(DriveConstants.frontRightConstants,
+                                    DriveConstants.frontRightEncoder, Constants.kCANivoreBus),
+                            new SwerveModuleIOFalcon500(DriveConstants.rearConstants,
+                                    DriveConstants.rearEncoder, Constants.kCANivoreBus));
                     m_feederSubsystem = new FeederSubsystem(new FeederIOFalcon500());
                     m_telescopeSubsystem = new TelescopeSubsystem(new TelescopeIOSparkMax(), null);
                     m_wristSubsystem = new WristSubsystem(new WristIOTalonSRX(), null);
@@ -105,6 +118,9 @@ public class RobotContainer {
                             m_telescopeSubsystem::getExtensionInches);
                     break;
                 case ROBOT_SIM:
+                    m_drivetrainSubsystem = new DrivetrainSubsystem(
+                            new GyroIO() {},
+                            new SwerveModuleIOSim() {}, new SwerveModuleIOSim() {}, new SwerveModuleIOSim() {});
                     m_feederSubsystem = new FeederSubsystem(new FeederIOSim());
                     m_telescopeSubsystem = new TelescopeSubsystem(new TelescopeIOSim(), null);
                     m_wristSubsystem = new WristSubsystem(new WristIOSim(), null);
@@ -115,6 +131,10 @@ public class RobotContainer {
             }
         }
 
+        m_drivetrainSubsystem = m_drivetrainSubsystem != null ? m_drivetrainSubsystem
+                : new DrivetrainSubsystem(
+                        new GyroIO() {},
+                        new SwerveModuleIO() {}, new SwerveModuleIO() {}, new SwerveModuleIO() {});
         m_feederSubsystem = m_feederSubsystem != null ? m_feederSubsystem
                 : new FeederSubsystem(new FeederIO() {});
         m_telescopeSubsystem = m_telescopeSubsystem != null ? m_telescopeSubsystem
