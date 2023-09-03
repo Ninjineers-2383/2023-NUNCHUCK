@@ -200,7 +200,16 @@
     },
     "transitory": {
       "AdvantageKit": {
+        "DashboardInputs": {
+          "open": true
+        },
+        "Pivot": {
+          "open": true
+        },
         "RealOutputs": {
+          "Pink Arm": {
+            "open": true
+          },
           "open": true
         },
         "open": true
@@ -221,9 +230,6 @@
           "Top Pivot": {
             "open": true
           },
-          "open": true
-        },
-        "WristSubsystem": {
           "open": true
         },
         "open": true

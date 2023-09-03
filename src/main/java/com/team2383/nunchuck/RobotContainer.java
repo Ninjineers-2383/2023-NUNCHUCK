@@ -24,6 +24,7 @@ import com.team2383.nunchuck.commands.pinkArm.velocity.TelescopeVelocityCommand;
 import com.team2383.nunchuck.commands.pinkArm.velocity.WristVelocityCommand;
 import com.team2383.nunchuck.commands.pinkArm.zero.ZeroTelescope;
 import com.team2383.nunchuck.helpers.ButtonBoardButtons;
+import com.team2383.nunchuck.subsystems.drivetrain.CoaxialSwerveModuleIOFalcon500;
 import com.team2383.nunchuck.subsystems.drivetrain.DrivetrainSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIO;
@@ -49,7 +50,6 @@ import com.team2383.nunchuck.commands.pinkArm.position.PositionConstants.PinkPos
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -71,7 +71,7 @@ public class RobotContainer {
     private final GenericHID m_driverController = new GenericHID(0);
     private final XboxController m_operatorController = new XboxController(2);
 
-    private DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(DataLogManager.getLog());
+    private DrivetrainSubsystem m_drivetrainSubsystem;
     private FeederSubsystem m_feederSubsystem;
     private TelescopeSubsystem m_telescopeSubsystem;
     private WristSubsystem m_wristSubsystem;
@@ -98,6 +98,8 @@ public class RobotContainer {
         if (Constants.getMode() != Mode.REPLAY) {
             switch (Constants.getRobot()) {
                 case ROBOT_COMP:
+                    m_drivetrainSubsystem = new DrivetrainSubsystem(new CoaxialSwerveModuleIOFalcon500(1), 
+                        new CoaxialSwerveModuleIOFalcon500(2), new CoaxialSwerveModuleIOFalcon500(3));
                     m_feederSubsystem = new FeederSubsystem(new FeederIOFalcon500());
                     m_telescopeSubsystem = new TelescopeSubsystem(new TelescopeIOSparkMax(), null);
                     m_wristSubsystem = new WristSubsystem(new WristIOTalonSRX(), null);

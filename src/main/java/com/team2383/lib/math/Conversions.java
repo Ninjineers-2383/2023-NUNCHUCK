@@ -38,6 +38,15 @@ public class Conversions {
     }
 
     /**
+     * @param rotationCount Falcon rotor position
+     * @param gearRatio     Gear Ratio between Falcon and Mechanism
+     * @return Radians of Rotation of Mechanism
+     */
+    public static double rotationsToRadians(double rotationCount, double gearRatio) {
+        return rotationCount * (2 * Math.PI) / gearRatio;
+    }
+
+    /**
      * @param degrees   Degrees of rotation of Mechanism
      * @param gearRatio Gear Ratio between Falcon and Mechanism
      * @return Falcon Position Counts
@@ -105,7 +114,7 @@ public class Conversions {
      *                      Falcon MPS)
      * @return Falcon Velocity Counts
      */
-    public static double RPMToMPS(double RPS, double circumference, double gearRatio) {
+    public static double RPSToMPS(double RPS, double circumference, double gearRatio) {
         double wheelRPS = falconRPSToWheelRPS(RPS, gearRatio);
         double wheelMPS = wheelRPS * circumference;
         return wheelMPS;
