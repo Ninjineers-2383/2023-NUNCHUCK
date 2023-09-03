@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -50,11 +51,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
 
-    public DrivetrainSubsystem(CoaxialSwerveModuleIO frontLeftIO, CoaxialSwerveModuleIO frontRightIO,
-            CoaxialSwerveModuleIO rearIO) {
-        m_frontLeftModule = new CoaxialSwerveModule(frontLeftIO);
-        m_frontRightModule = new CoaxialSwerveModule(frontRightIO);
-        m_rearModule = new CoaxialSwerveModule(rearIO);
+    public DrivetrainSubsystem(DataLog log) {
+        m_frontLeftModule = new CoaxialSwerveModule(DriveConstants.frontLeftConstants,
+                DriveConstants.frontLeftEncoder, Constants.kCANivoreBus);
+        m_frontRightModule = new CoaxialSwerveModule(DriveConstants.frontRightConstants,
+                DriveConstants.frontRightEncoder, Constants.kCANivoreBus);
+        m_rearModule = new CoaxialSwerveModule(DriveConstants.rearConstants,
+                DriveConstants.rearEncoder, Constants.kCANivoreBus);
 
         m_modules = new CoaxialSwerveModule[] { m_frontLeftModule, m_frontRightModule, m_rearModule };
 
@@ -68,6 +71,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         SmartDashboard.putData("Field", m_field);
         m_COR = m_field.getObject("COR");
+
+        addChild(DriveConstants.frontLeftConstants.name, m_frontLeftModule);
+        addChild(DriveConstants.frontRightConstants.name, m_frontRightModule);
+        addChild(DriveConstants.rearConstants.name, m_rearModule);
 
         if (RobotBase.isSimulation()) {
             m_poseEstimator.resetPosition(new Rotation2d(), getModulePositions(),

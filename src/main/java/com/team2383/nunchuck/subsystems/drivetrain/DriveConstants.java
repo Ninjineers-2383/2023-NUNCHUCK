@@ -34,6 +34,7 @@ public final class DriveConstants {
     public final static double kMaxAngularAcceleration = Math.PI * 2 * 100;
 
     public final static PIDController HEADING_CONTROLLER = new PIDController(1, 0, 0);
+
     public static final class ModuleConstants {
         public final double kS;
         public final double kV;
@@ -57,7 +58,7 @@ public final class DriveConstants {
 
         public ModuleConstants(double kS, double kV, double kA,
                 double kP, double kI, double kD,
-                int kAngleMotorID, int kDriveMotorID, int kEncoderID, 
+                int kAngleMotorID, int kDriveMotorID, int kEncoderID,
                 String name, Translation2d translation,
                 Rotation2d angleOffset) {
 
