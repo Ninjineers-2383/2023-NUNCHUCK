@@ -31,6 +31,8 @@ import com.team2383.nunchuck.subsystems.drivetrain.GyroIOPigeon;
 import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIO;
 import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIOFalcon500;
 import com.team2383.nunchuck.subsystems.drivetrain.SwerveModuleIOSim;
+import com.team2383.nunchuck.subsystems.drivetrain.vision.VisionIO;
+import com.team2383.nunchuck.subsystems.drivetrain.vision.VisionIOPhoton;
 import com.team2383.nunchuck.subsystems.pinkArm.PinkArmSimSubsystem;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIO;
 import com.team2383.nunchuck.subsystems.pinkArm.feeder.FeederIOFalcon500;
@@ -105,6 +107,7 @@ public class RobotContainer {
                 case ROBOT_COMP:
                     m_drivetrainSubsystem = new DrivetrainSubsystem(
                             new GyroIOPigeon(0, Constants.kCANivoreBus),
+                            new VisionIOPhoton(),
                             new SwerveModuleIOFalcon500(DriveConstants.frontLeftConstants,
                                     DriveConstants.frontLeftEncoder, Constants.kCANivoreBus),
                             new SwerveModuleIOFalcon500(DriveConstants.frontRightConstants,
@@ -120,6 +123,7 @@ public class RobotContainer {
                 case ROBOT_SIM:
                     m_drivetrainSubsystem = new DrivetrainSubsystem(
                             new GyroIO() {},
+                            new VisionIO() {},
                             new SwerveModuleIOSim() {}, new SwerveModuleIOSim() {}, new SwerveModuleIOSim() {});
                     m_feederSubsystem = new FeederSubsystem(new FeederIOSim());
                     m_telescopeSubsystem = new TelescopeSubsystem(new TelescopeIOSim(), null);
@@ -134,6 +138,7 @@ public class RobotContainer {
         m_drivetrainSubsystem = m_drivetrainSubsystem != null ? m_drivetrainSubsystem
                 : new DrivetrainSubsystem(
                         new GyroIO() {},
+                        new VisionIO() {},
                         new SwerveModuleIO() {}, new SwerveModuleIO() {}, new SwerveModuleIO() {});
         m_feederSubsystem = m_feederSubsystem != null ? m_feederSubsystem
                 : new FeederSubsystem(new FeederIO() {});

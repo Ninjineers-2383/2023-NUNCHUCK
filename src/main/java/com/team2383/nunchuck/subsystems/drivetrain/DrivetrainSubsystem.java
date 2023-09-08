@@ -1,15 +1,16 @@
 package com.team2383.nunchuck.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
 
-import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -21,7 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.team2383.nunchuck.subsystems.drivetrain.vision.PhotonCameraWrapper;
+import com.team2383.nunchuck.subsystems.drivetrain.vision.VisionIO;
+import com.team2383.nunchuck.subsystems.drivetrain.vision.VisionIOInputsAutoLogged;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private final CoaxialSwerveModule m_frontLeftModule;
@@ -31,7 +33,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final CoaxialSwerveModule[] m_modules;
     private final SwerveModuleState[] m_lastStates;
 
-    private final PhotonCameraWrapper m_camera = new PhotonCameraWrapper();
+    private final VisionIO m_vision;
+    private final VisionIOInputsAutoLogged m_visionInputs = new VisionIOInputsAutoLogged();
 
     private final GyroIO m_gyro;
     private final GyroIOInputsAutoLogged m_gyroInputs = new GyroIOInputsAutoLogged();
@@ -46,9 +49,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final Field2d m_field = new Field2d();
     private final FieldObject2d m_COR;
 
-    public DrivetrainSubsystem(GyroIO gyro, SwerveModuleIO frontLeftIO, SwerveModuleIO frontRightIO,
+    public DrivetrainSubsystem(GyroIO gyro, VisionIO vision, SwerveModuleIO frontLeftIO, SwerveModuleIO frontRightIO,
             SwerveModuleIO rearIO) {
         m_gyro = gyro;
+        m_vision = vision;
 
         m_frontLeftModule = new CoaxialSwerveModule(frontLeftIO, "FL");
         m_frontRightModule = new CoaxialSwerveModule(frontRightIO, "FR");
@@ -85,6 +89,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_gyro.updateInputs(m_gyroInputs);
         Logger.getInstance().processInputs("Gyro", m_gyroInputs);
 
+        m_vision.updateInputs(m_visionInputs);
+        Logger.getInstance().processInputs("Vision", m_visionInputs);
+
         for (CoaxialSwerveModule module : m_modules) {
             module.periodic();
         }
@@ -103,16 +110,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     getModulePositions());
         }
 
-        EstimatedRobotPose cam_pose = m_camera.getEstimatedGlobalPose(getPose());
+        for (int i = 0; i < m_visionInputs.connected.length; i++) {
+            if (!m_visionInputs.connected[i])
+                continue;
 
-        if (cam_pose != null) {
-            var estimate = cam_pose.estimatedPose.toPose2d();
-            if (estimate.getX() > 0 && estimate.getY() > 0 && estimate.getX() < 17 &&
-                    estimate.getY() < 9) {
-                m_poseEstimator.addVisionMeasurement(cam_pose.estimatedPose.toPose2d(),
-                        MathSharedStore.getTimestamp(),
-                        VecBuilder.fill(1, 1, 1));
-            }
+            Translation3d camTranslation = new Translation3d(
+                    m_visionInputs.x[i],
+                    m_visionInputs.y[i],
+                    m_visionInputs.z[i]);
+
+            Rotation3d camRotation = new Rotation3d(
+                    m_visionInputs.roll[i],
+                    m_visionInputs.pitch[i],
+                    m_visionInputs.yaw[i]);
+
+            Pose3d camPose = new Pose3d(camTranslation, camRotation);
+
+            m_poseEstimator.addVisionMeasurement(camPose.toPose2d(),
+                    m_visionInputs.timestampSeconds[i],
+                    VecBuilder.fill(1, 1, 1));
         }
 
         Pose2d estimatedPose = m_poseEstimator.getEstimatedPosition();
@@ -128,13 +144,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_field.setRobotPose(estimatedPose);
 
         SmartDashboard.putNumber("Roll", getRoll());
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // m_gyroSim.setRawYaw(
-        // m_gyro.getYaw().getValue() + (m_lastChassisSpeed.omegaRadiansPerSecond * 180
-        // / Math.PI) * 0.02);
     }
 
     /**
