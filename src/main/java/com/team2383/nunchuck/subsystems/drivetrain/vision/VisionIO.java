@@ -16,17 +16,17 @@ public interface VisionIO {
 
         public double[] timestampSeconds = {};
 
-        public void clear() {
-            connected = new boolean[] {};
-            x = new double[] {};
-            y = new double[] {};
-            z = new double[] {};
+        public void clear(int len) {
+            connected = new boolean[len];
+            x = new double[len];
+            y = new double[len];
+            z = new double[len];
 
-            roll = new double[] {};
-            pitch = new double[] {};
-            yaw = new double[] {};
+            roll = new double[len];
+            pitch = new double[len];
+            yaw = new double[len];
 
-            timestampSeconds = new double[] {};
+            timestampSeconds = new double[len];
         }
     }
 

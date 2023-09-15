@@ -9,18 +9,15 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.team2383.nunchuck.Robot;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class VisionIOPhoton implements VisionIO {
-    private int numCameras = Robot.isReal() ? VisionConstants.kPhotonCameras.length : 1;
-    public PhotonCamera[] photonCameras = new PhotonCamera[numCameras];
-    public PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[numCameras];
+
+    public PhotonCamera[] photonCameras = new PhotonCamera[VisionConstants.kPhotonCameras.length];
+    public PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[VisionConstants.kPhotonCameras.length];
 
     public VisionIOPhoton() {
         AprilTagFieldLayout atfl;
@@ -32,7 +29,7 @@ public class VisionIOPhoton implements VisionIO {
             throw new RuntimeException("Failed to load AprilTagFieldLayout");
         }
 
-        for (int i = 0; i < numCameras; i++) {
+        for (int i = 0; i < VisionConstants.kPhotonCameras.length; i++) {
             photonCameras[i] = new PhotonCamera(VisionConstants.kPhotonCameras[i].name);
             photonPoseEstimators[i] = new PhotonPoseEstimator(
                     atfl, PoseStrategy.MULTI_TAG_PNP, photonCameras[i],
@@ -69,6 +66,8 @@ public class VisionIOPhoton implements VisionIO {
             }
             poses[i] = estimatedRobotPose.get();
         }
+
+        inputs.clear(len);
 
         for (int i = 0; i < len; i++) {
             if (poses[i] == null) {
