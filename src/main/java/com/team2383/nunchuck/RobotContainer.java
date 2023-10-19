@@ -64,6 +64,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -180,6 +181,19 @@ public class RobotContainer {
         ButtonBoardButtons.makeNormieButton("Reset Heading")
                 .or(() -> m_driverController.getRawButton(Constants.OI.ResetHeading))
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::resetHeading));
+
+        new JoystickButton(m_driverController, 5).toggleOnTrue(
+             new JoystickDriveHeadingLock(m_drivetrainSubsystem,
+                        () -> new Translation2d(
+                                MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveX) * 0.75, .1),
+                                MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveY) * 0.75, .1)),
+                        () -> Rotation2d
+                                .fromDegrees(100 * MathUtil
+                                        .applyDeadband(m_driverController.getRawAxis(Constants.OI.DriveOmega) * 0.5, 0.1)),
+                        () -> !(m_driverController.getRawButton(Constants.OI.FieldCentric)),
+                        () -> -1)
+        );
+        
     }
 
     private void configureDefaultCommands() {
@@ -277,8 +291,13 @@ public class RobotContainer {
         Command score_preload_mid = new ScorePreloadMid(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
                 m_wristSubsystem, m_feederSubsystem);
 
-        Command cube_mobility = new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem, autoBuilder);
+        Command cube_mobility = new SequentialCommandGroup(
+                new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
+                m_wristSubsystem, m_feederSubsystem, autoBuilder),
+                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                PositionConstants.FEED_CUBE_POS),
+                new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.4)
+        );
 
         Command cone_cube_2 = new SequentialCommandGroup(
                 new ZeroTelescope(m_telescopeSubsystem),

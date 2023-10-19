@@ -31,6 +31,7 @@ public class CubeMobilityAuto extends SequentialCommandGroup {
                 new PinkArmPresetCommand(pivot, telescope, wrist, PositionConstants.HIGH_SCORE_BACK),
                 new FeederCommand(feeder, () -> -1).withTimeout(0.4),
                 new FeederCommand(feeder, () -> 0).withTimeout(0.01),
-                autoBuilder.fullAuto(pathGroup));
+                autoBuilder.fullAuto(pathGroup)
+            );
     }
 }
