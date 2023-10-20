@@ -26,12 +26,12 @@
     },
     {
       "anchorPoint": {
-        "x": 7.25,
-        "y": 3.95
+        "x": 7.05,
+        "y": 4.2
       },
       "prevControl": {
-        "x": 6.113339970954752,
-        "y": 4.353634340093109
+        "x": 5.913339970954752,
+        "y": 4.603634340093109
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -47,5 +47,12 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.6,
+      "names": [
+        "Feed Cube"
+      ]
+    }
+  ]
 }

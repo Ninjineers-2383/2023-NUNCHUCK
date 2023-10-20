@@ -271,6 +271,12 @@ public class RobotContainer {
 
                 put("High", new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem,
                         PositionConstants.HIGH_SCORE_BACK));
+
+                put("Feed Cube", new SequentialCommandGroup(
+                    new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                    PositionConstants.FEED_CUBE_POS),
+                    new FeederCommand(m_feederSubsystem, () -> 1)));
+                
             }
         };
 
@@ -293,10 +299,10 @@ public class RobotContainer {
 
         Command cube_mobility = new SequentialCommandGroup(
                 new CubeMobilityAuto(m_drivetrainSubsystem, m_telescopeSubsystem, m_pivotSubsystem,
-                m_wristSubsystem, m_feederSubsystem, autoBuilder),
-                new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
-                PositionConstants.FEED_CUBE_POS),
-                new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.4)
+                m_wristSubsystem, m_feederSubsystem, autoBuilder)
+                // new PinkArmPresetCommand(m_pivotSubsystem, m_telescopeSubsystem, m_wristSubsystem, 
+                // PositionConstants.FEED_CUBE_POS),
+                // new FeederCommand(m_feederSubsystem, () -> 1).withTimeout(0.4)
         );
 
         Command cone_cube_2 = new SequentialCommandGroup(
